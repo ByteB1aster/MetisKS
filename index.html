@@ -479,7 +479,7 @@
         e.preventDefault();
         var pw = document.getElementById('auth-pw').value;
         var hash = await sha256(pw);
-        if (hash === '61912509156c55fd07a0e5c8ca0b310ce55c73284062aa94b6bb9b10a886045f') {
+        if (hash === 'c367ffa3be05f71c8e45a63ba37071fc623ed33a3d9ed142d4baa6d3819d8143') {
             document.getElementById('auth-gate').style.display = 'none';
             document.getElementById('app-wrap').classList.add('unlocked');
             showPage('dashboard');
