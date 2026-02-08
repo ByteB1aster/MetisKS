@@ -428,6 +428,30 @@
             background: linear-gradient(135deg, #001830 0%, #003050 100%);
             touch-action: manipulation;
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-value {
+                font-size: 24px;
+                word-break: break-word;
+            }
+            .stat-card {
+                padding: 16px;
+            }
+            .card {
+                padding: 18px;
+                margin: 12px 0;
+            }
+            .card-title {
+                font-size: 17px;
+            }
+            .rx-cost {
+                flex-wrap: wrap;
+            }
+        }
     </style>
     <script>
     // Critical functions in head so they're available immediately
@@ -699,7 +723,7 @@
             <div class="stat-grid" style="margin-top:16px;">
                 <div class="stat-card" style="background:#001830; color:white;">
                     <div class="stat-value" style="color:#a7cf28; font-size:28px;">$4,288</div>
-                    <div class="stat-label" style="color:rgba(255,255,255,0.8);">Actual Monthly</div>
+                    <div class="stat-label" style="color:#ffffff;">Actual Monthly</div>
                 </div>
             </div>
             <div style="margin-top:16px;">
@@ -736,7 +760,7 @@
                 <span style="font-weight:800; color:#dc3545; font-size:18px;">~$1,123.00</span>
             </div>
             <div style="margin-top:8px; padding:12px 16px; background:#001830; border-radius:8px; display:flex; justify-content:space-between;">
-                <span style="font-weight:700; color:rgba(255,255,255,0.8);">Actual Net Monthly</span>
+                <span style="font-weight:700; color:#ffffff;">Actual Net Monthly</span>
                 <span style="font-weight:800; color:#a7cf28; font-size:18px;">~$3,165.45</span>
             </div>
         </div>
@@ -751,8 +775,8 @@
             </div>
             <div class="stat-grid" style="margin-top:16px;">
                 <div class="stat-card" style="background:linear-gradient(135deg, #001830, #003050); color:white;">
-                    <div class="stat-value" style="color:#2196f3; font-size:28px;">$9,537+</div>
-                    <div class="stat-label" style="color:rgba(255,255,255,0.8);">Potential Monthly</div>
+                    <div class="stat-value" style="color:#64b5f6; font-size:28px;">$9,537+</div>
+                    <div class="stat-label" style="color:#ffffff;">Potential Monthly</div>
                 </div>
             </div>
             <div style="margin-top:16px;">
@@ -3678,9 +3702,9 @@
   </div>
 
   <div class="card">
-    <div class="list-item" style="background:linear-gradient(135deg, #001830 0%, #003050 100%); border-left:4px solid #dc3545; color:white;">
-      <div class="list-title" style="color:#ff6b6b;">16. Sodium 126 — Hidden Falls Driver Discovered</div>
-      <div class="list-subtitle" style="color:#333;">
+    <div class="list-item" style="background:rgba(220,53,69,0.08); border-left:4px solid #dc3545;">
+      <div class="list-title" style="color:#dc3545;">16. Sodium 126 — Hidden Falls Driver Discovered</div>
+      <div class="list-subtitle" style="color:rgba(0,0,0,0.85);">
         <strong>What we found:</strong> GWU ER labs (02/20/2025) revealed sodium at 126 mmol/L (critically low, normal 135-145). Hyponatremia directly causes muscle weakness, confusion, impaired balance, and dizziness — matching your documented falls pattern.<br><br>
         <strong>The perfect storm:</strong> Combined with essential tremor, cervical stenosis + positive Hoffman's sign, and Fluoxetine 80mg/day (SSRIs are a known cause of hyponatremia), this creates a compounding cascade for falls. Your 3 documented falls in the past 6 months may be more about this biochemical imbalance than neuromotor decline alone.<br><br>
         <strong>Action required:</strong> URGENT: Repeat sodium labs, evaluate Fluoxetine as causative agent, check SIADH (Syndrome of Inappropriate ADH secretion — SSRIs are a common cause). If sodium is persistently low, Fluoxetine dose reduction or switch to alternative antidepressant is warranted. This is a potentially reversible driver of your falls.
@@ -3728,7 +3752,7 @@
       <div class="list-title" style="color:#001830;">Lung Nodule Surveillance REQUIRED — Imaging Gap Identified</div>
       <div class="list-subtitle" style="color:rgba(0,0,0,0.85);">
         <strong>Acute finding:</strong> CT Angio (12/26/2025) revealed minimal nodular infiltrate at left lung base posteriorly PLUS interstitial thickening at bases with mosaic attenuation pattern. While CT Angio was negative for PE and dissection, these findings are NOT normal and require follow-up imaging.<br><br>
-        <strong>Risk factors for pulmonary pathology:</strong> History of bilateral PE (2018, left PE with pulmonary infarction + DVT), recurrent pneumonia, asthma, NEW finding of left lower lung pneumothorax (documented for first time in Dec 2025 records), and 10+ years of smoking history (status post cessation).<br><br>
+        <strong>Risk factors for pulmonary pathology:</strong> History of bilateral PE (2018, left PE with pulmonary infarction + DVT), recurrent pneumonia, asthma, NEW finding of left lower lung pneumothorax (documented for first time in Dec 2025 records), and documented secondhand smoke exposure (never-smoker per medical records).<br><br>
         <strong>Genetic reassurance:</strong> Factor V Leiden C/C (normal) and Prothrombin G/G (normal) — PE was NOT genetic, was HRT/immobility-driven. Does not explain current nodular findings.<br><br>
         <strong>ACTION REQUIRED:</strong>
         <ul style="margin-top:8px; color:rgba(0,0,0,0.85);">
