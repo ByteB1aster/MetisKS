@@ -763,6 +763,253 @@ body.dark-mode .dash-ring-inner { background: #16213e !important; }
 body.dark-mode .dash-divider-text { color: #aaa !important; }
 body.dark-mode .dash-divider-line { background: #444 !important; }
 
+/* ===== INNER PAGE DESIGN SYSTEM ===== */
+
+/* Page Header Banners */
+.pg-header {
+    background: linear-gradient(135deg, #001830 0%, #002a4a 100%);
+    border-radius: 20px; padding: 24px; margin-bottom: 16px;
+    color: white; position: relative; overflow: hidden;
+}
+.pg-header-red {
+    background: linear-gradient(135deg, #1a0a0a 0%, #3d0f0f 40%, #5a1a1a 100%);
+    border: 1px solid rgba(220,53,69,0.3);
+}
+.pg-header-green {
+    background: linear-gradient(135deg, #0a1a0a 0%, #0f3d1a 40%, #1a5a2a 100%);
+    border: 1px solid rgba(167,207,40,0.3);
+}
+.pg-header-blue {
+    background: linear-gradient(135deg, #0a0a1a 0%, #0f1a3d 40%, #1a2a5a 100%);
+    border: 1px solid rgba(33,150,243,0.3);
+}
+.pg-header-orange {
+    background: linear-gradient(135deg, #1a150a 0%, #3d2a0f 40%, #5a3d1a 100%);
+    border: 1px solid rgba(248,138,47,0.3);
+}
+.pg-header-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; position: relative; z-index: 1; }
+.pg-header-sub { font-size: 14px; color: rgba(255,255,255,0.7); font-weight: 600; position: relative; z-index: 1; }
+.pg-header-stats {
+    display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap;
+    position: relative; z-index: 1;
+}
+.pg-header-stat {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85);
+    background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 10px;
+}
+
+/* Glass Page Wrapper */
+.pg-glass-wrap {
+    background: linear-gradient(160deg, #001830 0%, #002a4a 35%, #0d3a2a 65%, #1a4a15 100%);
+    border-radius: 22px; padding: 18px 14px; margin-bottom: 16px;
+}
+.pg-glass-wrap-red {
+    background: linear-gradient(160deg, #1a0808 0%, #2a1010 35%, #3d0f0f 65%, #4a1515 100%);
+}
+.pg-glass-wrap-blue {
+    background: linear-gradient(160deg, #080818 0%, #0f1a3d 35%, #152550 65%, #1a3060 100%);
+}
+
+/* Glass Cards for inner pages */
+.pg-glass {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px; padding: 22px; margin-bottom: 12px;
+    color: white; transition: all 0.2s;
+}
+.pg-glass:last-child { margin-bottom: 0; }
+.pg-glass-clickable { cursor: pointer; }
+.pg-glass-clickable:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.pg-glass-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; color: white; }
+.pg-glass-body { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.7; }
+.pg-glass-body strong { color: rgba(255,255,255,0.95); font-weight: 700; }
+
+/* Severity indicators */
+.pg-severity {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px;
+}
+.pg-severity-critical { color: #ff6b7a; }
+.pg-severity-warning { color: #ffc08a; }
+.pg-severity-info { color: #82c4f8; }
+.pg-severity-good { color: #c5e864; }
+.pg-severity-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    animation: dashPulseRed 1.5s infinite;
+}
+.pg-severity-critical .pg-severity-dot { background: #dc3545; }
+.pg-severity-warning .pg-severity-dot { background: #f88a2f; }
+.pg-severity-info .pg-severity-dot { background: #2196f3; }
+
+/* Glass Status Badges */
+.pg-glass-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 10px;
+}
+.pg-badge-green { background: rgba(167,207,40,0.25); color: #c5e864; }
+.pg-badge-red { background: rgba(220,53,69,0.25); color: #ff8a95; }
+.pg-badge-orange { background: rgba(248,138,47,0.25); color: #ffc08a; }
+.pg-badge-blue { background: rgba(33,150,243,0.25); color: #82c4f8; }
+
+/* AI Insight Tags (reusable in glass context) */
+.pg-ai-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.pg-ai-tag {
+    font-size: 12px; font-weight: 700; padding: 5px 12px;
+    border-radius: 8px; white-space: nowrap;
+}
+.pg-ai-tag-green { background: rgba(167,207,40,0.18); color: #c5e864; }
+.pg-ai-tag-red { background: rgba(220,53,69,0.18); color: #ff8a95; }
+.pg-ai-tag-orange { background: rgba(248,138,47,0.18); color: #ffc08a; }
+.pg-ai-tag-blue { background: rgba(33,150,243,0.18); color: #82c4f8; }
+.pg-ai-tag-default { background: rgba(167,207,40,0.18); color: #c5e864; }
+
+/* Glass Action Buttons */
+.pg-glass-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: rgba(167,207,40,0.2); color: #c5e864;
+    border: 1px solid rgba(167,207,40,0.3);
+    padding: 14px 24px; border-radius: 12px; width: 100%;
+    font-weight: 800; font-size: 14px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s; min-height: 48px;
+    touch-action: manipulation; -webkit-user-select: none;
+    margin-bottom: 8px;
+}
+.pg-glass-btn:hover { background: rgba(167,207,40,0.3); transform: translateY(-1px); }
+.pg-glass-btn-red {
+    background: rgba(220,53,69,0.2); color: #ff8a95;
+    border-color: rgba(220,53,69,0.3);
+}
+.pg-glass-btn-red:hover { background: rgba(220,53,69,0.3); }
+.pg-glass-btn-blue {
+    background: rgba(33,150,243,0.2); color: #82c4f8;
+    border-color: rgba(33,150,243,0.3);
+}
+.pg-glass-btn-blue:hover { background: rgba(33,150,243,0.3); }
+.pg-glass-btn-outline {
+    background: transparent; color: rgba(255,255,255,0.7);
+    border-color: rgba(255,255,255,0.2);
+}
+.pg-glass-btn-outline:hover { background: rgba(255,255,255,0.08); color: white; }
+
+/* Section Labels in Glass */
+.pg-glass-section {
+    font-size: 13px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; color: rgba(255,255,255,0.5);
+    padding: 10px 0 14px; margin-top: 8px;
+}
+
+/* Glass Dividers */
+.pg-glass-divider {
+    height: 1px; background: rgba(255,255,255,0.1);
+    margin: 16px 0;
+}
+
+/* Glass List Items */
+.pg-glass-list-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.pg-glass-list-item:last-child { border-bottom: none; }
+.pg-glass-list-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px; }
+.pg-glass-list-sub { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+/* Bento Grid */
+.pg-bento-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px; margin-bottom: 16px;
+}
+@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr; } }
+.pg-bento-card {
+    background: white; border-radius: 18px; padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: all 0.2s; cursor: pointer;
+}
+.pg-bento-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.pg-bento-card.span-2 { grid-column: span 2; }
+.pg-bento-val { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+.pg-bento-label { font-size: 14px; font-weight: 700; color: #666; }
+.pg-bento-sub { font-size: 13px; color: #999; margin-top: 4px; line-height: 1.4; }
+.pg-bento-accent { border-left: 4px solid; }
+.pg-bento-accent-red { border-color: #dc3545; }
+.pg-bento-accent-orange { border-color: #f88a2f; }
+.pg-bento-accent-green { border-color: #a7cf28; }
+.pg-bento-accent-blue { border-color: #2196f3; }
+
+/* Bento Provider Cards */
+.pg-provider-card {
+    background: white; border-radius: 18px; padding: 20px;
+    margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-left: 4px solid #a7cf28; transition: all 0.2s;
+}
+.pg-provider-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.pg-provider-card-inactive { border-color: #ccc; }
+.pg-provider-name { font-size: 16px; font-weight: 800; color: #001830; margin-bottom: 4px; }
+.pg-provider-role { font-size: 14px; font-weight: 700; color: #a7cf28; margin-bottom: 6px; }
+.pg-provider-detail { font-size: 14px; color: #666; line-height: 1.5; }
+.pg-provider-ai {
+    margin-top: 10px; padding: 10px 14px; background: rgba(167,207,40,0.08);
+    border-radius: 10px; font-size: 13px; color: #5a7a10; line-height: 1.5;
+    font-weight: 600;
+}
+
+/* Bento Section Headers */
+.pg-bento-section {
+    font-size: 13px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 2px; color: #999; padding: 10px 4px 14px;
+}
+
+/* Bento Action Buttons */
+.pg-bento-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: #001830; color: white; width: 100%;
+    border: none; padding: 14px 24px; border-radius: 12px;
+    font-weight: 800; font-size: 14px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.2s; min-height: 48px;
+    touch-action: manipulation; margin-bottom: 8px;
+}
+.pg-bento-btn:hover { background: #002a4a; transform: translateY(-1px); }
+.pg-bento-btn-outline {
+    background: transparent; color: #001830;
+    border: 2px solid #e0e0e0;
+}
+.pg-bento-btn-outline:hover { border-color: #001830; background: rgba(0,24,48,0.04); }
+
+/* AI Correlation Banner (for any page) */
+.pg-ai-banner {
+    background: linear-gradient(135deg, #001830 0%, #0d3a2a 100%);
+    border-radius: 14px; padding: 16px 18px; margin-top: 12px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.2s;
+}
+.pg-ai-banner:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+.pg-ai-banner-icon { font-size: 20px; flex-shrink: 0; }
+.pg-ai-banner-text { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; line-height: 1.4; }
+.pg-ai-banner-arrow { font-size: 14px; color: rgba(255,255,255,0.5); margin-left: auto; flex-shrink: 0; }
+
+/* Dark mode for inner pages */
+body.dark-mode .pg-bento-card { background: #16213e !important; }
+body.dark-mode .pg-bento-val { color: #e0e0e0 !important; }
+body.dark-mode .pg-bento-label { color: #aaa !important; }
+body.dark-mode .pg-bento-sub { color: #888 !important; }
+body.dark-mode .pg-provider-card { background: #16213e !important; }
+body.dark-mode .pg-provider-name { color: #e0e0e0 !important; }
+body.dark-mode .pg-provider-detail { color: #aaa !important; }
+body.dark-mode .pg-provider-ai { background: rgba(167,207,40,0.15) !important; color: #c5e864 !important; }
+body.dark-mode .pg-bento-btn { background: #0d47a1 !important; }
+body.dark-mode .pg-bento-btn-outline { border-color: #444 !important; color: #e0e0e0 !important; }
+
+/* High contrast for inner pages */
+body.high-contrast .pg-glass { border: 2px solid #fff !important; }
+body.high-contrast .pg-bento-card { border: 2px solid #000 !important; }
+body.high-contrast .pg-provider-card { border: 2px solid #000 !important; }
+body.high-contrast .pg-ai-tag { border: 1px solid currentColor; }
+body.high-contrast .pg-header { border: 2px solid #fff !important; }
+
 </style>
     <script>
     // Critical functions in head so they're available immediately
@@ -1449,95 +1696,101 @@ var AnalysisEngine = {
 
     <!-- BENEFITS CALCULATOR -->
     <div class="page" id="benefits-hub">
-        <div class="card">
-            <div class="card-title">Benefits Calculator</div>
-            <div class="card-subtitle">Actual vs Potential Monthly Income</div>
+      <!-- Page Header -->
+      <div class="pg-header pg-header-blue">
+        <div class="pg-header-title">💰 Benefits Calculator</div>
+        <div class="pg-header-sub">MÉTIS tracked your income sources, expenses, and pending claims</div>
+        <div class="pg-header-stats">
+          <span class="pg-header-stat"><span style="color:#c5e864;">●</span> 1 Active</span>
+          <span class="pg-header-stat"><span style="color:#ffc08a;">●</span> 2 Pending</span>
+          <span class="pg-header-stat"><span style="color:#ff6b7a;">●</span> $1,123/mo gap</span>
         </div>
+      </div>
 
-        <!-- ACTUAL MONTHLY -->
-        <div class="card" style="border-left:4px solid #a7cf28;">
-            <div class="card-title" style="color:#001830; font-weight:700;">Actual Monthly Income (Current)</div>
-            <div class="card-subtitle">What you are receiving right now</div>
-            <div class="stat-grid" style="margin-top:16px;">
-                <div class="stat-card" style="background:#001830; color:white;">
-                    <div class="stat-value" style="color:#a7cf28; font-size:28px;">$4,288</div>
-                    <div class="stat-label" style="color:#ffffff;">Actual Monthly</div>
-                </div>
-            </div>
-            <div style="margin-top:16px;">
-                <div class="list-item">
-                    <div class="list-title">VA Disability (100% P&T + Housebound)</div>
-                    <div class="list-subtitle">$4,288.45/month • Active since Dec 1, 2024 • Single veteran, no dependents</div>
-                    <span class="badge" style="background:#a7cf28; color:#001830;">Receiving</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-title">FERS Disability Retirement</div>
-                    <div class="list-subtitle">$0/month • Filed with OPM — awaiting approval (delayed)</div>
-                    <span class="badge badge-orange">Pending</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-title">SSDI</div>
-                    <div class="list-subtitle">$0/month • Initial denial — appeal in progress</div>
-                    <span class="badge badge-red">Appeal</span>
-                </div>
-            </div>
+      <!-- Bento Income Overview -->
+      <div class="pg-bento-grid">
+        <div class="pg-bento-card pg-bento-accent pg-bento-accent-green">
+          <div class="pg-bento-val" style="color:#a7cf28;">$4,288</div>
+          <div class="pg-bento-label">Actual Monthly</div>
+          <div class="pg-bento-sub">VA Disability (tax-free)</div>
         </div>
+        <div class="pg-bento-card pg-bento-accent pg-bento-accent-red">
+          <div class="pg-bento-val" style="color:#dc3545;">-$1,123</div>
+          <div class="pg-bento-label">Monthly Expenses</div>
+          <div class="pg-bento-sub">Medical out-of-pocket</div>
+        </div>
+        <div class="pg-bento-card span-2" style="background:#001830; color:white;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="pg-bento-label" style="color:rgba(255,255,255,0.7);">Actual Net Monthly</div>
+              <div class="pg-bento-val" style="color:#a7cf28; margin-top:4px;">~$3,165</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="pg-bento-label" style="color:rgba(255,255,255,0.7);">If All Approved</div>
+              <div class="pg-bento-val" style="color:#64b5f6; margin-top:4px;">$9,537+</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <!-- ACTUAL MONTHLY EXPENSES -->
-        <div class="card" style="border-left:4px solid #dc3545;">
-            <div class="card-title" style="color:#dc3545;">Actual Monthly Expenses (Out-of-Pocket)</div>
-            <div class="card-subtitle">VA not paying for prescriptions; specialist visits due to VA wait times</div>
-            <div style="margin-top:12px;">
-                <div class="rx-cost"><span class="rx-cost-label">Prescriptions (11 medications)</span><span class="rx-cost-value">-$373.00</span></div>
-                <div class="rx-cost"><span class="rx-cost-label">Dr. Azim (Psychiatry, ~monthly)</span><span class="rx-cost-value">-$250.00</span></div>
-                <div class="rx-cost"><span class="rx-cost-label">Dr. Goldsmith (Spinal, periodic)</span><span class="rx-cost-value">-$350.00</span></div>
-                <div class="rx-cost"><span class="rx-cost-label">Andrew Smith LCSW (Therapy)</span><span class="rx-cost-value">-$150.00</span></div>
-            </div>
-            <div style="margin-top:12px; padding:12px 16px; background:rgba(220,53,69,0.1); border-radius:8px; display:flex; justify-content:space-between;">
-                <span style="font-weight:700; color:#721c24;">Est. Monthly Expenses</span>
-                <span style="font-weight:800; color:#dc3545; font-size:18px;">~$1,123.00</span>
-            </div>
-            <div style="margin-top:8px; padding:12px 16px; background:#001830; border-radius:8px; display:flex; justify-content:space-between;">
-                <span style="font-weight:700; color:#ffffff;">Actual Net Monthly</span>
-                <span style="font-weight:800; color:#a7cf28; font-size:18px;">~$3,165.45</span>
-            </div>
-        </div>
+      <!-- Income Sources -->
+      <div class="pg-bento-section">Income Sources</div>
 
-        <!-- POTENTIAL MONTHLY -->
-        <div class="card" style="border-left:4px solid #2196f3;">
-            <div class="card-title" style="color:#2196f3;">Potential Monthly Income (If All Approved)</div>
-            <div class="card-subtitle">Projected total when FERS + SSDI are approved</div>
-            <div style="margin-top:12px; padding:12px; background:rgba(33,150,243,0.15); border-left:4px solid #2196f3; border-radius:4px;">
-                <div style="font-size:12px; color:#2196f3; font-weight:700;">⚠️ FERS Benefit Reduction Schedule:</div>
-                <div style="font-size:11px; color:#666; margin-top:6px; line-height:1.6;">Year 1: $5,248.62/mo net → After Year 1 (through age 62): Drops to ~$4,314/mo gross (33% reduction) → At Age 62: Recomputed to $2,392/mo. SSDI offsets 100% in year 1, 60% after. Plan accordingly for income reduction.</div>
-            </div>
-            <div class="stat-grid" style="margin-top:16px;">
-                <div class="stat-card" style="background:linear-gradient(135deg, #001830, #003050); color:white;">
-                    <div class="stat-value" style="color:#64b5f6; font-size:28px;">$9,537+</div>
-                    <div class="stat-label" style="color:#ffffff;">Potential Monthly</div>
-                </div>
-            </div>
-            <div style="margin-top:16px;">
-                <div class="list-item">
-                    <div class="list-title">VA Disability (100% P&T + Housebound)</div>
-                    <div class="list-subtitle">$4,288.45/month</div>
-                    <span class="badge" style="background:#a7cf28; color:#001830;">Active</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-title">FERS Disability Retirement</div>
-                    <div class="list-subtitle">~$5,248.62/month net (GS-14 Step 1 base, 60% first year)</div>
-                    <span class="badge badge-orange">Pending OPM</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-title">SSDI</div>
-                    <div class="list-subtitle">Amount TBD (estimated $1,800–$3,200/month based on earnings history)</div>
-                    <span class="badge badge-red">Appeal Pending</span>
-                </div>
-            </div>
-            <div style="margin-top:12px; font-size:12px; color:#666;">
-                ⚠️ Note: FERS + SSDI have an offset — if both are approved, total may be reduced. VA disability is tax-free and not offset. Potential monthly with SSDI offset could be $9,537–$12,737+ depending on SSDI amount.
-            </div>
+      <div class="pg-provider-card" style="border-color:#a7cf28;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="pg-provider-name">VA Disability (100% P&amp;T + Housebound)</div>
+          <span style="background:#a7cf28; color:#001830; font-size:12px; font-weight:700; padding:4px 12px; border-radius:8px;">Receiving</span>
         </div>
+        <div class="pg-provider-detail">$4,288.45/month • Active since Dec 1, 2024 • Single veteran, no dependents</div>
+      </div>
+
+      <div class="pg-provider-card" style="border-color:#f88a2f;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="pg-provider-name">FERS Disability Retirement</div>
+          <span class="badge badge-orange" style="font-size:12px; padding:4px 12px; border-radius:8px;">Pending OPM</span>
+        </div>
+        <div class="pg-provider-detail">$0/month • Filed with OPM — awaiting approval (delayed)</div>
+        <div class="pg-provider-ai">MÉTIS projected: ~$5,248.62/month net (GS-14 Step 1 base, 60% first year). Year 1 drops to ~$4,314/mo (33% reduction). At age 62: recomputed to $2,392/mo. SSDI offsets 100% in year 1, 60% after.</div>
+      </div>
+
+      <div class="pg-provider-card" style="border-color:#dc3545;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div class="pg-provider-name">SSDI</div>
+          <span class="badge badge-red" style="font-size:12px; padding:4px 12px; border-radius:8px;">Appeal Pending</span>
+        </div>
+        <div class="pg-provider-detail">$0/month • Initial denial — appeal in progress</div>
+        <div class="pg-provider-ai">MÉTIS estimated: $1,800–$3,200/month based on earnings history. Note: FERS + SSDI have an offset — total may be reduced. VA disability is tax-free and not offset. Potential: $9,537–$12,737+.</div>
+      </div>
+
+      <!-- Monthly Expenses -->
+      <div class="pg-bento-section">Monthly Medical Expenses (Out-of-Pocket)</div>
+
+      <div class="pg-provider-card" style="border-color:#dc3545;">
+        <div class="pg-provider-name" style="color:#dc3545;">VA not covering prescriptions or visits due to budget constraints</div>
+        <div style="margin-top:12px;">
+          <div class="rx-cost"><span class="rx-cost-label">Prescriptions (11 medications)</span><span class="rx-cost-value">-$373.00</span></div>
+          <div class="rx-cost"><span class="rx-cost-label">Dr. Azim (Psychiatry, ~monthly)</span><span class="rx-cost-value">-$250.00</span></div>
+          <div class="rx-cost"><span class="rx-cost-label">Dr. Goldsmith (Spinal, periodic)</span><span class="rx-cost-value">-$350.00</span></div>
+          <div class="rx-cost"><span class="rx-cost-label">Andrew Smith LCSW (Therapy)</span><span class="rx-cost-value">-$150.00</span></div>
+        </div>
+        <div style="margin-top:12px; padding:12px 16px; background:rgba(220,53,69,0.08); border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:700; color:#721c24; font-size:14px;">Estimated Monthly Expenses</span>
+          <span style="font-weight:900; color:#dc3545; font-size:20px;">~$1,123</span>
+        </div>
+      </div>
+
+      <!-- AI Cross-Reference -->
+      <div class="pg-ai-banner" onclick="showPage('insurance-dashboard')">
+        <span class="pg-ai-banner-icon">🧠</span>
+        <span class="pg-ai-banner-text">MÉTIS found 3 coverage enrollment paths that could eliminate your monthly gap. View Insurance Dashboard for details.</span>
+        <span class="pg-ai-banner-arrow">→</span>
+      </div>
+
+      <div style="margin-top:16px;">
+        <button class="pg-bento-btn" onclick="showPage('va-disability')">🎖️ View VA Disability Details</button>
+        <button class="pg-bento-btn pg-bento-btn-outline" onclick="showPage('claims-history')">📋 View Claims History</button>
+        <button class="pg-bento-btn pg-bento-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
+      </div>
     </div>
 
     <!-- VA DISABILITY -->
@@ -3241,70 +3494,105 @@ var AnalysisEngine = {
 
 <!-- CARE TEAM PAGE -->
 <div class="page" id="care-team">
-    <div class="card">
-        <div class="card-title">Care Team</div>
-        <div class="card-subtitle">Current and Historical Healthcare Providers</div>
+  <!-- Page Header -->
+  <div class="pg-header">
+    <div class="pg-header-title">👥 Care Team</div>
+    <div class="pg-header-sub">MÉTIS mapped your providers and flagged which genomic findings each one needs to know about</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat"><span style="color:#c5e864;">●</span> 4 Active</span>
+      <span class="pg-header-stat"><span style="color:#82c4f8;">●</span> 2 Recent ED</span>
+      <span class="pg-header-stat"><span style="color:rgba(255,255,255,0.5);">●</span> 6 Historical</span>
     </div>
+  </div>
 
-    <div class="card">
-        <div class="card-subtitle">Active Providers</div>
-        <div class="list-item">
-            <div class="list-title">Dr. Yusuf M. Azim, MD — Psychiatry</div>
-            <div class="list-subtitle">Bloom Health Centers, Arlington VA | Medication management, psychiatric care</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Dr. Michael E. Goldsmith, MD — Spine Surgery</div>
-            <div class="list-subtitle">Virginia Spine Institute, Summit Orthopedics / CAO | Cervical DDD, spinal fusion management, 22+ years</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Andrew Smith, LCSW — Therapist</div>
-            <div class="list-subtitle">Thriveworks, Richmond VA | PTSD/disability support, ongoing therapy, 3+ years</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Christina S Michael, DO — Primary Care</div>
-            <div class="list-subtitle">INOVA | Primary care, preventive medicine</div>
-        </div>
-    </div>
+  <!-- Active Providers -->
+  <div class="pg-bento-section">Active Providers</div>
 
-    <div class="card">
-        <div class="card-subtitle">Fort Belvoir ED — December 2025</div>
-        <div class="list-item">
-            <div class="list-title">Dr. Gurkiran K. Sardar, MD — ED Attending</div>
-            <div class="list-subtitle">A.T. Augusta Military Medical Center, Fort Belvoir VA 22060 | Emergency Department | 12/26-27/2025</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Dr. Angela Joy Doty, MD — ED Provider</div>
-            <div class="list-subtitle">Fort Belvoir Emergency Department | 12/26-27/2025</div>
-        </div>
-    </div>
+  <div class="pg-provider-card">
+    <div class="pg-provider-name">Dr. Yusuf M. Azim, MD</div>
+    <div class="pg-provider-role">Psychiatry — Medication Management</div>
+    <div class="pg-provider-detail">Bloom Health Centers, Arlington VA | ~$250/mo out-of-pocket (VA not covering)</div>
+    <div class="pg-provider-ai">MÉTIS flagged: Manages 5 psychiatric medications. HTR2A variant may affect Fluoxetine efficacy. Prazosin suppressing REM sleep (10% vs 20-25% target). DRD2 variant confirms ADHD/D-Amphetamine need. Consider L-methylfolate for MTHFR variant + depression.</div>
+  </div>
 
-    <div class="card">
-        <div class="card-subtitle">Historical / Referred Providers</div>
-        <div class="list-item">
-            <div class="list-title">Dr. Rhanni Herzfeld, MD — Neurology</div>
-            <div class="list-subtitle">Neurology Center, 2021 K St NW, Washington DC 20006 | (301) 562-7200 | Neurologic evaluation 11/09/2023</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Dr. Natalie Brooks, MD — Psychiatry (PHP)</div>
-            <div class="list-subtitle">Dominion Hospital PHP, Falls Church VA | Psychiatric care 09/2024, partial hospitalization program</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Dr. Sona Aloyan, MD — Primary Care</div>
-            <div class="list-subtitle">Capital Healthcare PC, 1710 Rhode Island Ave NW, Washington DC 20036 | Primary care / labs, patient since prior to 2024</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Dr. Marc Rankin, MD — Orthopedics</div>
-            <div class="list-subtitle">Capital Arthritis & Orthopedics (CAO) | Shoulder impingement, cervical radiculopathy evaluation 09/29/2023</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Washington Radiology — Imaging Services</div>
-            <div class="list-subtitle">2141 K St NW, Washington DC 20037 | (202) 223-9722 | Mammography & breast MRI imaging</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">EPIC Hearing Healthcare / Cosmetic Hearing Solutions — Audiology</div>
-            <div class="list-subtitle">424 S Washington St, Alexandria VA 22314 | (571) 312-7345 | Hearing loss evaluation 10/06/2021</div>
-        </div>
-    </div>
+  <div class="pg-provider-card">
+    <div class="pg-provider-name">Dr. Michael E. Goldsmith, MD</div>
+    <div class="pg-provider-role">Spine Surgery — 22+ Year Relationship</div>
+    <div class="pg-provider-detail">Virginia Spine Institute, Summit Orthopedics / CAO | Cervical DDD, spinal fusion management</div>
+    <div class="pg-provider-ai">MÉTIS flagged: SCN5A anesthesia resistance variant — MUST inform before any surgical procedure. OPRM1 variant alters pain response. 3 falls in 6 months with spinal hardware T12-S1 creates catastrophic risk. Peripheral neuropathy evaluation needed.</div>
+  </div>
+
+  <div class="pg-provider-card">
+    <div class="pg-provider-name">Andrew Smith, LCSW</div>
+    <div class="pg-provider-role">Therapist — PTSD/Disability Support</div>
+    <div class="pg-provider-detail">Thriveworks, Richmond VA | Ongoing therapy, 3+ years | ~$150/mo out-of-pocket</div>
+    <div class="pg-provider-ai">MÉTIS noted: OXTR variant (stress reactivity) and COMT variant (pain sensitivity) are relevant context for therapy approach. REM sleep crisis directly worsens PTSD symptoms.</div>
+  </div>
+
+  <div class="pg-provider-card">
+    <div class="pg-provider-name">Christina S Michael, DO</div>
+    <div class="pg-provider-role">Primary Care</div>
+    <div class="pg-provider-detail">INOVA | Primary care, preventive medicine</div>
+    <div class="pg-provider-ai">MÉTIS noted: TCF7L2 dual variants + family history warrant metabolic screening. Lipid panel from 08/2024 showed cholesterol 269 HIGH. Vitamin D repletion and phosphorus monitoring recommended.</div>
+  </div>
+
+  <!-- Fort Belvoir ED -->
+  <div class="pg-bento-section">Fort Belvoir ED — December 2025</div>
+
+  <div class="pg-provider-card" style="border-color:#2196f3;">
+    <div class="pg-provider-name">Dr. Gurkiran K. Sardar, MD</div>
+    <div class="pg-provider-role">ED Attending Physician</div>
+    <div class="pg-provider-detail">A.T. Augusta Military Medical Center, Fort Belvoir VA 22060 | 12/26-27/2025</div>
+  </div>
+
+  <div class="pg-provider-card" style="border-color:#2196f3;">
+    <div class="pg-provider-name">Dr. Angela Joy Doty, MD</div>
+    <div class="pg-provider-role">ED Provider</div>
+    <div class="pg-provider-detail">Fort Belvoir Emergency Department | 12/26-27/2025</div>
+  </div>
+
+  <!-- Historical Providers -->
+  <div class="pg-bento-section">Historical / Referred Providers</div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">Dr. Rhanni Herzfeld, MD</div>
+    <div class="pg-provider-role">Neurology</div>
+    <div class="pg-provider-detail">Neurology Center, 2021 K St NW, Washington DC 20006 | (301) 562-7200 | Neurologic evaluation 11/09/2023</div>
+  </div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">Dr. Natalie Brooks, MD</div>
+    <div class="pg-provider-role">Psychiatry (PHP)</div>
+    <div class="pg-provider-detail">Dominion Hospital PHP, Falls Church VA | Psychiatric care 09/2024, partial hospitalization program</div>
+  </div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">Dr. Sona Aloyan, MD</div>
+    <div class="pg-provider-role">Primary Care</div>
+    <div class="pg-provider-detail">Capital Healthcare PC, 1710 Rhode Island Ave NW, Washington DC 20036 | Primary care / labs, patient since prior to 2024</div>
+  </div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">Dr. Marc Rankin, MD</div>
+    <div class="pg-provider-role">Orthopedics</div>
+    <div class="pg-provider-detail">Capital Arthritis &amp; Orthopedics (CAO) | Shoulder impingement, cervical radiculopathy evaluation 09/29/2023</div>
+  </div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">Washington Radiology</div>
+    <div class="pg-provider-role">Imaging Services</div>
+    <div class="pg-provider-detail">2141 K St NW, Washington DC 20037 | (202) 223-9722 | Mammography &amp; breast MRI imaging</div>
+  </div>
+
+  <div class="pg-provider-card pg-provider-card-inactive">
+    <div class="pg-provider-name">EPIC Hearing Healthcare / Cosmetic Hearing Solutions</div>
+    <div class="pg-provider-role">Audiology</div>
+    <div class="pg-provider-detail">424 S Washington St, Alexandria VA 22314 | (571) 312-7345 | Hearing loss evaluation 10/06/2021</div>
+  </div>
+
+  <div style="margin-top:16px;">
+    <button class="pg-bento-btn" onclick="showPage('dashboard')">← Back to Dashboard</button>
+  </div>
 </div>
 
 <!-- GENOME UPLOAD PAGE -->
@@ -3350,90 +3638,146 @@ var AnalysisEngine = {
 
 <!-- GENOME DASHBOARD PAGE -->
 <div class="page" id="genome-dashboard">
-  <div class="card">
-    <div class="card-title">Genome Dashboard</div>
-    <div class="card-subtitle">AI-Integrated Genetic Analysis</div>
-  </div>
-
-  <div class="alert alert-orange">
-    <div class="list-title">Comprehensive Cross-Reference Complete</div>
-    <div class="list-subtitle">AI analyzed your genome against 30+ diagnoses, Fort Belvoir ER labs (12/2025), GWU labs (02/2025), INOVA labs (08/2024), and Oura wearable data</div>
-  </div>
-
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-value">31</div>
-      <div class="stat-label">Actionable Variants</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">21</div>
-      <div class="stat-label">Medical Correlations</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">6</div>
-      <div class="stat-label">Referrals Recommended</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">8</div>
-      <div class="stat-label">Medication Alerts</div>
+  <!-- Page Header -->
+  <div class="pg-header pg-header-green">
+    <div class="pg-header-title">🧬 Genome Dashboard</div>
+    <div class="pg-header-sub">MÉTIS analyzed 650,373 genetic variants against your diagnoses, labs, and wearable data</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat"><span style="color:#c5e864;">●</span> Cross-Reference Complete</span>
+      <span class="pg-header-stat">AncestryDNA V2.0</span>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Key Variants Explained</div>
+  <!-- Bento Stats Grid -->
+  <div class="pg-bento-grid">
+    <div class="pg-bento-card pg-bento-accent pg-bento-accent-green" onclick="showPage('genetic-risks')">
+      <div class="pg-bento-val" style="color:#a7cf28;">31</div>
+      <div class="pg-bento-label">Actionable Variants</div>
+      <div class="pg-bento-sub">Reviewed against 30+ conditions</div>
+    </div>
+    <div class="pg-bento-card pg-bento-accent pg-bento-accent-blue" onclick="showPage('genome-correlations')">
+      <div class="pg-bento-val" style="color:#2196f3;">21</div>
+      <div class="pg-bento-label">Medical Correlations</div>
+      <div class="pg-bento-sub">Genome + labs + Oura + Rx</div>
+    </div>
+    <div class="pg-bento-card pg-bento-accent pg-bento-accent-orange" onclick="showPage('care-team')">
+      <div class="pg-bento-val" style="color:#f88a2f;">6</div>
+      <div class="pg-bento-label">Referrals Recommended</div>
+      <div class="pg-bento-sub">Based on variant findings</div>
+    </div>
+    <div class="pg-bento-card pg-bento-accent pg-bento-accent-red" onclick="showPage('medications')">
+      <div class="pg-bento-val" style="color:#dc3545;">8</div>
+      <div class="pg-bento-label">Medication Alerts</div>
+      <div class="pg-bento-sub">Pharmacogenomic flags</div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="list-title">COMT Gene (rs4680) — Val/Met (A/G)</div>
-    <div class="list-subtitle">Controls dopamine and norepinephrine breakdown. Val/Met = intermediate enzyme activity. Associated with moderate stress sensitivity and enhanced pain perception. Directly relevant to PTSD, GAD, and chronic pain. Combined with essential tremor (Primidone 50mg) and falls history (4 documented falls Feb-Dec 2025), COMT affects balance/coordination.</div>
-    <div class="badge badge-orange">Actionable</div>
-  </div>
+  <!-- Variant Cards in Glass Wrap -->
+  <div class="pg-glass-wrap">
+    <div class="pg-glass-section">Key Variants — What Your Genes Reveal</div>
 
-  <div class="card">
-    <div class="list-title">CLOCK Gene (rs1801260) — A/G</div>
-    <div class="list-subtitle">Controls circadian rhythm. G allele = evening chronotype tendency. Explains Oura data: 12:05 AM-12:40 AM bedtime, noon wake-up. Genetic component to delayed sleep phase. Also connected to insomnia (currently treated with Trazodone 100mg).</div>
-    <div class="badge badge-orange">Actionable</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">COMT Gene (rs4680) — Val/Met (A/G)</div>
+      <div class="pg-glass-body">Controls dopamine and norepinephrine breakdown. Val/Met = intermediate enzyme activity. Associated with moderate stress sensitivity and enhanced pain perception. Directly relevant to PTSD, GAD, and chronic pain. Combined with essential tremor (Primidone 50mg) and falls history (4 documented falls Feb-Dec 2025), COMT affects balance/coordination.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-orange">PTSD</span>
+          <span class="pg-ai-tag pg-ai-tag-red">Falls Risk</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Pain Sensitivity</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Actionable</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">DRD2/ANKK1 (rs1800497) — A/G</div>
-    <div class="list-subtitle">One copy of A1 allele = reduced dopamine D2 receptor density. Relevant to ADHD (currently on D-Amphetamine 30mg TWICE DAILY). May affect reward processing and treatment response. Confirms genetic basis for dopaminergic deficit requiring amphetamine therapy.</div>
-    <div class="badge badge-blue">Active Medication</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">CLOCK Gene (rs1801260) — A/G</div>
+      <div class="pg-glass-body">Controls circadian rhythm. G allele = evening chronotype tendency. Explains Oura data: 12:05 AM-12:40 AM bedtime, noon wake-up. Genetic component to delayed sleep phase. Also connected to insomnia (currently treated with Trazodone 100mg).</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-default">Oura: Circadian</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">Rx: Trazodone</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Actionable</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">SCN5A (rs1805124) — T/C</div>
-    <div class="list-subtitle">Sodium channel gene affecting nerve/muscle signaling. Heterozygous variant may affect anesthetic drug response. CRITICAL: May explain documented history of "waking up during surgery" (anesthesia resistance). All future anesthesiologists MUST be informed. ALSO connected to peripheral neuropathy — SCN5A codes for sodium channels in nerve/muscle. The variant T/C can affect nerve conduction, which may contribute to peripheral neuropathy symptoms (cold/numb/tingling feet documented Fort Belvoir 12/2025). Fort Belvoir labs (12/26-27/2025) showed Sodium 134 (low). This represents 5 interconnected pathways: (1) SCN5A sodium channel dysfunction, (2) Persistent electrolyte dysregulation, (3) Vitamin D deficiency impairing phosphorus absorption, (4) MTHFR folate cascade, (5) Medication effects (Fluoxetine SIADH). Nerve conduction testing strongly recommended.</div>
-    <div class="badge badge-red">Critical Alert</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">DRD2/ANKK1 (rs1800497) — A/G</div>
+      <div class="pg-glass-body">One copy of A1 allele = reduced dopamine D2 receptor density. Relevant to ADHD (currently on D-Amphetamine 30mg TWICE DAILY). May affect reward processing and treatment response. Confirms genetic basis for dopaminergic deficit requiring amphetamine therapy.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-blue">ADHD</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">Rx: D-Amphetamine</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-blue">Active Medication</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">OPRM1 (rs1799971) — A/G</div>
-    <div class="list-subtitle">Opioid receptor mu-1. G allele alters opioid sensitivity and pain perception. May need adjusted pain management approaches. Relevant to chronic pain syndrome diagnosis and DDD/radiculopathy severity. Combined with COMT Val/Met, creates genetically-amplified pain response.</div>
-    <div class="badge badge-orange">Actionable</div>
-  </div>
+    <div class="pg-glass" style="border: 1px solid rgba(220,53,69,0.3);">
+      <div class="pg-severity pg-severity-critical"><span class="pg-severity-dot"></span> Critical Finding</div>
+      <div class="pg-glass-title">SCN5A (rs1805124) — T/C</div>
+      <div class="pg-glass-body">Sodium channel gene affecting nerve/muscle signaling. Heterozygous variant may affect anesthetic drug response. CRITICAL: May explain documented history of "waking up during surgery" (anesthesia resistance). All future anesthesiologists MUST be informed. ALSO connected to peripheral neuropathy — SCN5A codes for sodium channels in nerve/muscle. The variant T/C can affect nerve conduction, which may contribute to peripheral neuropathy symptoms (cold/numb/tingling feet documented Fort Belvoir 12/2025). Fort Belvoir labs (12/26-27/2025) showed Sodium 134 (low). This represents 5 interconnected pathways: (1) SCN5A sodium channel dysfunction, (2) Persistent electrolyte dysregulation, (3) Vitamin D deficiency impairing phosphorus absorption, (4) MTHFR folate cascade, (5) Medication effects (Fluoxetine SIADH). Nerve conduction testing strongly recommended.</div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-red">Anesthesia Resistance</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Peripheral Neuropathy</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Labs: Na 134</span>
+        <span class="pg-ai-tag pg-ai-tag-default">5 Pathways</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">MTHFR C677T (rs1801133) — A/G</div>
-    <div class="list-subtitle">Heterozygous = ~65% enzyme activity. Fort Belvoir ER (12/2025) confirmed severe hypophosphatemia (Phosphorus 0.97). MTHFR variant reduces folate metabolism which impairs Vitamin D absorption (confirmed 25.4 LOW) — Vitamin D deficiency impairs phosphorus absorption — cascade of electrolyte instability. Also linked to persistent hyponatremia (Na 126→134). Supplementation with methylfolate + Vitamin D3 2000-4000 IU/day is clinically indicated.</div>
-    <div class="badge badge-blue">Supplementation</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">OPRM1 (rs1799971) — A/G</div>
+      <div class="pg-glass-body">Opioid receptor mu-1. G allele alters opioid sensitivity and pain perception. May need adjusted pain management approaches. Relevant to chronic pain syndrome diagnosis and DDD/radiculopathy severity. Combined with COMT Val/Met, creates genetically-amplified pain response.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Chronic Pain</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Genome: COMT</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Actionable</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">HTR2A (rs6311) — T/C</div>
-    <div class="list-subtitle">Serotonin receptor 2A. T allele can affect SSRI response and reduce efficacy. Relevant to Fluoxetine 80mg/day (2x 40mg capsules, VA prescribed for PTSD). At 80mg/day, Fluoxetine carries significant SIADH (hyponatremia) risk — confirmed by persistent low sodium (GWU Feb 2025: 126, Fort Belvoir Dec 2025: 134). The HTR2A variant may be reducing SSRI efficacy, potentially driving the high dose to achieve therapeutic effect — but the sodium cost is dangerous. Pharmacogenomic-guided dose adjustment with Dr. Azim is recommended.</div>
-    <div class="badge badge-orange">Monitor</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">MTHFR C677T (rs1801133) — A/G</div>
+      <div class="pg-glass-body">Heterozygous = ~65% enzyme activity. Fort Belvoir ER (12/2025) confirmed severe hypophosphatemia (Phosphorus 0.97). MTHFR variant reduces folate metabolism which impairs Vitamin D absorption (confirmed 25.4 LOW) — Vitamin D deficiency impairs phosphorus absorption — cascade of electrolyte instability. Also linked to persistent hyponatremia (Na 126→134). Supplementation with methylfolate + Vitamin D3 2000-4000 IU/day is clinically indicated.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-red">Phosphorus 0.97</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">Vitamin D 25.4</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-blue">Supplementation</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <div class="list-title">TCF7L2 (rs7903146) — T/C + (rs12255372) T/G</div>
-    <div class="list-subtitle">Both heterozygous — dual metabolic risk variants. Fort Belvoir labs (12/2025): glucose 89 (normal), but previous INOVA labs (08/2024) showed cholesterol 269 (HIGH), triglycerides 251 (HIGH), LDL 162 (HIGH). Modest increased Type 2 Diabetes risk. Combined with strong family history (father: diabetes, mother: diabetes), metabolic trajectory requires active monitoring and lipid management. Elevated lipid panel may reflect metabolic syndrome precursor.</div>
-    <div class="badge badge-orange">Screening</div>
-  </div>
+    <div class="pg-glass">
+      <div class="pg-glass-title">HTR2A (rs6311) — T/C</div>
+      <div class="pg-glass-body">Serotonin receptor 2A. T allele can affect SSRI response and reduce efficacy. Relevant to Fluoxetine 80mg/day (2x 40mg capsules, VA prescribed for PTSD). At 80mg/day, Fluoxetine carries significant SIADH (hyponatremia) risk — confirmed by persistent low sodium (GWU Feb 2025: 126, Fort Belvoir Dec 2025: 134). The HTR2A variant may be reducing SSRI efficacy, potentially driving the high dose to achieve therapeutic effect — but the sodium cost is dangerous. Pharmacogenomic-guided dose adjustment with Dr. Azim is recommended.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Rx: Fluoxetine 80mg</span>
+          <span class="pg-ai-tag pg-ai-tag-red">Hyponatremia Risk</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Monitor</span>
+      </div>
+    </div>
 
-  <div class="card">
-    <button class="action-btn" onclick="showPage('genetic-risks')">View Full Genetic Profile</button>
-    <button class="action-btn-secondary" onclick="showPage('genome-correlations')">View Genome Correlations</button>
+    <div class="pg-glass">
+      <div class="pg-glass-title">TCF7L2 (rs7903146) — T/C + (rs12255372) T/G</div>
+      <div class="pg-glass-body">Both heterozygous — dual metabolic risk variants. Fort Belvoir labs (12/2025): glucose 89 (normal), but previous INOVA labs (08/2024) showed cholesterol 269 (HIGH), triglycerides 251 (HIGH), LDL 162 (HIGH). Modest increased Type 2 Diabetes risk. Combined with strong family history (father: diabetes, mother: diabetes), metabolic trajectory requires active monitoring and lipid management. Elevated lipid panel may reflect metabolic syndrome precursor.</div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Family Hx: Diabetes</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Lipid Panel HIGH</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Screening</span>
+      </div>
+    </div>
+
+    <div class="pg-glass-divider"></div>
+
+    <button class="pg-glass-btn" onclick="showPage('genetic-risks')">🔬 View Full Genetic Profile</button>
+    <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('genome-correlations')">🧠 View All 21 Genome Correlations</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
   </div>
 </div>
 
@@ -4245,10 +4589,16 @@ var AnalysisEngine = {
 
 <!-- AI INSIGHTS PAGE -->
 <div class="page" id="insights">
-  <div class="card">
-    <div class="card-title">AI Health Insights</div>
-    <div class="card-subtitle">Deep Cross-Referencing: Oura Ring + Genome + Medical Records + Medications</div>
-    <div style="margin-top:12px; font-size:13px; color:#666;">MÉTIS analyzed 650,373 genetic variants, 90+ days of wearable data, 30+ documented conditions, and 11 active medications to generate these personalized insights.</div>
+  <!-- Page Header -->
+  <div class="pg-header pg-header-green">
+    <div class="pg-header-title">🧠 AI Health Insights</div>
+    <div class="pg-header-sub">Deep cross-referencing: Oura Ring + Genome + Medical Records + Medications</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat">650K variants analyzed</span>
+      <span class="pg-header-stat">90+ days wearable</span>
+      <span class="pg-header-stat">30+ conditions</span>
+      <span class="pg-header-stat">11 medications</span>
+    </div>
   </div>
 
   <!-- CRITICAL INSIGHTS -->
@@ -4279,6 +4629,11 @@ var AnalysisEngine = {
   </div>
 
   <!-- GENOMIC + WEARABLE INSIGHTS -->
+  <div class="pg-ai-banner" onclick="showPage('genome-correlations')" style="margin-bottom:16px;">
+    <span class="pg-ai-banner-icon">🧬</span>
+    <span class="pg-ai-banner-text">MÉTIS found 21 correlations between your genome and wearable data. These 3 are the most clinically significant.</span>
+    <span class="pg-ai-banner-arrow">→</span>
+  </div>
   <div class="card">
     <div class="card-title" style="color:#001830;">GENOME + WEARABLE CORRELATIONS</div>
   </div>
@@ -4504,11 +4859,13 @@ var AnalysisEngine = {
     </div>
   </div>
 
-  <div class="card">
-    <button class="action-btn" onclick="showPage('wearables')">📊 View Oura Data & Graphs</button>
-    <button class="action-btn action-btn-secondary" style="margin-top:10px;" onclick="showPage('trends')">📈 View Health Trends</button>
-    <button class="action-btn action-btn-secondary" style="margin-top:10px;" onclick="showPage('genome-overview')">🧬 View Full Genome Report</button>
-    <button class="action-btn action-btn-secondary" style="margin-top:10px;" onclick="showPage('alerts')">🚨 View Active Alerts</button>
+  <div class="pg-glass-wrap" style="margin-top:16px;">
+    <div class="pg-glass-section">Explore Your Data</div>
+    <button class="pg-glass-btn" onclick="showPage('wearables')">📊 View Oura Data &amp; Graphs</button>
+    <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('trends')">📈 View Health Trends</button>
+    <button class="pg-glass-btn" onclick="showPage('genome-overview')">🧬 View Full Genome Report</button>
+    <button class="pg-glass-btn pg-glass-btn-red" onclick="showPage('alerts')">🚨 View Active Alerts</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
   </div>
 </div>
 
@@ -4671,93 +5028,157 @@ var AnalysisEngine = {
 
 <!-- ALERTS PAGE -->
 <div class="page" id="alerts">
-  <div class="card">
-    <div class="card-title">Active Alerts</div>
-    <div class="card-subtitle">6 Active Health Notifications</div>
-    <div style="font-size:12px; color:#666; margin-top:8px;">Each alert includes a plain-language explanation of what it means for your health.</div>
-  </div>
-
-  <!-- ALERT: FALLS TRACKING -->
-  <div class="alert alert-red" style="border-radius:16px; padding:20px; margin-bottom:16px;">
-    <div class="list-title" style="font-size:16px;">🚨 CRITICAL: Recurring Falls — 3 in 6 Months + Peripheral Neuropathy</div>
-    <div class="list-subtitle" style="margin-top:12px; line-height:1.6;">
-      <strong>Pattern detected:</strong> Feb 19, 2025 (14 stairs → rib fracture), March 2025 (twisted ankle → Grade 2 sprain), March 22, 2025 (ankle injury → INOVA ER). You are now ambulating with a cane.<br><br>
-      <strong>Contributing factors:</strong> Extensive spinal hardware (T12-S1), cervical stenosis with Hoffman's sign positive, essential tremor (Primidone 50mg 4x/day), bilateral sciatica, possible cervical myelopathy, AND newly diagnosed peripheral neuropathy (cold/numb/tingling feet reported December 2025). Peripheral neuropathy with sensory loss and abnormal foot sensation directly impairs proprioceptive feedback needed for balance — this is a MAJOR fall risk driver. Your COMT Val/Met variant (heightened pain sensitivity) may cause gait compensation patterns that increase fall risk further.<br><br>
-      <strong>Why this is urgent:</strong> With spinal hardware from T12 to S1, a fall can cause catastrophic hardware failure. The rib fracture from the February fall shows the force of impact. Cervical Hoffman's sign being positive bilaterally is an upper motor neuron finding that suggests possible cervical myelopathy — this directly affects balance and coordination. Peripheral neuropathy with sensory loss (numb feet) eliminates the ground-level proprioceptive feedback your balance system needs, creating a perfect storm for falls.<br><br>
-      <strong>Action:</strong> Discuss fall prevention strategy with Dr. Goldsmith (spinal) and Dr. Azim (medications that may affect balance — Clonazepam, Trazodone, Prazosin). URGENT: Nerve conduction study (NCS/EMG) to quantify neuropathy severity, address underlying causes (Vitamin D deficiency 25.4, electrolyte depletion, possible Fluoxetine contribution), and optimize footwear/balance aids. Consider formal balance assessment and home safety evaluation.
+  <!-- Page Header -->
+  <div class="pg-header pg-header-red">
+    <div class="pg-header-title">🚨 Health Alerts</div>
+    <div class="pg-header-sub">6 active notifications — MÉTIS cross-referenced your genome, medications, wearable data, and medical records to flag these</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat"><span style="color:#ff6b7a;">●</span> 3 Critical</span>
+      <span class="pg-header-stat"><span style="color:#ffc08a;">●</span> 2 Action Needed</span>
+      <span class="pg-header-stat"><span style="color:#82c4f8;">●</span> 1 Ongoing</span>
     </div>
-    <div style="margin-top:12px;"><span class="insight-tag">Falls: 3 in 6mo</span> <span class="insight-tag">Peripheral Neuropathy</span> <span class="insight-tag">Rib Fracture</span> <span class="insight-tag">Ankle Sprain</span> <span class="insight-tag">Hoffman's +</span> <span class="insight-tag">Essential Tremor</span></div>
   </div>
 
-  <!-- ALERT 1: REM -->
-  <div class="alert alert-red" style="border-radius:16px; padding:20px; margin-bottom:16px;">
-    <div class="list-title" style="font-size:16px;">🚨 CRITICAL: REM Sleep Is Half What Your Brain Needs</div>
-    <div class="list-subtitle" style="margin-top:12px; line-height:1.6;">
-      <strong>What's happening:</strong> Your Oura Ring shows you're only getting about 10% REM sleep. Healthy adults your age should get 20–25%.<br><br>
-      <strong>What REM sleep actually does:</strong> REM (Rapid Eye Movement) sleep is the phase where your brain processes emotions from the day, consolidates memories, and essentially "resets" your mood. Think of it as your brain's nightly therapy session. Without enough REM, emotions pile up unprocessed — which directly worsens depression and PTSD symptoms.<br><br>
-      <strong>What this means for you specifically:</strong> With depression rated at 100% and PTSD, your brain desperately needs this processing time. Getting only half the REM you need means your brain never fully catches up on emotional processing. This can make you feel like your medications aren't working as well as they should, even though the issue may partly be sleep architecture.<br><br>
-      <strong>What to discuss with Dr. Azim:</strong> Whether Prazosin dosage or timing could be adjusted (it can suppress REM), whether Trazodone timing is optimal, and whether a sleep study would provide more detailed data.
+  <!-- Critical Alerts Section -->
+  <div class="pg-glass-wrap pg-glass-wrap-red">
+    <div class="pg-glass-section">Critical Alerts</div>
+
+    <!-- FALLS TRACKING -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-critical"><span class="pg-severity-dot"></span> Critical — Falls Pattern Detected</div>
+      <div class="pg-glass-title">Recurring Falls — 3 in 6 Months + Peripheral Neuropathy</div>
+      <div class="pg-glass-body">
+        <strong>Pattern detected:</strong> Feb 19, 2025 (14 stairs → rib fracture), March 2025 (twisted ankle → Grade 2 sprain), March 22, 2025 (ankle injury → INOVA ER). You are now ambulating with a cane.<br><br>
+        <strong>Contributing factors:</strong> Extensive spinal hardware (T12-S1), cervical stenosis with Hoffman's sign positive, essential tremor (Primidone 50mg 4x/day), bilateral sciatica, possible cervical myelopathy, AND newly diagnosed peripheral neuropathy (cold/numb/tingling feet reported December 2025). Peripheral neuropathy with sensory loss and abnormal foot sensation directly impairs proprioceptive feedback needed for balance — this is a MAJOR fall risk driver. Your COMT Val/Met variant (heightened pain sensitivity) may cause gait compensation patterns that increase fall risk further.<br><br>
+        <strong>Why this is urgent:</strong> With spinal hardware from T12 to S1, a fall can cause catastrophic hardware failure. The rib fracture from the February fall shows the force of impact. Cervical Hoffman's sign being positive bilaterally is an upper motor neuron finding that suggests possible cervical myelopathy — this directly affects balance and coordination. Peripheral neuropathy with sensory loss (numb feet) eliminates the ground-level proprioceptive feedback your balance system needs, creating a perfect storm for falls.<br><br>
+        <strong>Action:</strong> Discuss fall prevention strategy with Dr. Goldsmith (spinal) and Dr. Azim (medications that may affect balance — Clonazepam, Trazodone, Prazosin). URGENT: Nerve conduction study (NCS/EMG) to quantify neuropathy severity, address underlying causes (Vitamin D deficiency 25.4, electrolyte depletion, possible Fluoxetine contribution), and optimize footwear/balance aids. Consider formal balance assessment and home safety evaluation.
+      </div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-red">Falls: 3 in 6mo</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Peripheral Neuropathy</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Rib Fracture</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Ankle Sprain</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Hoffman's +</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Genome: COMT</span>
+        <span class="pg-ai-tag pg-ai-tag-blue">Essential Tremor</span>
+      </div>
     </div>
-    <div style="margin-top:12px;"><span class="insight-tag">Oura Ring</span> <span class="insight-tag">Depression</span> <span class="insight-tag">PTSD</span> <span class="insight-tag">Rx: Prazosin</span></div>
-  </div>
 
-  <!-- ALERT 2: ANESTHESIA -->
-  <div class="alert alert-red" style="border-radius:16px; padding:20px; margin-bottom:16px;">
-    <div class="list-title" style="font-size:16px;">🚨 CRITICAL: Anesthesia Resistance Gene Found</div>
-    <div class="list-subtitle" style="margin-top:12px; line-height:1.6;">
-      <strong>What's happening:</strong> Your genome shows a variant in the SCN5A gene (T/C) that affects how your body responds to anesthesia.<br><br>
-      <strong>In plain language:</strong> Remember waking up during surgery? That wasn't random or a fluke — it was likely caused by this genetic variant. Your sodium channels (which anesthesia targets) work slightly differently than most people's. Standard doses that keep most people unconscious may not work the same way for you.<br><br>
-      <strong>Why this matters right now:</strong> If spinal surgery for your DDD/L4-L5 bulging disc proceeds with Dr. Goldsmith at Virginia Spinal Institute, the anesthesiologist needs to know about this variant BEFORE the procedure. Your OPRM1 variant (altered pain receptor) adds another layer — you may need a customized anesthesia plan.<br><br>
-      <strong>Action:</strong> Print or share this finding with any surgical team. It should be noted in your medical record permanently.
+    <!-- REM SLEEP -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-critical"><span class="pg-severity-dot"></span> Critical — Sleep Architecture</div>
+      <div class="pg-glass-title">REM Sleep Is Half What Your Brain Needs</div>
+      <div class="pg-glass-body">
+        <strong>What's happening:</strong> Your Oura Ring shows you're only getting about 10% REM sleep. Healthy adults your age should get 20–25%.<br><br>
+        <strong>What REM sleep actually does:</strong> REM (Rapid Eye Movement) sleep is the phase where your brain processes emotions from the day, consolidates memories, and essentially "resets" your mood. Think of it as your brain's nightly therapy session. Without enough REM, emotions pile up unprocessed — which directly worsens depression and PTSD symptoms.<br><br>
+        <strong>What this means for you specifically:</strong> With depression rated at 100% and PTSD, your brain desperately needs this processing time. Getting only half the REM you need means your brain never fully catches up on emotional processing. This can make you feel like your medications aren't working as well as they should, even though the issue may partly be sleep architecture.<br><br>
+        <strong>What to discuss with Dr. Azim:</strong> Whether Prazosin dosage or timing could be adjusted (it can suppress REM), whether Trazodone timing is optimal, and whether a sleep study would provide more detailed data.
+      </div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-default">Oura Ring Data</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Depression 100%</span>
+        <span class="pg-ai-tag pg-ai-tag-red">PTSD</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Rx: Prazosin</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Genome: HTR2A</span>
+      </div>
     </div>
-    <div style="margin-top:12px;"><span class="insight-tag">Genome: SCN5A</span> <span class="insight-tag">Genome: OPRM1</span> <span class="insight-tag">Surgery Planning</span></div>
-  </div>
 
-  <!-- ALERT 3: D-AMPHETAMINE -->
-  <div class="alert alert-orange" style="border-radius:16px; padding:20px; margin-bottom:16px;">
-    <div class="list-title" style="font-size:16px;">⚠️ ACTION NEEDED: D-Amphetamine 30mg Delayed at Pharmacy</div>
-    <div class="list-subtitle" style="margin-top:12px; line-height:1.6;">
-      <strong>What's happening:</strong> Your pharmacy shows this prescription's status as under review. D-Amphetamine is a Schedule II controlled substance, so pharmacies sometimes flag these for additional verification.<br><br>
-      <strong>Why this medication matters:</strong> Your DRD2 genetic variant (A/G) shows you have reduced dopamine D2 receptors — this is a biological marker that supports the ADHD diagnosis. Without this medication, focus, executive function, and task completion are affected at a neurological level.<br><br>
-      <strong>What to do:</strong> Contact the pharmacy to ask what's needed to release the prescription. If they need prescriber verification, ask Dr. Azim's office to call it in. If it's an insurance issue — note that you're currently paying out of pocket with no insurance.
+    <!-- ANESTHESIA -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-critical"><span class="pg-severity-dot"></span> Critical — Surgical Safety</div>
+      <div class="pg-glass-title">Anesthesia Resistance Gene Found</div>
+      <div class="pg-glass-body">
+        <strong>What's happening:</strong> Your genome shows a variant in the SCN5A gene (T/C) that affects how your body responds to anesthesia.<br><br>
+        <strong>In plain language:</strong> Remember waking up during surgery? That wasn't random or a fluke — it was likely caused by this genetic variant. Your sodium channels (which anesthesia targets) work slightly differently than most people's. Standard doses that keep most people unconscious may not work the same way for you.<br><br>
+        <strong>Why this matters right now:</strong> If spinal surgery for your DDD/L4-L5 bulging disc proceeds with Dr. Goldsmith at Virginia Spinal Institute, the anesthesiologist needs to know about this variant BEFORE the procedure. Your OPRM1 variant (altered pain receptor) adds another layer — you may need a customized anesthesia plan.<br><br>
+        <strong>Action:</strong> Print or share this finding with any surgical team. It should be noted in your medical record permanently.
+      </div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-red">Genome: SCN5A</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Genome: OPRM1</span>
+        <span class="pg-ai-tag pg-ai-tag-blue">Surgery Planning</span>
+      </div>
     </div>
-    <div style="margin-top:12px;"><span class="insight-tag">Rx: D-Amphetamine</span> <span class="insight-tag">Genome: DRD2</span> <span class="insight-tag">ADHD</span></div>
-  </div>
 
-  <!-- ALERT 4: PRAZOSIN REFILL -->
-  <div class="card" style="border-left:4px solid #f88a2f;">
-    <div class="list-title">📋 Prazosin 2mg — Refill Likely Overdue</div>
-    <div class="list-subtitle" style="margin-top:8px; line-height:1.6;">
-      <strong>Last filled:</strong> October 10, 2025 (almost 4 months ago)<br>
-      <strong>Quantity:</strong> 30 tablets with 2 refills remaining<br><br>
-      <strong>Why this matters:</strong> Prazosin controls PTSD nightmares. If you've been taking it daily, a 30-day supply should have run out in November. A gap in this medication can cause nightmare recurrence, which worsens sleep quality and PTSD symptoms. If you've stopped taking it intentionally, that's worth discussing with Dr. Azim — especially since your REM is already critically low.
+    <div class="pg-glass-section">Action Needed</div>
+
+    <!-- D-AMPHETAMINE -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-warning"><span class="pg-severity-dot"></span> Action Needed — Prescription</div>
+      <div class="pg-glass-title">D-Amphetamine 30mg Delayed at Pharmacy</div>
+      <div class="pg-glass-body">
+        <strong>What's happening:</strong> Your pharmacy shows this prescription's status as under review. D-Amphetamine is a Schedule II controlled substance, so pharmacies sometimes flag these for additional verification.<br><br>
+        <strong>Why this medication matters:</strong> Your DRD2 genetic variant (A/G) shows you have reduced dopamine D2 receptors — this is a biological marker that supports the ADHD diagnosis. Without this medication, focus, executive function, and task completion are affected at a neurological level.<br><br>
+        <strong>What to do:</strong> Contact the pharmacy to ask what's needed to release the prescription. If they need prescriber verification, ask Dr. Azim's office to call it in. If it's an insurance issue — note that you're currently paying out of pocket with no insurance.
+      </div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-orange">Rx: D-Amphetamine</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Genome: DRD2</span>
+        <span class="pg-ai-tag pg-ai-tag-blue">ADHD</span>
+      </div>
     </div>
-    <div class="badge badge-orange" style="margin-top:8px;">Overdue</div>
-  </div>
 
-  <!-- ALERT 5: MONTELUKAST REFILL -->
-  <div class="card" style="border-left:4px solid #f88a2f;">
-    <div class="list-title">📋 Montelukast 10mg — Refill Due</div>
-    <div class="list-subtitle" style="margin-top:8px; line-height:1.6;">
-      <strong>Last filled:</strong> November 17, 2025 (about 2.5 months ago)<br>
-      <strong>Quantity:</strong> 90 tablets with 1 refill remaining<br><br>
-      <strong>Why this matters:</strong> Montelukast manages asthma and allergies. A 90-day supply from November would last through mid-February. You should be approaching time to refill. Note: This is an out-of-pocket cost since VA does not currently cover your prescriptions.
+    <!-- PRAZOSIN REFILL -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-warning"><span class="pg-severity-dot"></span> Action Needed — Refill Overdue</div>
+      <div class="pg-glass-title">Prazosin 2mg — Refill Likely Overdue</div>
+      <div class="pg-glass-body">
+        <strong>Last filled:</strong> October 10, 2025 (almost 4 months ago)<br>
+        <strong>Quantity:</strong> 30 tablets with 2 refills remaining<br><br>
+        <strong>Why this matters:</strong> Prazosin controls PTSD nightmares. If you've been taking it daily, a 30-day supply should have run out in November. A gap in this medication can cause nightmare recurrence, which worsens sleep quality and PTSD symptoms. If you've stopped taking it intentionally, that's worth discussing with Dr. Azim — especially since your REM is already critically low.
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Rx: Prazosin 2mg</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Oura: REM 10%</span>
+          <span class="pg-ai-tag pg-ai-tag-red">PTSD</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Overdue</span>
+      </div>
     </div>
-    <div class="badge badge-orange" style="margin-top:8px;">Upcoming</div>
-  </div>
 
-  <!-- INSURANCE GAP ALERT -->
-  <div class="card" style="border-left:4px solid #dc3545;">
-    <div class="list-title">🏥 No Health Insurance Since June 10, 2025</div>
-    <div class="list-subtitle" style="margin-top:8px; line-height:1.6;">
-      You lost FEHB coverage when you were removed from federal service. All non-VA medical care is at full cost. All 11 medications are being paid out-of-pocket. FERS Disability Retirement is pending OPM, SSDI appeal is pending, and DC Medicaid application should be filed.
+    <!-- MONTELUKAST REFILL -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-warning"><span class="pg-severity-dot"></span> Action Needed — Refill Due</div>
+      <div class="pg-glass-title">Montelukast 10mg — Refill Due</div>
+      <div class="pg-glass-body">
+        <strong>Last filled:</strong> November 17, 2025 (about 2.5 months ago)<br>
+        <strong>Quantity:</strong> 90 tablets with 1 refill remaining<br><br>
+        <strong>Why this matters:</strong> Montelukast manages asthma and allergies. A 90-day supply from November would last through mid-February. You should be approaching time to refill. Note: This is an out-of-pocket cost since VA does not currently cover your prescriptions.
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-blue">Rx: Montelukast</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">No Insurance</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-orange">Upcoming</span>
+      </div>
     </div>
-    <div class="badge badge-red" style="margin-top:8px;">Ongoing</div>
-  </div>
 
-  <div class="card">
-    <button class="action-btn" onclick="showPage('insights')">🧠 View Full AI Insights</button>
-    <button class="action-btn action-btn-secondary" style="margin-top:10px;" onclick="showPage('medical-bills')">💰 View Out-of-Pocket Costs</button>
+    <div class="pg-glass-section">Ongoing</div>
+
+    <!-- INSURANCE GAP -->
+    <div class="pg-glass">
+      <div class="pg-severity pg-severity-info"><span class="pg-severity-dot"></span> Ongoing — Coverage Gap</div>
+      <div class="pg-glass-title">🏥 No Health Insurance Since June 10, 2025</div>
+      <div class="pg-glass-body">
+        You lost FEHB coverage when you were removed from federal service. All non-VA medical care is at full cost. All 11 medications are being paid out-of-pocket. FERS Disability Retirement is pending OPM, SSDI appeal is pending, and DC Medicaid application should be filed.
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px;">
+        <div class="pg-ai-tags" style="margin-top:0;">
+          <span class="pg-ai-tag pg-ai-tag-red">Uninsured 8+ months</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">$1,123/mo out-of-pocket</span>
+        </div>
+        <span class="pg-glass-badge pg-badge-red">Ongoing</span>
+      </div>
+    </div>
+
+    <div class="pg-glass-divider"></div>
+
+    <!-- Action Buttons -->
+    <button class="pg-glass-btn" onclick="showPage('insights')">🧠 View Full AI Insights</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('medical-bills')">💰 View Out-of-Pocket Costs</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
   </div>
 </div>
 
@@ -5591,137 +6012,153 @@ var AnalysisEngine = {
 
 <!-- INSURANCE DASHBOARD PAGE -->
 <div id="insurance-dashboard" class="page">
-    <div class="card">
-        <h1 class="card-title">Insurance Dashboard</h1>
-        <p class="card-subtitle">Coverage Status & Recommendations</p>
+  <!-- Critical Header Banner -->
+  <div class="pg-header pg-header-red">
+    <div class="pg-header-title">🏥 Insurance Dashboard</div>
+    <div class="pg-header-sub">UNINSURED SINCE JUNE 10, 2025 — Lost FEHB when removed from EOP payroll</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat"><span style="color:#ff6b7a;">●</span> $1,123/mo gap</span>
+      <span class="pg-header-stat"><span style="color:#82c4f8;">●</span> VA Active</span>
+      <span class="pg-header-stat"><span style="color:#ffc08a;">●</span> 2 Pending</span>
+    </div>
+  </div>
+
+  <!-- Coverage Cards in Glass Wrap -->
+  <div class="pg-glass-wrap pg-glass-wrap-blue">
+    <div class="pg-glass-section">Active Coverage</div>
+
+    <!-- VA Healthcare -->
+    <div class="pg-glass" style="border:1px solid rgba(33,150,243,0.3);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">VA Healthcare</div>
+        <span class="pg-glass-badge pg-badge-blue">Active &amp; Eligible</span>
+      </div>
+      <div class="pg-glass-body">
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-title">Priority Group 1 (100% P&amp;T Housebound)</div>
+          <div class="pg-glass-list-sub">Top priority for all VA benefits • $4,288.45/month (tax-free)</div>
+        </div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-title">Coverage for SC Conditions</div>
+          <div class="pg-glass-list-sub">⚠️ VA is NOT currently covering visits OR prescriptions due to budget &amp; staffing constraints. All 7 rated conditions require private providers out-of-pocket. 11 medications out-of-pocket (~$373/mo via GoodRx). Doctor visits ~$750/mo. Total gap: ~$1,123/mo.</div>
+        </div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-title">Mental Health Services</div>
+          <div class="pg-glass-list-sub">⚠️ NOT currently covered — Dr. Azim (psychiatry, ~$250/mo) &amp; Andrew Smith LCSW (therapy, ~$150/mo) both paid out-of-pocket</div>
+        </div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-title">Prescriptions (11 medications)</div>
+          <div class="pg-glass-list-sub">Out-of-pocket via GoodRx (~$373/mo). Includes Lyllana, Trazodone, Fluoxetine, D-Amphetamine, Clonazepam, Montelukast, Prazosin, Trelegy Ellipta, Ipratropium Bromide, Primidone, K-Phos</div>
+        </div>
+      </div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-blue">Priority Group 1</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Coverage Gap</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">$1,123/mo OOP</span>
+      </div>
     </div>
 
-    <div class="alert alert-orange">
-        <strong>🚨 CRITICAL — UNINSURED SINCE JUNE 10, 2025</strong><br>
-        Lost Federal Employee Health Benefits (FEHB) when removed from EOP payroll. MUST secure coverage immediately.
+    <!-- Not Covered by VA -->
+    <div class="pg-glass">
+      <div class="pg-glass-title">Not Covered by VA</div>
+      <div class="pg-glass-body">
+        <div class="pg-glass-list-item"><div class="pg-glass-list-sub">Non-SC specialist care (non-service-connected conditions)</div></div>
+        <div class="pg-glass-list-item"><div class="pg-glass-list-sub">Dental services (not covered for non-100% rated)</div></div>
+        <div class="pg-glass-list-item"><div class="pg-glass-list-sub">Vision care (not covered for non-100% rated)</div></div>
+        <div class="pg-glass-list-item"><div class="pg-glass-list-sub">Hearing aids ($4,398 quote — NOT VA-covered unless SC claim approved)</div></div>
+        <div class="pg-glass-list-item"><div class="pg-glass-list-sub">Emergency care at non-VA facilities (unless VA-authorized)</div></div>
+      </div>
     </div>
 
-    <div class="card">
-        <div class="card-title">VA Healthcare (Active)</div>
-        <div class="list-item">
-            <div class="list-title">Status</div>
-            <span class="badge badge-blue">Active & Eligible</span>
+    <div class="pg-glass-section">Pending &amp; Available Options</div>
+
+    <!-- DC Medicaid -->
+    <div class="pg-glass">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">DC Medicaid</div>
+        <span class="pg-glass-badge pg-badge-orange">Application Filed</span>
+      </div>
+      <div class="pg-glass-body">
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-title">VA Income: $4,288.45/month</div>
+          <div class="pg-glass-list-sub">May exceed DC limits (~$1,580/individual) BUT special programs may apply</div>
         </div>
-        <div class="list-item">
-            <div class="list-title">Priority Group</div>
-            <div class="list-subtitle">1 (100% P&T Housebound) — Top priority for all VA benefits</div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-sub">Note: FERS pension ($5,248.62/mo pending) could further exceed limits; SSA-1099-R needed for income verification</div>
         </div>
-        <div class="list-item">
-            <div class="list-title">Monthly VA Payment</div>
-            <div class="list-subtitle">$4,288.45 (Tax-free disability compensation)</div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-sub">If approved: Covers gaps not in VA (dental, vision, non-SC care)</div>
         </div>
-        <div class="list-item">
-            <div class="list-title">Coverage for SC Conditions</div>
-            <div class="list-subtitle">⚠️ VA is NOT currently covering visits OR prescriptions due to budget &amp; staffing constraints. All 7 rated conditions (depression, DDD, bilateral sciatica, knee) require private providers out-of-pocket. 11 medications out-of-pocket (~$373/mo via GoodRx). Doctor visits ~$750/mo. Total gap: ~$1,123/mo.</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Mental Health Services</div>
-            <div class="list-subtitle">⚠️ NOT currently covered by VA — Dr. Azim (psychiatry, ~$250/mo) &amp; Andrew Smith LCSW (therapy, ~$150/mo) both paid out-of-pocket due to VA budget/staffing constraints</div>
-        </div>
-        <div class="list-item">
-            <div class="list-title">Prescriptions (SC)</div>
-            <div class="list-subtitle">11 medications — out-of-pocket via GoodRx (~$373/mo). Includes Lyllana, Trazodone, Fluoxetine, D-Amphetamine, Clonazepam, Montelukast, Prazosin, Trelegy Ellipta, Ipratropium Bromide, Primidone, K-Phos</div>
-        </div>
+      </div>
     </div>
 
-    <div class="card">
-        <div class="card-title">NOT Covered by VA</div>
-        <div class="list-item">
-            <div class="list-subtitle">Non-SC specialist care (non-service-connected conditions)</div>
+    <!-- ACA Marketplace -->
+    <div class="pg-glass">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">ACA Marketplace</div>
+        <span class="pg-glass-badge pg-badge-orange">Special Enrollment</span>
+      </div>
+      <div class="pg-glass-body">
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-sub">Job loss on June 10, 2025 (EOP) qualifies for 60-day special enrollment</div>
         </div>
-        <div class="list-item">
-            <div class="list-subtitle">Dental services (not covered for non-100% rated)</div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-sub">Available plans cover primary care, specialists, ER, hospital — BUT at cost</div>
         </div>
-        <div class="list-item">
-            <div class="list-subtitle">Vision care (not covered for non-100% rated)</div>
+        <div class="pg-glass-list-item">
+          <div class="pg-glass-list-sub">May qualify for subsidies based on VA disability income + pending FERS + SSDI status</div>
         </div>
-        <div class="list-item">
-            <div class="list-subtitle">Hearing aids ($4,398 quote — NOT VA-covered unless SC claim approved)</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Emergency care at non-VA facilities (unless VA-authorized)</div>
-        </div>
+      </div>
     </div>
 
-    <div class="card">
-        <div class="card-title">Medicare (Not Yet Eligible)</div>
-        <div class="list-item">
-            <div class="list-title">Status</div>
-            <span class="badge badge-red">Not Eligible</span>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Age 46 — Medicare eligibility begins at 65 OR after 24-month SSDI waiting period (if approved)</div>
-        </div>
+    <div class="pg-glass-section">Not Eligible / Not Recommended</div>
+
+    <!-- Medicare -->
+    <div class="pg-glass">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">Medicare</div>
+        <span class="pg-glass-badge pg-badge-red">Not Eligible</span>
+      </div>
+      <div class="pg-glass-body">Age 46 — Medicare eligibility begins at 65 OR after 24-month SSDI waiting period (if approved).</div>
     </div>
 
-    <div class="card">
-        <div class="card-title">DC Medicaid (Pending)</div>
-        <div class="list-item">
-            <div class="list-title">Status</div>
-            <span class="badge badge-orange">Application Filed — Eligibility Pending</span>
-        </div>
-        <div class="list-item">
-            <div class="list-title">VA Income</div>
-            <div class="list-subtitle">$4,288.45/month (may exceed DC limits ~$1,580/individual BUT special programs may apply)</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Note: FERS pension ($5,248.62/mo pending) could further exceed limits; SSA-1099-R needed for income verification</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">If approved: Covers gaps not in VA (dental, vision, non-SC care)</div>
-        </div>
+    <!-- COBRA -->
+    <div class="pg-glass">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">COBRA</div>
+        <span class="pg-glass-badge pg-badge-red">Not Recommended</span>
+      </div>
+      <div class="pg-glass-body">May be available from EOP FEHB loss (18-month extension) BUT expensive (>$500/month). Not cost-effective compared to ACA Marketplace enrollment.</div>
     </div>
 
-    <div class="card">
-        <div class="card-title">ACA Marketplace (Special Enrollment Period)</div>
-        <div class="list-item">
-            <div class="list-title">Eligibility</div>
-            <span class="badge badge-orange">OPEN — Special Enrollment Period</span>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Job loss on June 10, 2025 (EOP) qualifies for 60-day special enrollment</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Available plans cover primary care, specialists, ER, hospital — BUT at cost</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">May qualify for subsidies based on VA disability income + pending FERS + SSDI status</div>
-        </div>
+    <!-- CHAMPVA -->
+    <div class="pg-glass">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <div class="pg-glass-title" style="margin-bottom:0;">CHAMPVA</div>
+        <span class="pg-glass-badge pg-badge-blue">To Be Evaluated</span>
+      </div>
+      <div class="pg-glass-body">Dependent/survivor coverage through VA — Check eligibility status.</div>
     </div>
 
-    <div class="card">
-        <div class="card-title">COBRA (Not Recommended)</div>
-        <div class="list-item">
-            <div class="list-subtitle">May be available from EOP FEHB loss (18-month extension) BUT expensive (>$500/month)</div>
-        </div>
-        <div class="list-item">
-            <div class="list-subtitle">Not cost-effective compared to ACA Marketplace enrollment</div>
-        </div>
+    <div class="pg-glass-section">AI Cross-Reference</div>
+
+    <!-- Genomic Anesthesia Note -->
+    <div class="pg-glass" style="border: 1px solid rgba(220,53,69,0.3);">
+      <div class="pg-severity pg-severity-critical"><span class="pg-severity-dot"></span> Genome + Insurance Risk</div>
+      <div class="pg-glass-title">SCN5A Anesthesia Variant Makes Coverage Critical</div>
+      <div class="pg-glass-body">Your SCN5A finding (anesthesia sensitivity with reduced cardiac tolerance to certain agents) makes surgical coverage CRITICAL for any future procedures. With spinal surgery potentially needed for DDD/L4-L5, the current insurance gap creates high financial and medical risk.</div>
+      <div class="pg-ai-tags">
+        <span class="pg-ai-tag pg-ai-tag-red">Genome: SCN5A</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Surgery Planning</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Uninsured Risk</span>
+      </div>
     </div>
 
-    <div class="card">
-        <div class="card-title">CHAMPVA (To Be Evaluated)</div>
-        <div class="list-item">
-            <div class="list-subtitle">Dependent/survivor coverage through VA — Check eligibility status</div>
-        </div>
-    </div>
+    <div class="pg-glass-divider"></div>
 
-    <div class="card">
-        <div class="card-title">⚠️ Critical Note: Genomic Anesthesia Variant</div>
-        <div class="alert alert-orange">
-            <strong>SCN5A Finding:</strong> Anesthesia sensitivity (reduced cardiac tolerance to certain agents). Makes surgical coverage CRITICAL for any future procedures. Current insurance gap = high financial & medical risk.
-        </div>
-    </div>
-
-    <div class="card">
-        <button class="action-btn" onclick="showPage('insurance-insights')">View AI Action Plan</button>
-        <button class="action-btn-secondary" onclick="showPage('dashboard')">← Back to Dashboard</button>
-    </div>
+    <button class="pg-glass-btn pg-glass-btn-red" onclick="showPage('insurance-insights')">⚡ View AI Action Plan</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
+  </div>
 </div>
 
 <!-- INSURANCE AI INSIGHTS PAGE -->
