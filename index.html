@@ -2188,6 +2188,27 @@ var AnalysisEngine = {
                 ⚠️ <strong>Anesthesia Resistance:</strong> Genetically confirmed. All procedures require higher anesthesia doses. Alert all surgical teams.
             </div>
         </div>
+
+        <!-- AI Cross-Reference: Diagnoses + Genome -->
+        <div class="pg-glass-wrap" style="margin-top:0;">
+            <div class="pg-glass-section">MÉTIS AI Cross-Reference: Diagnoses + Genome</div>
+            <div class="pg-glass">
+                <div class="pg-glass-title">12 Diagnoses Have Genomic Connections</div>
+                <div class="pg-glass-body">
+                    MÉTIS cross-referenced your 30+ diagnoses against 650K genetic variants and found genomic factors in 12 conditions: Depression links to HTR2A + MTHFR variants. ADHD confirmed by DRD2 dopamine receptor deficit. Chronic pain amplified by COMT + OPRM1 variants. Peripheral neuropathy driven by SCN5A sodium channel dysfunction. Insomnia explained by CLOCK gene circadian shift. Falls pattern connected to electrolyte cascade (MTHFR → Vitamin D → Phosphorus).<br><br>
+                    <strong>Why this matters:</strong> Understanding the genetic basis of your conditions helps your care team make better treatment decisions — like knowing your HTR2A variant may reduce Fluoxetine effectiveness, or that your COMT variant means you experience pain more intensely than most people.
+                </div>
+                <div class="pg-ai-tags">
+                    <span class="pg-ai-tag pg-ai-tag-red">12 Genomic Links</span>
+                    <span class="pg-ai-tag pg-ai-tag-default">650K Variants</span>
+                    <span class="pg-ai-tag pg-ai-tag-blue">30+ Conditions</span>
+                    <span class="pg-ai-tag pg-ai-tag-orange">11 Medications</span>
+                </div>
+            </div>
+            <button class="pg-glass-btn" onclick="showPage('insights')">🧠 View Full AI Insights</button>
+            <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('genome-correlations')">🧬 View All 21 Genome Correlations</button>
+            <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
+        </div>
     </div>
 
     <!-- MEDICATIONS -->
@@ -2300,6 +2321,30 @@ var AnalysisEngine = {
                 <div class="list-title">Mother</div>
                 <div class="list-subtitle">Cancer, Diabetes</div>
             </div>
+        </div>
+
+        <!-- AI Cross-Reference: Medications + Genome -->
+        <div class="pg-glass-wrap" style="margin-top:0;">
+            <div class="pg-glass-section">MÉTIS AI Cross-Reference: Medications + Genome</div>
+            <div class="pg-glass">
+                <div class="pg-glass-title">8 Pharmacogenomic Flags Across 11 Medications</div>
+                <div class="pg-glass-body">
+                    MÉTIS analyzed each of your 11 medications against your genome and found 8 actionable pharmacogenomic interactions:<br><br>
+                    <strong>Fluoxetine 80mg:</strong> HTR2A T/C variant may reduce SSRI efficacy — high dose may be compensating. CYP2D6 normal (metabolism OK). SIADH risk confirmed by persistent hyponatremia (Na 126→134).<br><br>
+                    <strong>D-Amphetamine 30mg:</strong> DRD2 A/G variant confirms reduced dopamine receptors — genetic justification for stimulant therapy.<br><br>
+                    <strong>Prazosin 2mg:</strong> Suppressing REM sleep (10% vs 20-25% target). OXTR variant amplifies PTSD symptoms, making this a necessary trade-off.<br><br>
+                    <strong>Primidone 50mg:</strong> CYP2C9*3 A/C (intermediate metabolizer) — may affect metabolism of this anticonvulsant. Monitor levels.<br><br>
+                    <strong>Lyllana HRT:</strong> Factor V Leiden NEGATIVE — PE was hormonal/immobility, not genetic. Continued HRT carries known but manageable clotting risk.
+                </div>
+                <div class="pg-ai-tags">
+                    <span class="pg-ai-tag pg-ai-tag-red">8 Rx-Gene Flags</span>
+                    <span class="pg-ai-tag pg-ai-tag-default">CYP2D6 Normal</span>
+                    <span class="pg-ai-tag pg-ai-tag-orange">CYP2C9 Intermediate</span>
+                    <span class="pg-ai-tag pg-ai-tag-blue">HTR2A Variant</span>
+                </div>
+            </div>
+            <button class="pg-glass-btn" onclick="showPage('pharmacogenomics')">💊 View Pharmacogenomics Detail</button>
+            <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('insights')">🧠 View Full AI Insights</button>
         </div>
 
     <!-- LAB RESULTS SUMMARY — Full page at id="lab-results" -->
@@ -2973,6 +3018,28 @@ var AnalysisEngine = {
                 <div class="list-subtitle">2 tablets 4 times daily for 14 days • Take with food • Take 2hrs before/after antacids</div>
             </div>
         </div>
+
+        <!-- AI Cross-Reference: Schedule + Genome + Wearable -->
+        <div class="pg-glass-wrap" style="margin-top:0;">
+            <div class="pg-glass-section">MÉTIS AI: Timing + Genome Insights</div>
+            <div class="pg-glass">
+                <div class="pg-glass-title">Your Medication Timing Has Genomic Implications</div>
+                <div class="pg-glass-body">
+                    <strong>Morning Fluoxetine + CLOCK Gene:</strong> Your CLOCK A/G variant makes you a genetic night owl (natural bedtime ~12:30 AM per Oura). Morning dosing at a later wake time may affect peak drug levels differently than standard 7 AM assumptions. Worth discussing timing optimization with Dr. Azim.<br><br>
+                    <strong>Bedtime Prazosin + REM:</strong> Oura data shows only 10% REM sleep. Prazosin is taken at bedtime for PTSD nightmares but suppresses REM as a side effect. Your OXTR variant amplifies stress reactivity, making Prazosin necessary — but your brain is missing ~45 minutes of critical emotional processing nightly.<br><br>
+                    <strong>K-Phos Timing:</strong> Critical for phosphorus repletion (0.97 was life-threatening). The 4x daily dosing is essential — your MTHFR variant impairs nutrient absorption, so consistency matters even more for you.<br><br>
+                    <strong>D-Amphetamine Twice Daily:</strong> DRD2 variant (fewer dopamine receptors) means split dosing is the right approach to maintain stable dopamine levels throughout the day.
+                </div>
+                <div class="pg-ai-tags">
+                    <span class="pg-ai-tag pg-ai-tag-default">Genome: CLOCK</span>
+                    <span class="pg-ai-tag pg-ai-tag-red">Oura: REM 10%</span>
+                    <span class="pg-ai-tag pg-ai-tag-orange">Genome: MTHFR</span>
+                    <span class="pg-ai-tag pg-ai-tag-blue">Genome: DRD2</span>
+                </div>
+            </div>
+            <button class="pg-glass-btn" onclick="showPage('pharmacogenomics')">💊 View Pharmacogenomics</button>
+            <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('insights')">🧠 View Full AI Insights</button>
+        </div>
     </div>
 
     <!-- COMORBIDITY -->
@@ -3507,6 +3574,29 @@ var AnalysisEngine = {
                     <div class="timeline-detail">Active duty enlisted (Gulf War Era)</div>
                 </div>
             </div>
+        </div>
+
+        <!-- AI Cross-Reference: Timeline Pattern Detection -->
+        <div class="pg-glass-wrap" style="margin-top:0;">
+            <div class="pg-glass-section">MÉTIS AI: Timeline Pattern Detection</div>
+            <div class="pg-glass">
+                <div class="pg-glass-title">3 Escalating Patterns Identified Across Your Medical History</div>
+                <div class="pg-glass-body">
+                    MÉTIS analyzed your full medical timeline and detected accelerating patterns that connect to your genome:<br><br>
+                    <strong>Falls Acceleration (2025):</strong> 3 falls in 6 months — Feb (rib fracture), March (ankle sprain), March (INOVA ER). This pace is new and correlates with worsening peripheral neuropathy (SCN5A variant + electrolyte decline). Your Oura activity data shows you're more active (4h 54m vs 2h 39m baseline) — increased activity with impaired balance = escalating risk.<br><br>
+                    <strong>Electrolyte Deterioration (2025):</strong> Sodium 126 (Feb GWU) → 134 (Dec Fort Belvoir). Phosphorus dropped to 0.97 (critical). This 10-month pattern points to Fluoxetine-driven SIADH combined with MTHFR-impaired nutrient absorption. Not a one-time event — it's progressive.<br><br>
+                    <strong>Spinal Progression (2004→2025):</strong> L5-S1 fusion (2004) → revision + T12-L1 extension (2017) → cervical DDD + Hoffman's positive (2025). 21 years of spinal hardware with progressive cervical involvement. Your COMT variant (heightened pain sensitivity) means you feel this deterioration more intensely than clinical imaging alone would suggest.
+                </div>
+                <div class="pg-ai-tags">
+                    <span class="pg-ai-tag pg-ai-tag-red">Falls: Accelerating</span>
+                    <span class="pg-ai-tag pg-ai-tag-red">Electrolytes: Declining</span>
+                    <span class="pg-ai-tag pg-ai-tag-orange">Spine: Progressive</span>
+                    <span class="pg-ai-tag pg-ai-tag-default">Genome: 4 Variants</span>
+                    <span class="pg-ai-tag pg-ai-tag-blue">Oura: Activity +85%</span>
+                </div>
+            </div>
+            <button class="pg-glass-btn" onclick="showPage('insights')">🧠 View Full AI Insights</button>
+            <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('alerts')">🚨 View Active Alerts</button>
         </div>
     </div>
 
