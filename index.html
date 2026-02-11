@@ -600,6 +600,169 @@ body.dark-mode .a11y-panel h3 { color: #a7cf28; }
 .a11y-range-row span { min-width: 40px; text-align: right; font-weight: 700; font-size: 14px; }
 .a11y-reset-btn { width: 100%; padding: 10px; background: rgba(220,53,69,0.1); color: #dc3545; border: 1px solid #dc3545; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; margin-top: 8px; }
 .a11y-reset-btn:hover { background: #dc3545; color: white; }
+
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD v2 — Hero Alert, Pulse Rings, Glass & Bento
+   Patient-first design system with AI correlation emphasis
+   ══════════════════════════════════════════════════════════════ */
+
+/* Hero Critical Alert */
+.dash-hero-alert {
+    background: linear-gradient(135deg, #1a0a0a 0%, #3d0f0f 40%, #5a1a1a 100%);
+    border-radius: 20px; padding: 24px; margin-bottom: 16px;
+    color: white; position: relative; overflow: hidden;
+    cursor: pointer; transition: transform 0.2s;
+    border: 1px solid rgba(220,53,69,0.3);
+}
+.dash-hero-alert:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.dash-hero-alert::before {
+    content: ''; position: absolute; top: -40%; right: -20%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(220,53,69,0.2), transparent 70%);
+    border-radius: 50%;
+}
+.dash-hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #ff6b7a; margin-bottom: 12px;
+}
+.dash-hero-pulse {
+    width: 10px; height: 10px; border-radius: 50%; background: #dc3545;
+    animation: dashPulseRed 1.5s infinite;
+}
+@keyframes dashPulseRed {
+    0%,100%{ box-shadow: 0 0 0 0 rgba(220,53,69,0.3); }
+    50%{ box-shadow: 0 0 0 8px transparent; }
+}
+.dash-hero-alert h3 { font-size: 19px; font-weight: 800; margin-bottom: 8px; position: relative; z-index: 1; }
+.dash-hero-alert p { font-size: 14px; color: rgba(255,255,255,0.82); line-height: 1.6; position: relative; z-index: 1; margin-bottom: 16px; }
+.dash-hero-btn {
+    background: #dc3545; color: white; border: none;
+    padding: 14px 24px; border-radius: 12px;
+    font-weight: 800; font-size: 14px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    position: relative; z-index: 1; transition: all 0.2s;
+    min-height: 48px; touch-action: manipulation; -webkit-user-select: none;
+}
+.dash-hero-btn:hover { background: #e04050; transform: translateY(-1px); }
+
+/* Pulse Data Rings Row */
+.dash-pulse-row {
+    display: flex; gap: 10px; margin-bottom: 16px;
+    overflow-x: auto; padding: 4px 0;
+    -webkit-overflow-scrolling: touch;
+}
+.dash-pulse-row::-webkit-scrollbar { display: none; }
+.dash-pulse-card {
+    flex: 1 1 0; min-width: 110px;
+    background: white; border-radius: 18px; padding: 18px 10px;
+    text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    cursor: pointer; transition: all 0.2s;
+}
+.dash-pulse-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.dash-ring {
+    width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+}
+.dash-ring-bg { position: absolute; inset: 0; border-radius: 50%; }
+.dash-ring-inner {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: white; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+}
+.dash-ring-val { font-size: 24px; font-weight: 900; line-height: 1; }
+.dash-ring-unit { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.dash-pulse-label { font-size: 12px; font-weight: 800; color: #001830; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.dash-pulse-sub { font-size: 11px; color: #777; font-weight: 600; line-height: 1.3; }
+
+/* Section Divider */
+.dash-divider {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 4px 12px;
+}
+.dash-divider-line { flex: 1; height: 1px; background: #ddd; }
+.dash-divider-text {
+    font-size: 12px; font-weight: 800; color: #888;
+    text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;
+}
+
+/* Glass Backdrop & Cards */
+.dash-glass-wrap {
+    background: linear-gradient(160deg, #001830 0%, #002a4a 35%, #0d3a2a 65%, #2a6d20 90%, #a7cf28 100%);
+    border-radius: 22px; padding: 18px 14px; margin-bottom: 16px;
+}
+.dash-glass {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 18px; padding: 22px; margin-bottom: 12px;
+    cursor: pointer; transition: all 0.25s ease; color: white;
+    min-height: 48px;
+}
+.dash-glass:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.dash-glass:active { transform: scale(0.98); }
+.dash-glass:last-child { margin-bottom: 0; }
+.dash-glass-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.dash-glass-ico {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+}
+.dash-glass-titles { flex: 1; }
+.dash-glass-title { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
+.dash-glass-sub { font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.dash-glass-body { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 12px; }
+.dash-glass-foot { display: flex; align-items: center; justify-content: space-between; }
+.dash-glass-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 10px;
+}
+.dash-glass-badge.bg-green { background: rgba(167,207,40,0.25); color: #c5e864; }
+.dash-glass-badge.bg-red { background: rgba(220,53,69,0.25); color: #ff8a95; }
+.dash-glass-badge.bg-orange { background: rgba(248,138,47,0.25); color: #ffc08a; }
+.dash-glass-badge.bg-blue { background: rgba(33,150,243,0.25); color: #82c4f8; }
+.dash-glass-arrow {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 16px; color: rgba(255,255,255,0.6); transition: all 0.2s;
+}
+.dash-glass:hover .dash-glass-arrow { background: rgba(255,255,255,0.2); color: white; }
+
+/* AI Correlation Chips */
+.dash-ai-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.dash-ai-chip {
+    font-size: 12px; font-weight: 700; padding: 5px 12px;
+    border-radius: 8px; white-space: nowrap;
+}
+.dash-ai-chip.chip-green { background: rgba(167,207,40,0.18); color: #c5e864; }
+.dash-ai-chip.chip-red { background: rgba(220,53,69,0.18); color: #ff8a95; }
+.dash-ai-chip.chip-orange { background: rgba(248,138,47,0.18); color: #ffc08a; }
+.dash-ai-chip.chip-default { background: rgba(167,207,40,0.18); color: #c5e864; }
+
+/* Dashboard Footer */
+.dash-footer-note {
+    text-align: center; padding: 20px 0 10px;
+    font-size: 12px; color: #999; font-weight: 600;
+}
+.dash-footer-note strong { color: #a7cf28; }
+
+/* High contrast overrides */
+body.high-contrast .dash-hero-alert { border: 2px solid #ff0000 !important; }
+body.high-contrast .dash-glass { border: 2px solid #fff !important; }
+body.high-contrast .dash-ai-chip { border: 1px solid currentColor; }
+
+/* Dark mode overrides */
+body.dark-mode .dash-pulse-card { background: #16213e !important; }
+body.dark-mode .dash-pulse-label { color: #e0e0e0 !important; }
+body.dark-mode .dash-pulse-sub { color: #aaa !important; }
+body.dark-mode .dash-ring-inner { background: #16213e !important; }
+body.dark-mode .dash-divider-text { color: #aaa !important; }
+body.dark-mode .dash-divider-line { background: #444 !important; }
+
 </style>
     <script>
     // Critical functions in head so they're available immediately
@@ -1018,24 +1181,8 @@ var AnalysisEngine = {
         </div>
 
         <div class="menu-section">
-            <div class="menu-section-title">💰 Benefits & Money</div>
-            <a class="menu-item" href="#" onclick="showPage('benefits-hub'); return false;">💰 Benefits Calculator</a>
-            <a class="menu-item" href="#" onclick="showPage('va-disability'); return false;">🎖️ VA Disability</a>
-            <a class="menu-item" href="#" onclick="showPage('claims-history'); return false;">📋 Claims History</a>
-            <a class="menu-item" href="#" onclick="showPage('programs'); return false;">🏆 Programs</a>
-            <a class="menu-item" href="#" onclick="showPage('financial-overview'); return false;">💵 Financial Overview</a>
-        </div>
-
-        <div class="menu-section">
-            <div class="menu-section-title">🛡️ Insurance & Bills</div>
-            <a class="menu-item" href="#" onclick="showPage('insurance-dashboard'); return false;">🛡️ My Insurance</a>
-            <a class="menu-item" href="#" onclick="showPage('medical-bills'); return false;">💳 Medical Bills</a>
-            <a class="menu-item" href="#" onclick="showPage('medicare-medicaid'); return false;">🏛️ Medicare / Medicaid</a>
-            <a class="menu-item" href="#" onclick="showPage('insurance-insights'); return false;">🧠 Insurance AI Insights</a>
-        </div>
-
-        <div class="menu-section">
             <div class="menu-section-title">🏥 Health Data</div>
+            <a class="menu-item" href="#" onclick="showPage('alerts'); return false;">🚨 Health Alerts</a>
             <a class="menu-item" href="#" onclick="showPage('diagnoses'); return false;">🏥 My Diagnoses</a>
             <a class="menu-item" href="#" onclick="showPage('medications'); return false;">💊 Medications</a>
             <a class="menu-item" href="#" onclick="showPage('med-schedule'); return false;">⏰ Med Schedule</a>
@@ -1055,10 +1202,21 @@ var AnalysisEngine = {
         </div>
 
         <div class="menu-section">
-            <div class="menu-section-title">👨‍⚕️ Care Team</div>
-            <a class="menu-item" href="#" onclick="showPage('care-team'); return false;">👥 Care Team</a>
-            <a class="menu-item" href="#" onclick="showPage('appointments'); return false;">📅 Appointments</a>
-            <a class="menu-item" href="#" onclick="showPage('communications'); return false;">💬 Messages</a>
+            <div class="menu-section-title">💰 Benefits & Money</div>
+            <a class="menu-item" href="#" onclick="showPage('benefits-hub'); return false;">💰 Benefits Calculator</a>
+            <a class="menu-item" href="#" onclick="showPage('va-disability'); return false;">🎖️ VA Disability</a>
+            <a class="menu-item" href="#" onclick="showPage('claims-history'); return false;">📋 Claims History</a>
+            <a class="menu-item" href="#" onclick="showPage('programs'); return false;">🏆 Programs</a>
+            <a class="menu-item" href="#" onclick="showPage('financial-overview'); return false;">💵 Financial Overview</a>
+            <a class="menu-item" href="#" onclick="showPage('studies'); return false;">🔬 Clinical Studies</a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">🛡️ Insurance & Bills</div>
+            <a class="menu-item" href="#" onclick="showPage('insurance-dashboard'); return false;">🛡️ My Insurance</a>
+            <a class="menu-item" href="#" onclick="showPage('medical-bills'); return false;">💳 Medical Bills</a>
+            <a class="menu-item" href="#" onclick="showPage('medicare-medicaid'); return false;">🏛️ Medicare / Medicaid</a>
+            <a class="menu-item" href="#" onclick="showPage('insurance-insights'); return false;">🧠 Insurance AI Insights</a>
         </div>
 
         <div class="menu-section">
@@ -1069,9 +1227,10 @@ var AnalysisEngine = {
         </div>
 
         <div class="menu-section">
-            <div class="menu-section-title">🚨 Alerts & Studies</div>
-            <a class="menu-item" href="#" onclick="showPage('alerts'); return false;">🚨 Health Alerts</a>
-            <a class="menu-item" href="#" onclick="showPage('studies'); return false;">🔬 Clinical Studies</a>
+            <div class="menu-section-title">👨‍⚕️ Care Team & Communications</div>
+            <a class="menu-item" href="#" onclick="showPage('care-team'); return false;">👥 Care Team</a>
+            <a class="menu-item" href="#" onclick="showPage('appointments'); return false;">📅 Appointments</a>
+            <a class="menu-item" href="#" onclick="showPage('communications'); return false;">💬 Messages</a>
         </div>
 
         <div class="menu-section">
@@ -1093,84 +1252,199 @@ var AnalysisEngine = {
         </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD v2 — Patient-First AI-Powered Overview -->
     <div class="page" id="dashboard">
-        <div class="card">
-            <div class="card-title">Welcome, Keenan</div>
-            <div class="card-subtitle">Army Veteran • 100% P&T + Housebound</div>
-            <div class="alert-red alert">
-                🚨 <strong>CRITICAL ALERT:</strong> NO INSURANCE COVERAGE since June 10, 2025<br>
-                Lost FEHB upon federal service removal. Recommend immediate enrollment in DC Medicaid or ACA Marketplace.
+
+        <!-- ── HERO CRITICAL ALERT — above fold ── -->
+        <div class="dash-hero-alert" onclick="showPage('alerts')">
+            <div class="dash-hero-tag">
+                <span class="dash-hero-pulse"></span>
+                Critical Alert — Needs Your Attention
+            </div>
+            <h3>🚨 Recurring Falls + Drug Interaction</h3>
+            <p>MÉTIS noticed 3 falls in the past 30 days. When we cross-referenced your peripheral neuropathy, gabapentin dose, and blood pressure medications, a potential compounding interaction was flagged. Worth discussing with Dr. Rodriguez at your Feb 18 appointment.</p>
+            <button class="dash-hero-btn" onclick="event.stopPropagation(); showPage('alerts')">Review Health Alerts →</button>
+        </div>
+
+        <!-- ── PULSE DATA RINGS — AI analysis at a glance ── -->
+        <div class="dash-pulse-row">
+            <div class="dash-pulse-card" onclick="showPage('comorbidity')">
+                <div class="dash-ring">
+                    <div class="dash-ring-bg" style="background:conic-gradient(#a7cf28 0deg 252deg, #e8e8e8 252deg 360deg); border-radius:50%;"></div>
+                    <div class="dash-ring-inner">
+                        <div class="dash-ring-val" style="color:#a7cf28">70</div>
+                        <div class="dash-ring-unit">Score</div>
+                    </div>
+                </div>
+                <div class="dash-pulse-label">Health Score</div>
+                <div class="dash-pulse-sub">+5 from last week</div>
+            </div>
+            <div class="dash-pulse-card" onclick="showPage('genome-correlations')">
+                <div class="dash-ring">
+                    <div class="dash-ring-bg" style="background:conic-gradient(#9c27b0 0deg 216deg, #e8e8e8 216deg 360deg); border-radius:50%;"></div>
+                    <div class="dash-ring-inner">
+                        <div class="dash-ring-val" style="color:#9c27b0">21</div>
+                        <div class="dash-ring-unit">Found</div>
+                    </div>
+                </div>
+                <div class="dash-pulse-label">AI Correlations</div>
+                <div class="dash-pulse-sub">Cross-system links</div>
+            </div>
+            <div class="dash-pulse-card" onclick="showPage('alerts')">
+                <div class="dash-ring">
+                    <div class="dash-ring-bg" style="background:conic-gradient(#dc3545 0deg 120deg, #f88a2f 120deg 200deg, #e8e8e8 200deg 360deg); border-radius:50%;"></div>
+                    <div class="dash-ring-inner">
+                        <div class="dash-ring-val" style="color:#dc3545">8</div>
+                        <div class="dash-ring-unit">Active</div>
+                    </div>
+                </div>
+                <div class="dash-pulse-label">Alerts</div>
+                <div class="dash-pulse-sub">3 critical, 5 watch</div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">Quick Stats</div>
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-value">$51K+</div>
-                    <div class="stat-label">Annual Benefits</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">17+</div>
-                    <div class="stat-label">Conditions</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">Medications</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">4</div>
-                    <div class="stat-label">Care Team</div>
-                </div>
-            </div>
+        <!-- ── SECTION DIVIDER ── -->
+        <div class="dash-divider">
+            <span class="dash-divider-line"></span>
+            <span class="dash-divider-text">What MÉTIS Found For You</span>
+            <span class="dash-divider-line"></span>
         </div>
 
-        <div class="card">
-            <div class="card-title">🧬 Genomic Highlights</div>
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-value">650K</div>
-                    <div class="stat-label">Variants Analyzed</div>
+        <!-- ── GLASS SECTION INSIGHT CARDS ── -->
+        <div class="dash-glass-wrap">
+
+            <!-- Health Data -->
+            <div class="dash-glass" onclick="showPage('alerts')">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">🏥</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Health Data</div>
+                        <div class="dash-glass-sub">17+ Conditions • 7 Medications</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">12</div>
-                    <div class="stat-label">Med Correlations</div>
+                <div class="dash-glass-body">MÉTIS noticed your falls pattern correlates with peripheral neuropathy progression. A possible gabapentin + lisinopril interaction was flagged. Your D-Amphetamine 30mg is delayed at the pharmacy.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-red">Falls ↔ Neuropathy</span>
+                    <span class="dash-ai-chip chip-orange">Drug Interaction</span>
+                    <span class="dash-ai-chip chip-default">Rx Delayed</span>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value">1</div>
-                    <div class="stat-label">Critical Finding</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label">Med Alerts</div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-red">3 Critical Alerts</span>
+                    <span class="dash-glass-arrow">→</span>
                 </div>
             </div>
+
+            <!-- Genomics -->
+            <div class="dash-glass" onclick="showPage('genome-dashboard')">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">🧬</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Genomics</div>
+                        <div class="dash-glass-sub">650K Variants Analyzed</div>
+                    </div>
+                </div>
+                <div class="dash-glass-body">Your genome revealed an SCN5A variant linked to anesthesia resistance — important for any future procedures. MÉTIS also found your CYP2D6 rapid metabolizer status may be reducing how well Prazosin works for you. 12 medical-genomic connections mapped so far.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-red">SCN5A → Anesthesia</span>
+                    <span class="dash-ai-chip chip-orange">CYP2D6 → Prazosin</span>
+                    <span class="dash-ai-chip chip-default">12 Correlations</span>
+                </div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-orange">1 Critical + 2 Pharma</span>
+                    <span class="dash-glass-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Benefits & Money -->
+            <div class="dash-glass" onclick="showPage('benefits-hub')">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">💰</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Benefits & Money</div>
+                        <div class="dash-glass-sub">$51K+ Annual Active</div>
+                    </div>
+                </div>
+                <div class="dash-glass-body">Your SSDI appeal was filed — decision expected within 90 days. MÉTIS matched 3 clinical trials to your diagnosis profile, including an MDMA-assisted PTSD therapy study nearby. If SSDI is approved, that's an additional ~$4K annually.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-default">SSDI → 90 Days</span>
+                    <span class="dash-ai-chip chip-default">3 Trials Matched</span>
+                    <span class="dash-ai-chip chip-green">+$4K Potential</span>
+                </div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-green">On Track</span>
+                    <span class="dash-glass-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Insurance & Bills -->
+            <div class="dash-glass" onclick="showPage('insurance-dashboard')" style="border-color:rgba(220,53,69,0.4)">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">🛡️</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Insurance & Bills</div>
+                        <div class="dash-glass-sub">Gap: 8 Months</div>
+                    </div>
+                </div>
+                <div class="dash-glass-body">You've been without coverage since June 2025. VA covers prescriptions, but specialist visits, imaging, and ER are at full cost. MÉTIS found 3 enrollment paths — DC Medicaid, ACA Special Enrollment, and VA community care expansion — with deadlines approaching this month.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-red">No Coverage</span>
+                    <span class="dash-ai-chip chip-orange">Deadlines This Month</span>
+                    <span class="dash-ai-chip chip-default">3 Options Found</span>
+                </div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-red">Action Required</span>
+                    <span class="dash-glass-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Connected Health -->
+            <div class="dash-glass" onclick="showPage('insights')">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">⌚</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Connected Health</div>
+                        <div class="dash-glass-sub">Oura Ring Synced</div>
+                    </div>
+                </div>
+                <div class="dash-glass-body">Your REM sleep is at 10% — your brain needs 20-25%. Your bedtime has been averaging 12:34 AM, past the optimal window. MÉTIS correlated your Prazosin timing with REM suppression, and your PTSD nightmares may be fragmenting sleep architecture.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-orange">REM ↔ Prazosin</span>
+                    <span class="dash-ai-chip chip-orange">Late Bedtime</span>
+                    <span class="dash-ai-chip chip-default">PTSD ↔ Sleep</span>
+                </div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-orange">Sleep Warning</span>
+                    <span class="dash-glass-arrow">→</span>
+                </div>
+            </div>
+
+            <!-- Care Team -->
+            <div class="dash-glass" onclick="showPage('care-team')">
+                <div class="dash-glass-hdr">
+                    <div class="dash-glass-ico">👨‍⚕️</div>
+                    <div class="dash-glass-titles">
+                        <div class="dash-glass-title">Care Team & Comms</div>
+                        <div class="dash-glass-sub">4 Providers Active</div>
+                    </div>
+                </div>
+                <div class="dash-glass-body">Your next appointment is with Dr. Rodriguez on Feb 18. You have 2 unread messages from the VA pharmacy about refills. Based on recent findings, MÉTIS suggests bringing up the falls pattern, Prazosin timing, and your anesthesia gene card.</div>
+                <div class="dash-ai-row">
+                    <span class="dash-ai-chip chip-default">Feb 18 Appt</span>
+                    <span class="dash-ai-chip chip-default">2 Messages</span>
+                    <span class="dash-ai-chip chip-green">3 Topics Prepared</span>
+                </div>
+                <div class="dash-glass-foot" style="margin-top:12px">
+                    <span class="dash-glass-badge bg-blue">2 Unread</span>
+                    <span class="dash-glass-arrow">→</span>
+                </div>
+            </div>
+
+        </div><!-- /dash-glass-wrap -->
+
+        <div class="dash-footer-note">
+            <strong>MÉTIS AI</strong> — Last scan: 2 minutes ago • 21 correlations active across your health data
         </div>
 
-        <div class="card">
-            <div class="card-title">Recent Activity</div>
-            <div class="list-item" onclick="showPage('genome-dashboard')" style="cursor: pointer;">
-                <div class="list-title">🧬 Genome Analysis Complete</div>
-                <div class="list-subtitle">650K variants analyzed with 12 medical correlations, 1 critical finding (anesthesia resistance)</div>
-                <span class="badge badge">New Insights Available</span>
-            </div>
-            <div class="list-item">
-                <div class="list-title">⌚ Oura Data Synced</div>
-                <div class="list-subtitle">7-day avg: Sleep 7h 8min, REM 10% (low), bedtime 12:34 AM</div>
-                <span class="badge badge-blue">View Details</span>
-            </div>
-            <div class="list-item">
-                <div class="list-title">⚠️ SSDI Appeal Pending</div>
-                <div class="list-subtitle">Appeal filed following initial denial. Decision expected within 90 days.</div>
-                <span class="badge-orange badge">In Progress</span>
-            </div>
-            <div class="list-item">
-                <div class="list-title">🚨 Insurance Gap Critical</div>
-                <div class="list-subtitle">No coverage since June 10, 2025. All VA Rx free but commercial care at risk.</div>
-                <span class="badge-red badge">Action Required</span>
-            </div>
-        </div>
     </div>
 
     <!-- BENEFITS CALCULATOR -->
