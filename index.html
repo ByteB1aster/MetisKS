@@ -405,11 +405,11 @@
         }
 
         /* Oura Graph Bars */
-        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 10px 0; }
-        .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; }
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 140px; padding: 10px 0; overflow: visible; }
+        .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 0; overflow: visible; }
         .bar { width: 100%; min-height: 4px; transition: height 0.3s; }
-        .bar-label { font-size: 10px; color: #999; margin-top: 6px; font-weight: 600; white-space: nowrap; }
-        .bar-val { font-size: 10px; color: #001830; font-weight: 700; margin-bottom: 4px; white-space: nowrap; }
+        .bar-label { font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 6px; font-weight: 600; white-space: nowrap; }
+        .bar-val { font-size: 10px; color: #fff; font-weight: 700; margin-bottom: 4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 100%; }
         .bar-stack { width: 100%; display: flex; flex-direction: column; border-radius: 6px 6px 0 0; overflow: hidden; }
         .bar-deep { background: #001830; }
         .bar-rem { background: #2196f3; }
@@ -567,19 +567,20 @@ body.reduce-motion, body.reduce-motion * {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: #001830;
-    color: #a7cf28;
-    border: 2px solid #a7cf28;
+    background: #2196f3;
+    color: #fff;
+    border: 3px solid #fff;
     font-size: 24px;
     cursor: pointer;
     z-index: 10000;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 16px rgba(33,150,243,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     touch-action: manipulation;
+    transition: all 0.3s;
 }
-.a11y-fab:hover { background: #a7cf28; color: #001830; }
+.a11y-fab:hover { background: #1976d2; color: #fff; box-shadow: 0 6px 20px rgba(33,150,243,0.6); transform: scale(1.1); }
 
 .a11y-panel-overlay {
     display: none;
@@ -731,7 +732,7 @@ body.dark-mode .a11y-panel h3 { color: #a7cf28; }
 }
 .dash-glass-titles { flex: 1; }
 .dash-glass-title { font-size: 17px; font-weight: 800; margin-bottom: 2px; }
-.dash-glass-sub { font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.dash-glass-sub { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .dash-glass-body { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 12px; }
 .dash-glass-foot { display: flex; align-items: center; justify-content: space-between; }
 .dash-glass-badge {
@@ -806,7 +807,7 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     border: 1px solid rgba(248,138,47,0.3);
 }
 .pg-header-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; position: relative; z-index: 1; }
-.pg-header-sub { font-size: 14px; color: rgba(255,255,255,0.7); font-weight: 600; position: relative; z-index: 1; }
+.pg-header-sub { font-size: 14px; color: rgba(255,255,255,0.88); font-weight: 600; position: relative; z-index: 1; }
 .pg-header-stats {
     display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap;
     position: relative; z-index: 1;
@@ -841,8 +842,8 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 .pg-glass-clickable { cursor: pointer; }
 .pg-glass-clickable:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .pg-glass-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; color: white; }
-.pg-glass-body { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.7; }
-.pg-glass-body strong { color: rgba(255,255,255,0.95); font-weight: 700; }
+.pg-glass-body { font-size: 15px; color: rgba(255,255,255,0.93); line-height: 1.7; }
+.pg-glass-body strong { color: #fff; font-weight: 700; }
 
 /* Severity indicators */
 .pg-severity {
@@ -908,15 +909,15 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 }
 .pg-glass-btn-blue:hover { background: rgba(33,150,243,0.3); }
 .pg-glass-btn-outline {
-    background: transparent; color: rgba(255,255,255,0.7);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(167,207,40,0.12); color: #a7cf28;
+    border-color: rgba(167,207,40,0.4);
 }
-.pg-glass-btn-outline:hover { background: rgba(255,255,255,0.08); color: white; }
+.pg-glass-btn-outline:hover { background: rgba(167,207,40,0.25); color: #c5e864; }
 
 /* Section Labels in Glass */
 .pg-glass-section {
     font-size: 13px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 2px; color: rgba(255,255,255,0.5);
+    letter-spacing: 2px; color: rgba(255,255,255,0.75);
     padding: 10px 0 14px; margin-top: 8px;
 }
 
@@ -933,7 +934,7 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 }
 .pg-glass-list-item:last-child { border-bottom: none; }
 .pg-glass-list-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px; }
-.pg-glass-list-sub { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.pg-glass-list-sub { font-size: 14px; color: rgba(255,255,255,0.9); line-height: 1.5; }
 
 /* Bento Grid */
 .pg-bento-grid {
@@ -1084,6 +1085,7 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
             document.getElementById('app-wrap').classList.add('unlocked');
             showPage('dashboard');
             loadA11ySettings();
+            loadDocumentsFromStorage();
         } else {
             document.getElementById('auth-err').style.display = 'block';
             document.getElementById('auth-pw').value = '';
@@ -1376,6 +1378,121 @@ var AnalysisEngine = {
         };
     }
 };
+
+// === DOCUMENT UPLOAD SYSTEM ===
+var uploadedDocuments = [];
+
+function handleFileUpload(files) {
+    if (!files || files.length === 0) return;
+    var progressArea = document.getElementById('upload-progress-area');
+    var progressList = document.getElementById('upload-progress-list');
+    progressArea.style.display = 'block';
+
+    for (var i = 0; i < files.length; i++) {
+        (function(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                progressList.innerHTML += '<div style="padding:8px; margin:4px 0; background:rgba(220,53,69,0.2); border-radius:6px; font-size:13px;">❌ ' + file.name + ' — File too large (max 10MB)</div>';
+                return;
+            }
+
+            var progressId = 'prog-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+            progressList.innerHTML += '<div id="' + progressId + '" style="padding:8px; margin:4px 0; background:rgba(167,207,40,0.15); border-radius:6px; font-size:13px;">⏳ Uploading ' + file.name + '...</div>';
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var doc = {
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2,9),
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    date: new Date().toLocaleDateString(),
+                    data: e.target.result
+                };
+                uploadedDocuments.push(doc);
+                saveDocumentsToStorage();
+
+                var el = document.getElementById(progressId);
+                if (el) el.innerHTML = '✅ ' + file.name + ' — Uploaded successfully (' + formatFileSize(file.size) + ')';
+                updateUploadedFilesList();
+            };
+            reader.onerror = function() {
+                var el = document.getElementById(progressId);
+                if (el) el.innerHTML = '❌ ' + file.name + ' — Upload failed';
+            };
+            reader.readAsDataURL(file);
+        })(files[i]);
+    }
+    document.getElementById('file-input-real').value = '';
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function updateUploadedFilesList() {
+    var container = document.getElementById('uploaded-files-list');
+    if (!container) return;
+    if (uploadedDocuments.length === 0) {
+        container.innerHTML = '<div style="color:rgba(255,255,255,0.6); text-align:center; padding:20px;">No files uploaded yet.</div>';
+        return;
+    }
+    var html = '';
+    for (var i = uploadedDocuments.length - 1; i >= 0; i--) {
+        var doc = uploadedDocuments[i];
+        var icon = getFileIcon(doc.name);
+        html += '<div style="display:flex; align-items:center; gap:12px; padding:12px; margin:6px 0; background:rgba(255,255,255,0.06); border-radius:8px; border:1px solid rgba(255,255,255,0.1);">';
+        html += '<div style="font-size:24px;">' + icon + '</div>';
+        html += '<div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + doc.name + '</div>';
+        html += '<div style="font-size:11px; color:rgba(255,255,255,0.6);">' + formatFileSize(doc.size) + ' • Uploaded ' + doc.date + '</div></div>';
+        html += '<button onclick="viewDocument(\'' + doc.id + '\')" style="background:rgba(33,150,243,0.2); color:#82c4f8; border:1px solid rgba(33,150,243,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">View</button>';
+        html += '<button onclick="deleteDocument(\'' + doc.id + '\')" style="background:rgba(220,53,69,0.2); color:#ff8a95; border:1px solid rgba(220,53,69,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">×</button>';
+        html += '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function getFileIcon(name) {
+    var ext = name.split('.').pop().toLowerCase();
+    var icons = { pdf: '📕', doc: '📘', docx: '📘', jpg: '🖼️', jpeg: '🖼️', png: '🖼️', txt: '📝', csv: '📊', xlsx: '📊', xls: '📊' };
+    return icons[ext] || '📄';
+}
+
+function viewDocument(id) {
+    for (var i = 0; i < uploadedDocuments.length; i++) {
+        if (uploadedDocuments[i].id === id) {
+            var doc = uploadedDocuments[i];
+            var win = window.open('', '_blank');
+            if (doc.type.startsWith('image/')) {
+                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e;"><img src="' + doc.data + '" style="max-width:100%; max-height:100vh;"></body></html>');
+            } else if (doc.type === 'application/pdf') {
+                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0;"><iframe src="' + doc.data + '" style="width:100%; height:100vh; border:none;"></iframe></body></html>');
+            } else {
+                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:20px; font-family:monospace; background:#1a1a2e; color:#e0e0e0;"><pre>' + atob(doc.data.split(',')[1]) + '</pre></body></html>');
+            }
+            break;
+        }
+    }
+}
+
+function deleteDocument(id) {
+    if (!confirm('Delete this document?')) return;
+    uploadedDocuments = uploadedDocuments.filter(function(d) { return d.id !== id; });
+    saveDocumentsToStorage();
+    updateUploadedFilesList();
+}
+
+function saveDocumentsToStorage() {
+    try { localStorage.setItem('metis-uploads', JSON.stringify(uploadedDocuments)); } catch(e) {}
+}
+
+function loadDocumentsFromStorage() {
+    try {
+        var saved = localStorage.getItem('metis-uploads');
+        if (saved) { uploadedDocuments = JSON.parse(saved); updateUploadedFilesList(); }
+    } catch(e) {}
+}
 </script>
 </head>
 <body>
@@ -1429,7 +1546,7 @@ var AnalysisEngine = {
     <div class="nav-bar" role="navigation" aria-label="Main navigation">
         <label for="menuToggle" class="nav-btn" style="touch-action:manipulation; cursor:pointer;">☰ Menu</label>
         <div class="logo">MÉTIS</div>
-        <label class="nav-btn" onclick="showPage('dashboard')" style="touch-action:manipulation; cursor:pointer;">🏠 Home</label>
+        <label class="nav-btn" onclick="showPage('dashboard')" style="touch-action:manipulation; cursor:pointer;">🏠 My Dashboard</label>
     </div>
 
     <!-- Menu Overlay — clicking closes menu -->
@@ -1462,6 +1579,7 @@ var AnalysisEngine = {
             <a class="menu-item" href="#" onclick="showPage('genome-upload'); return false;">⬆️ Upload Genome</a>
             <a class="menu-item" href="#" onclick="showPage('genome-dashboard'); return false;">🧬 My Genome</a>
             <a class="menu-item" href="#" onclick="showPage('genetic-risks'); return false;">⚠️ Genetic Risks</a>
+            <a class="menu-item" href="#" onclick="showPage('family-history'); return false;">👪 Family History</a>
             <a class="menu-item" href="#" onclick="showPage('genome-correlations'); return false;">🔗 Medical Correlations</a>
             <a class="menu-item" href="#" onclick="showPage('pharmacogenomics'); return false;">💊 Pharmacogenomics</a>
         </div>
@@ -1495,6 +1613,7 @@ var AnalysisEngine = {
             <div class="menu-section-title">👨‍⚕️ Care Team & Communications</div>
             <a class="menu-item" href="#" onclick="showPage('care-team'); return false;">👥 Care Team</a>
             <a class="menu-item" href="#" onclick="showPage('appointments'); return false;">📅 Appointments</a>
+            <a class="menu-item" href="#" onclick="showPage('calendar'); return false;">🗓️ Calendar</a>
             <a class="menu-item" href="#" onclick="showPage('communications'); return false;">💬 Messages</a>
         </div>
 
@@ -1508,12 +1627,14 @@ var AnalysisEngine = {
 
         <div class="menu-section">
             <div class="menu-section-title">⚙️ Account</div>
-            
-    <div class="menu-section-title" style="padding:10px 16px 4px; color:#999; font-size:12px; font-weight:700; text-transform:uppercase;">Platform</div>
-    <a class="menu-item" href="#" onclick="showPage('data-integration'); return false;">🔗 Data Integration Hub</a>
-    <a class="menu-item" href="#" onclick="showPage('security-privacy'); return false;">🔒 Security &amp; Privacy</a>
-    <a class="menu-item" href="#" onclick="showPage('platform-architecture'); return false;">🏗️ Platform Architecture</a>
-    <a class="menu-item" href="#" onclick="showPage('profile'); return false;">👤 Profile</a>
+            <a class="menu-item" href="#" onclick="showPage('data-integration'); return false;">🔗 Data Integration Hub</a>
+            <a class="menu-item" href="#" onclick="showPage('security-privacy'); return false;">🔒 Security &amp; Privacy</a>
+            <a class="menu-item" href="#" onclick="showPage('profile'); return false;">👤 Profile</a>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-section-title">💼 Investors</div>
+            <a class="menu-item" href="#" onclick="showPage('platform-architecture'); return false;">🏗️ Platform Architecture</a>
         </div>
     </div>
 
@@ -3195,8 +3316,8 @@ var AnalysisEngine = {
     <!-- COMORBIDITY -->
     <div class="page" id="comorbidity">
         <div class="pg-header pg-header-red">
-            <div class="pg-header-title">📋 Complete Medical Diagnoses & Conditions</div>
-            <div class="pg-header-sub">28+ conditions organized by system</div>
+            <div class="pg-header-title">📋 Complete Medical Diagnoses & Conditions with Correlated Disease Clusters</div>
+            <div class="pg-header-sub">28+ conditions organized by system with AI-identified disease clusters</div>
             <div class="pg-header-stats">
                 <div class="pg-header-stat">28+ Conditions</div>
                 <div class="pg-header-stat">7 VA-Rated</div>
@@ -3310,10 +3431,6 @@ var AnalysisEngine = {
                 <div class="pg-glass-title">Essential Tremor</div>
                 <div class="pg-glass-body">(G25.0) | Documented since 03/14/2024; fine motor impact</div>
             </div>
-            <div class="pg-glass">
-                <div class="pg-glass-title">Alcohol Use Disorder</div>
-                <div class="pg-glass-body">(F10.10) | Documented history; recovery focus, substance use counseling</div>
-            </div>
         </div>
 
         <div class="pg-glass-wrap pg-glass-wrap-red">
@@ -3324,11 +3441,11 @@ var AnalysisEngine = {
             </div>
             <div class="pg-glass">
                 <div class="pg-glass-title">Asthma</div>
-                <div class="pg-glass-body">Active since 2023; requires rescue and maintenance inhalers; monitored by PCP</div>
+                <div class="pg-glass-body">Original diagnosis 2006; requires rescue and maintenance inhalers; monitored by PCP</div>
             </div>
             <div class="pg-glass">
                 <div class="pg-glass-title">Pleurisy (Recurrent)</div>
-                <div class="pg-glass-body">Diagnosed December 26-27, 2025 at Fort Belvoir ER; presented with chest pain, shortness of breath; history of pneumothorax</div>
+                <div class="pg-glass-body">Original diagnosis South Africa, 2011; recurrence diagnosed December 26-27, 2025 at Fort Belvoir ER; presented with chest pain, shortness of breath; history of pneumothorax</div>
             </div>
             <div class="pg-glass">
                 <div class="pg-glass-title">Left Lower Lung Pneumothorax (Historical)</div>
@@ -3343,8 +3460,8 @@ var AnalysisEngine = {
                 <div class="pg-glass-body">Documented history; post-hysterectomy (April 2019, robotic-assisted); ongoing surveillance for recurrence</div>
             </div>
             <div class="pg-glass">
-                <div class="pg-glass-title">Hysterectomy - Robotic Assisted</div>
-                <div class="pg-glass-body">April 2019; cervical cancer treatment; post-surgical recovery complete</div>
+                <div class="pg-glass-title">Hysterectomy - Robotic Assisted (with BSO, Lymphadenectomy, Colporrhaphy)</div>
+                <div class="pg-glass-body">April 2019; cervical cancer treatment. Procedures included: Total Hysterectomy, Bilateral Salpingo-oophorectomy (BSO), Lymphadenectomy (Lymph Node Dissection), Pelvic Organ Prolapse Repair (Colporrhaphy), and Cystoscopy. Post-surgical recovery complete</div>
             </div>
         </div>
 
@@ -3742,8 +3859,8 @@ var AnalysisEngine = {
 
             <div class="pg-glass">
                 <span class="pg-ai-tag pg-ai-tag-orange">April 2019</span>
-                <div class="pg-glass-title">Hysterectomy & Cystoscopy</div>
-                <div class="pg-glass-body">Robotic assisted hysterectomy with cystoscopy</div>
+                <div class="pg-glass-title">Hysterectomy, BSO, Lymphadenectomy & Colporrhaphy</div>
+                <div class="pg-glass-body">Robotic-assisted hysterectomy with bilateral salpingo-oophorectomy (BSO), lymph node dissection, pelvic organ prolapse repair (colporrhaphy), and cystoscopy</div>
             </div>
 
             <div class="pg-glass">
@@ -4090,6 +4207,265 @@ var AnalysisEngine = {
 
     <div class="pg-glass-divider"></div>
 
+    <!-- 23andMe Cross-Reference Analysis Section -->
+    <div class="pg-glass-wrap pg-glass-wrap-red">
+      <div class="pg-glass-section">⚠️ Cross-Platform Discrepancies Detected</div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">BDNF Val66Met (rs6265) — SIGNIFICANT DISCREPANCY</div>
+        <div class="pg-glass-body">
+          <div style="margin-bottom: 12px;">
+            <strong>AncestryDNA:</strong> GG (Val-Val homozygous)<br>
+            <strong>23andMe:</strong> CC (Met-Met homozygous)
+          </div>
+          <div style="font-size: 13px; line-height: 1.6; color: #333;">
+            <strong>Clinical Significance:</strong> This is a SIGNIFICANT discrepancy. If 23andMe is correct (CC/Met-Met), this has major implications. Met-Met genotype is associated with lower BDNF production, reduced learning ability, increased depression/anxiety risk, and reduced exercise-induced neuroplasticity. Given your 100% MDD rating and current Fluoxetine 80mg therapy, this could impact treatment strategy. May require higher-intensity exercise protocol to boost BDNF naturally and discussion with psychiatrist about treatment optimization.
+          </div>
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-red">SIGNIFICANT</span>
+          <span class="pg-ai-tag pg-ai-tag-red">Depression Risk</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Requires Confirmation</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">MTHFR A1298C (rs1801131) — MAJOR DISCREPANCY</div>
+        <div class="pg-glass-body">
+          <div style="margin-bottom: 12px;">
+            <strong>AncestryDNA:</strong> AC (heterozygous)<br>
+            <strong>23andMe:</strong> TT (homozygous for C variant)
+          </div>
+          <div style="font-size: 13px; line-height: 1.6; color: #333;">
+            <strong>Clinical Significance:</strong> If 23andMe is correct (TT), combined with your C677T heterozygosity, this creates compound heterozygosity for MTHFR with potentially more severe methylation impairment. This could significantly worsen your folate metabolism cascade, affecting your electrolyte instability and peripheral neuropathy. Recommend methylfolate supplementation (active form, not folic acid) — 800-1000 mcg daily, paired with B12 (methylcobalamin preferred), B6, and choline. Consider functional testing: plasma homocysteine and methylmalonic acid levels.
+          </div>
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-red">MAJOR</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">Methylation Impact</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Requires Confirmation</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">CYP2C19 (rs4244285) — FAVORABLE DISCREPANCY</div>
+        <div class="pg-glass-body">
+          <div style="margin-bottom: 12px;">
+            <strong>AncestryDNA:</strong> AG (intermediate metabolizer)<br>
+            <strong>23andMe:</strong> GG (normal metabolizer - FAVORABLE)
+          </div>
+          <div style="font-size: 13px; line-height: 1.6; color: #333;">
+            <strong>Clinical Significance:</strong> This is actually GOOD news. If 23andMe is correct (GG), you are a normal metabolizer for CYP2C19 substrates including clopidogrel, omeprazole, and escitalopram. Standard medication dosing is appropriate without pharmacogenomic adjustment needed for these drugs.
+          </div>
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">FAVORABLE</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Standard Dosing OK</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">Recommendation: Clinical Confirmatory Testing</div>
+        <div class="pg-glass-body">
+          <div style="font-size: 13px; line-height: 1.6; color: #333;">
+            Given the significant discrepancies between AncestryDNA and 23andMe, particularly for BDNF and MTHFR A1298C, clinical confirmatory testing from a CLIA-certified laboratory is strongly recommended. Consider contacting genetic counselor to review discrepancies and plan confirmatory testing strategy.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New 23andMe Genetic Findings -->
+    <div class="pg-glass-wrap">
+      <div class="pg-glass-section">New Genetic Findings from 23andMe</div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">TCF7L2 (rs7903146) — CT — Elevated Type 2 Diabetes Risk</div>
+        <div class="pg-glass-body">
+          Heterozygous carrier of risk allele — one of the strongest genetic risk factors for type 2 diabetes. Combined with family history (father: diabetes, mother: diabetes) and elevated lipid panel (cholesterol 269, triglycerides 251, LDL 162), metabolic trajectory requires active monitoring. Annual fasting glucose and HbA1c screening strongly recommended. Dietary modifications: low glycemic index foods, reduced simple sugars, weight management, and 150+ min/week moderate activity.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-orange">Elevated Risk</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Annual Screening</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">CYP1A2 (rs762551) — AA — Slow Caffeine Metabolizer</div>
+        <div class="pg-glass-body">
+          Homozygous for slow caffeine metabolism allele. Recommend limiting caffeine to &lt;200mg/day. Coffee, tea, and energy drinks may cause prolonged jitteriness, anxiety, and sleep disruption. Given your insomnia (treated with Trazodone) and CLOCK gene evening chronotype, caffeine restriction especially important. Consider decaffeinated alternatives.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-orange">Moderate Impact</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Sleep Optimization</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">ACTN3 (rs1815739) — TT — Endurance Athlete Predisposition</div>
+        <div class="pg-glass-body">
+          Loss-of-function genotype indicates genetic predisposition toward slow-twitch muscle fibers and endurance activities rather than power/sprint activities. Best athletic pursuits: distance running, cycling, swimming, triathlon, rowing, cross-country skiing. May benefit from creatine supplementation (5g daily) to compensate for ACTN3 deficiency. Endurance-focused training approach recommended.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Favorable for Endurance</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Athletic Optimization</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">DRD2 (rs1800497) — AG — Intermediate Dopamine Receptor Density</div>
+        <div class="pg-glass-body">
+          One copy of A1 allele = reduced dopamine D2 receptor density. Intermediate genetic risk for addiction and reward-seeking behaviors. Directly relevant to your ADHD (currently on D-Amphetamine 30mg twice daily) — amphetamine directly targets dopamine pathway your variant affects. Dosage optimization important. May benefit from routine monitoring of substance use patterns.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-orange">Moderate Impact</span>
+          <span class="pg-ai-tag pg-ai-tag-default">ADHD Management</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">OXTR (rs53576) — AG — Intermediate Oxytocin Receptor</div>
+        <div class="pg-glass-body">
+          Heterozygous for oxytocin receptor polymorphism. May have intermediate empathetic response and social engagement patterns. Benefits from social engagement activities, mindfulness practices, and stress management. These behaviors support both neurological health and mental well-being.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-blue">Neutral Genotype</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Lifestyle Support</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">FTO (rs9939609) — TT — No Genetic Obesity Predisposition</div>
+        <div class="pg-glass-body">
+          Homozygous for wild-type FTO allele (no obesity risk). Favorable metabolic genotype. Lower genetic predisposition to obesity compared to carriers of A allele. Maintain current lifestyle for weight management.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Favorable</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Metabolic Health</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">ADRB2 (rs1042713) — GG — Good Response to Beta-2 Agonist Inhalers</div>
+        <div class="pg-glass-body">
+          Homozygous for Arg16 variant (GG = Arg16Arg). Associated with better response to beta-2 agonist inhalers like albuterol. Genetically favorable for asthma management. Your current Trelegy Ellipta regimen (fluticasone/umeclidinium/vilanterol) is well-matched to this genotype. Current medication regimen is optimized for your genetic profile.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Favorable Response</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Asthma Management</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">IL6 (rs1800795) — GG — Lower Baseline Inflammation</div>
+        <div class="pg-glass-body">
+          Homozygous for lower IL-6 producing allele. May have lower baseline inflammatory markers. Potentially beneficial for cardiovascular health and reduced inflammatory disease risk. Continue anti-inflammatory lifestyle (Mediterranean diet, exercise, stress management).
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Protective</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Cardiovascular Health</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">SLCO1B1 (rs4149056) — TT — Normal Statin Metabolism</div>
+        <div class="pg-glass-body">
+          Homozygous for normal SLCO1B1 function. If statins prescribed for your elevated lipid panel (cholesterol 269, LDL 162), normal metabolism is expected. Not at increased risk of statin-induced myopathy. Standard statin dosing appropriate.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Favorable</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Drug Response</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">MC1R (rs1805007) — CC — Normal Pigmentation, Lower Melanoma Risk</div>
+        <div class="pg-glass-body">
+          Homozygous for wild-type MC1R allele. Associated with normal skin pigmentation and lower genetic risk for melanoma. Not a red-haired phenotype carrier. Maintains standard skin cancer risk relative to general population. Continue routine sun protection as prevention best practice.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Protective</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Skin Health</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">Lactose Tolerance (rs4988235) — AG — Likely Tolerant</div>
+        <div class="pg-glass-body">
+          Heterozygous for lactase persistence allele. Likely lactose tolerant but with possible reduced efficiency compared to homozygous AA. Can consume dairy but may experience some digestive symptoms with large quantities. Monitor for digestive symptoms; may need to limit dairy quantity or choose lactose-free products if symptoms develop.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-blue">Neutral Genotype</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Dietary</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Cross-Reference Insights -->
+    <div class="pg-glass-wrap" style="border-left: 3px solid #2ecc71;">
+      <div class="pg-glass-section">🧠 AI Cross-Reference Insights</div>
+      <div style="font-size: 12px; color: #666; margin-bottom: 16px;">Correlating combined genomic data with medical conditions, labs, and medications</div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">TCF7L2 Diabetes Risk + Family History + Metabolic Labs</div>
+        <div class="pg-glass-body">
+          <strong>Finding:</strong> TCF7L2 CT (elevated type 2 diabetes genetic risk) combined with father died of heart disease, mother has diabetes, plus your INOVA labs (Aug 2024): cholesterol 269, triglycerides 251, LDL 162. <br><br>
+          <strong>MÉTIS Recommendation:</strong> Annual HbA1c screening and fasting glucose testing. Implement Mediterranean-style diet emphasis on olive oil, fish, whole grains, vegetables. Consider lipid management discussion with primary care. Weight management and 150+ min/week aerobic activity essential.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Metabolic Risk</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Family Hx: Diabetes</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">CYP1A2 Slow Metabolism + Insomnia + CLOCK Evening Chronotype</div>
+        <div class="pg-glass-body">
+          <strong>Finding:</strong> CYP1A2 AA (slow caffeine metabolizer) combined with your documented insomnia (Trazodone 100mg) and CLOCK AG gene (evening chronotype, avg bedtime 12:05 AM per Oura). Caffeine persistence in your system exacerbates circadian misalignment. <br><br>
+          <strong>MÉTIS Recommendation:</strong> Strict caffeine restriction — cut off by 12 PM at latest. Eliminate energy drinks entirely. This single dietary change may significantly improve sleep quality. Consider discussing caffeine impact at next sleep medicine visit.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="pg-ai-tag pg-ai-tag-orange">Sleep Optimization</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Circadian Mismatch</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">BDNF Met-Met (if confirmed) + 100% MDD Rating + Fluoxetine Therapy</div>
+        <div class="pg-glass-body">
+          <strong>Finding:</strong> BDNF CC/Met-Met (if 23andMe confirmed) has major implications for depression management. Met-Met genotype shows reduced BDNF activity, reduced neuroplasticity, and potentially reduced SSRI efficacy. Your 100% MDD rating and high-dose Fluoxetine 80mg therapy align with this genetic risk. <br><br>
+          <strong>MÉTIS Recommendation:</strong> May require higher-intensity exercise protocol to boost BDNF naturally — target 200+ min/week aerobic exercise rather than standard 150 min. Mediterranean diet and omega-3 supplementation (2-3g EPA+DHA daily) evidence-based for BDNF support. Discuss with psychiatrist about pharmacogenomic-guided treatment optimization — consider combination therapy or dose adjustment based on 23andMe confirmation.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="pg-ai-tag pg-ai-tag-red">Depression Treatment</span>
+          <span class="pg-ai-tag pg-ai-tag-orange">Pharmacogenomic Optimization</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">ADRB2 GG + Asthma (since 2006) + Trelegy Ellipta</div>
+        <div class="pg-glass-body">
+          <strong>Finding:</strong> ADRB2 GG (genetically favorable for beta-2 agonist response) combined with your asthma diagnosis (since 2006) and current Trelegy Ellipta (fluticasone/umeclidinium/vilanterol). This is a positive genetic-medication match. <br><br>
+          <strong>MÉTIS Recommendation:</strong> Your current medication regimen is well-matched to your genotype. Continue current asthma management strategy. Genetically favorable response to beta-2 agonist therapy. Monitor for adequate control; genotype supports standard dosing efficacy.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="badge badge-green">Well-Matched</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Asthma Control</span>
+        </div>
+      </div>
+
+      <div class="pg-glass">
+        <div class="pg-glass-title">DRD2 AG + ADHD + D-Amphetamine Therapy</div>
+        <div class="pg-glass-body">
+          <strong>Finding:</strong> DRD2 AG (intermediate dopamine receptor density) with ADHD diagnosis and current D-Amphetamine 30mg twice daily (60mg/day total). Your genotype creates reduced dopamine D2 receptor density, making dopaminergic stimulant therapy mechanistically appropriate. <br><br>
+          <strong>MÉTIS Recommendation:</strong> Current amphetamine dosing genetically justified for your DRD2 variant. Intermediate dopamine receptor density may affect stimulant response — dosage optimization important. Continue monitoring for therapeutic efficacy and side effects. Discuss with prescriber (Dr. Azim) any concerns about response.
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+          <span class="pg-ai-tag pg-ai-tag-blue">ADHD Management</span>
+          <span class="pg-ai-tag pg-ai-tag-default">Genetically Targeted</span>
+        </div>
+      </div>
+    </div>
+
     <button class="pg-glass-btn" onclick="showPage('genetic-risks')">🔬 View Full Genetic Profile</button>
     <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('genome-correlations')">🧠 View All 21 Genome Correlations</button>
     <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
@@ -4233,6 +4609,197 @@ var AnalysisEngine = {
     <div class="pg-glass-divider"></div>
     <button class="pg-glass-btn pg-glass-btn-red">Discuss with Dr. Azim</button>
     <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('genome-dashboard')">View Genome Dashboard</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
+  </div>
+</div>
+
+<!-- FAMILY HISTORY PAGE -->
+<div class="page" id="family-history">
+  <!-- Page Header -->
+  <div class="pg-header pg-header-blue">
+    <div class="pg-header-title">👪 Family History</div>
+    <div class="pg-header-sub">Genetic risk factors inherited from family members</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat"><span style="color:#2196f3;">●</span> 8 Family Members</span>
+      <span class="pg-header-stat">5 Major Conditions</span>
+    </div>
+  </div>
+
+  <!-- Immediate Family -->
+  <div class="pg-glass-wrap">
+    <div class="pg-glass-section">👨‍👩‍👦 Immediate Family</div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Mother</div>
+      <div class="pg-glass-body">
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Breast Cancer</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 52, treated with chemotherapy and radiation</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Managed with lisinopril and amlodipine since age 48</span></div>
+        <div><strong style="color:#2196f3;">Depression</strong><br><span style="font-size:12px; color:#666;">Treated with sertraline; positive family history for mood disorders</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">Cancer Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Cardiovascular</span>
+        <span class="pg-ai-tag pg-ai-tag-blue">Mental Health</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Father (Deceased)</div>
+      <div class="pg-glass-body">
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Heart Disease</strong><br><span style="font-size:12px; color:#666;">Myocardial infarction at age 58; primary cause of death</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Type 2 Diabetes</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 51; managed with insulin and metformin</span></div>
+        <div><strong style="color:#dc3545;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Uncontrolled at time of cardiac event; on multiple antihypertensives</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">CRITICAL - Cardiac Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Metabolic Risk</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Sister</div>
+      <div class="pg-glass-body">
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Depression & Anxiety</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 28; currently on escitalopram and buspirone</span></div>
+        <div><strong style="color:#2196f3;">Asthma</strong><br><span style="font-size:12px; color:#666;">Childhood-onset; well-controlled with albuterol inhaler and seasonal flares</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-blue">Mental Health</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Respiratory</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Brother</div>
+      <div class="pg-glass-body">
+        <div><strong style="color:#2196f3;">ADHD</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 8; treated with methylphenidate through adolescence; symptoms persist in adulthood</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-blue">Neurodevelopmental</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extended Family -->
+  <div class="pg-glass-wrap pg-glass-wrap-blue">
+    <div class="pg-glass-section">👵👴 Extended Family</div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Maternal Grandmother</div>
+      <div class="pg-glass-body">
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Breast Cancer</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 59; treated with mastectomy and adjuvant therapy</span></div>
+        <div><strong style="color:#2196f3;">Arthritis</strong><br><span style="font-size:12px; color:#666;">Rheumatoid arthritis; developed age 61; managed with methotrexate and biologics</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">Cancer Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Autoimmune</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Paternal Grandfather</div>
+      <div class="pg-glass-body">
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Stroke</strong><br><span style="font-size:12px; color:#666;">Ischemic stroke at age 71; residual right-sided weakness</span></div>
+        <div><strong style="color:#dc3545;">Type 2 Diabetes</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 54; on insulin regimen; contributed to cardiovascular complications</span></div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">Cerebrovascular Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Metabolic Risk</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Correlation Section -->
+  <div class="pg-glass-wrap">
+    <div class="pg-glass-section">🔗 AI Correlation to Your Conditions</div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Depression & Mental Health (Your 100% VA Rating)</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Mother and sister both have depression/anxiety diagnoses. Strong familial aggregation suggests genetic predisposition.</p>
+        <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> Major Depressive Disorder (100% VA rating) + Insomnia + Anxiety. Current treatment: Fluoxetine 40mg (elevated due to HTR2A variant affecting SSRI metabolism).</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue psychiatric monitoring. Genetic susceptibility validates ongoing pharmacotherapy. Monitor for medication interactions.</p>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-blue">Family History: Strong</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Pharmacogenomics</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Cardiovascular Risk (Your PE/DVT History)</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father had myocardial infarction at age 58 (DECEASED). Paternal grandfather had stroke at age 71. Both parents hypertensive.</p>
+        <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> History of PE/DVT (2020) despite Factor V Leiden negative. Currently on Eliquis 5mg BID for thrombotic prophylaxis. Requires surveillance.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue anticoagulation. Annual cardiovascular screening. Monitor blood pressure. Lifestyle modifications (exercise, diet) critical given family history.</p>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">Family History: CRITICAL</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Anticoagulation</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Breast Cancer Surveillance (Your BI-RADS 3 Finding)</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Mother diagnosed breast cancer age 52. Maternal grandmother diagnosed age 59. Two-generation history.</p>
+        <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> BI-RADS 3 nodule on recent imaging (probably benign but requires follow-up). Given family history, aggressive surveillance recommended.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> 6-month follow-up mammography/ultrasound. Consider genetic counseling for BRCA testing. Annual screening. Discuss hormone therapy risks (if applicable) with oncology.</p>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-red">Family History: Strong</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Surveillance Required</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Type 2 Diabetes Risk (Your Metabolic Profile)</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father diagnosed age 51 (on insulin). Paternal grandfather diagnosed age 54 (on insulin). Genetic predisposition very strong.</p>
+        <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> NOT diabetic (glucose 89, HbA1c 5.4%), but you have TCF7L2 dual heterozygous variants + abnormal lipid panel (Cholesterol 269, Triglycerides 251). Metabolic syndrome precursor state.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Monitor HbA1c every 6 months. Intensive lifestyle modification (diet, exercise). Avoid weight gain. Consider statin therapy for lipid management. Glucose monitoring at routine visits.</p>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-orange">Family History: VERY STRONG</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Prevention</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Asthma/Reactive Airway (Your Current Trelegy + Montelukast)</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Sister has childhood-onset asthma (still active). Suggests genetic predisposition to airway hyperreactivity.</p>
+        <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> Asthma since 2006 + history of left lower lung pneumothorax (2019) + lung nodule on CT (12/2025). On Trelegy Ellipta (ICS/LABA/LAMA) + Montelukast 10mg. Requires pulmonology follow-up.</p>
+        <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue dual therapy. Pulmonology referral for nodule surveillance and pneumothorax recurrence risk assessment. Annual spirometry. Monitor for medication compliance.</p>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-orange">Family History: Moderate</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Imaging Follow-up</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Box -->
+  <div class="pg-glass-wrap pg-glass-wrap-blue">
+    <div class="pg-glass">
+      <div class="pg-glass-title">Family History Summary</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 12px 0; font-size:13px; color:#555;">Your family history demonstrates significant genetic predisposition to several conditions that are present in your current health profile:</p>
+        <div style="margin-top:12px; padding:12px; background:rgba(33,150,243,0.1); border-radius:8px; font-size:12px; color:#555; line-height:1.8;">
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cardiovascular Risk:</strong> Multiple family members with MI, stroke, hypertension. Your PE/DVT and current anticoagulation are appropriate given genetics.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Metabolic Syndrome:</strong> Both parents diabetic; you show early lipid abnormalities and genetic variants (TCF7L2). Prevention critical.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Mental Health:</strong> Mother and sister both depressed; your 100% MDD rating reflects hereditary component.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cancer Surveillance:</strong> Maternal breast cancer in two generations; your BI-RADS 3 finding requires aggressive follow-up.</div>
+          <div><strong style="color:#2196f3;">✓ Respiratory:</strong> Sister has asthma; your lung nodule and pneumothorax history warrant pulmonology oversight.</div>
+        </div>
+        <p style="margin-top:12px; margin-bottom:0; font-size:12px; color:#666;"><strong>Overall Risk Profile:</strong> Moderate-to-high genetic predisposition to chronic disease. Recommend genetic counseling for BRCA (breast cancer) and detailed family history discussion with all treating providers.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="pg-glass-wrap">
+    <div class="pg-glass-divider"></div>
+    <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('genetic-risks')">View Genetic Risks</button>
     <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
   </div>
 </div>
@@ -4772,6 +5339,77 @@ var AnalysisEngine = {
     </div>
   </div>
 
+  <!-- 23andMe Pharmacogenomic Findings -->
+  <div class="pg-glass-wrap">
+    <div class="pg-glass-section">23andMe Pharmacogenomic Metabolism Findings</div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">CYP1A2 (rs762551) — AA — Slow Caffeine Metabolizer</div>
+      <div class="pg-glass-body">
+        <strong>Genotype:</strong> Homozygous for slow caffeine metabolism allele<br><br>
+        <strong>Clinical Implications:</strong> Your liver breaks down caffeine slowly. Caffeine remains in your system 2-3x longer than average. This affects stimulant metabolism broadly — you may be more sensitive to any CNS stimulants.<br><br>
+        <strong>Medication Guidance:</strong> Limit caffeine to &lt;200mg/day absolute maximum. This includes coffee, tea, energy drinks, and some medications. Given your current D-Amphetamine 30mg twice daily, slow caffeine clearance may potentiate stimulant effects. Avoid combining caffeine with amphetamine doses. For sleep optimization with your Trazodone 100mg, caffeine restriction critical — cut off all caffeine by 12 PM.
+      </div>
+      <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-orange">Slow Metabolizer</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Drug Interaction Risk</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">ADRB2 (rs1042713) — GG — Beta-2 Agonist Response</div>
+      <div class="pg-glass-body">
+        <strong>Genotype:</strong> Homozygous for Arg16 variant (GG = Arg16Arg)<br><br>
+        <strong>Clinical Implications:</strong> Your beta-2 adrenergic receptors are genetically optimized for beta-2 agonist medications. Associated with better response to bronchodilators and faster improvement in airway function.<br><br>
+        <strong>Medication Guidance:</strong> Your Trelegy Ellipta (which includes vilanterol, a long-acting beta-2 agonist) is pharmacogenomically well-matched to your genotype. Standard dosing is appropriate. You have genetically favorable response to albuterol rescue inhalers and other beta-2 agonists. Continue current respiratory therapy approach.
+      </div>
+      <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <span class="badge badge-green">Favorable Response</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Asthma Medications</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">SLCO1B1 (rs4149056) — TT — Normal Statin Metabolism</div>
+      <div class="pg-glass-body">
+        <strong>Genotype:</strong> Homozygous for normal SLCO1B1 function<br><br>
+        <strong>Clinical Implications:</strong> SLCO1B1 encodes the statin transporter. Normal function means statins enter liver cells efficiently for metabolism. You are NOT at increased risk of statin-induced myopathy or rhabdomyolysis. Standard statin dosing is safe and appropriate.<br><br>
+        <strong>Medication Guidance:</strong> If statins prescribed for your elevated lipid panel (cholesterol 269, LDL 162), your genotype supports standard therapeutic dosing without pharmacogenomic dose reduction. Monitor liver function (ALT, AST) and creatine kinase annually. Side effects like muscle pain should prompt clinical evaluation (not genetic concern).
+      </div>
+      <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <span class="badge badge-green">Normal Metabolism</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Drug Response</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">DRD2 (rs1800497) — AG — Dopamine Receptor & Stimulant Response</div>
+      <div class="pg-glass-body">
+        <strong>Genotype:</strong> Heterozygous for A1 allele (reduced dopamine D2 receptor density)<br><br>
+        <strong>Clinical Implications:</strong> Your dopamine D2 receptors are genetically fewer/less sensitive. This creates reduced dopamine signaling baseline — directly relevant to ADHD and medication response. Not technically a drug metabolism gene, but affects neuropharmacology.<br><br>
+        <strong>Medication Guidance:</strong> Your current D-Amphetamine 30mg twice daily (60mg/day) directly addresses your DRD2 deficit by increasing dopamine availability. Dosage is genetically justified. Intermediate receptor density may affect response — optimization important. Not a standard CYP-based metabolizer variant, but affects neural drug response. Continue current therapy with Dr. Azim.
+      </div>
+      <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <span class="pg-ai-tag pg-ai-tag-blue">Genetically Targeted</span>
+        <span class="pg-ai-tag pg-ai-tag-default">ADHD Medication</span>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">MTHFR A1298C (rs1801131) — TT (if confirmed) — Folate Metabolism Impact on Drug Response</div>
+      <div class="pg-glass-body">
+        <strong>Genotype (23andMe):</strong> TT (homozygous for C variant) — DISCREPANCY from AncestryDNA (AC)<br><br>
+        <strong>Clinical Implications:</strong> While MTHFR isn't a traditional drug metabolism enzyme, it is critical for folate metabolism which affects methylation pathways. Many psychiatric drugs depend on adequate methylation. If TT confirmed, combined with your C677T heterozygosity, creates compound heterozygosity with potentially severe methylation impairment.<br><br>
+        <strong>Medication Guidance:</strong> Supplementation with active methylfolate (NOT folic acid) 800-1000 mcg daily is essential. Pair with B12 (methylcobalamin preferred, 1000-2000 mcg daily), B6 (pyridoxal-5-phosphate, 50mg daily), and choline. This supports methylation pathways your medications depend on. Poor folate metabolism may be limiting SSRI efficacy (Fluoxetine 80mg) and affecting neuroplasticity. Consider functional homocysteine and methylmalonic acid testing.
+      </div>
+      <div style="display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <span class="badge badge-red">If Confirmed</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Supplementation Critical</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Requires Testing</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Drug Metabolism Profile -->
   <div class="pg-glass-wrap">
     <div class="pg-glass-section">Your Drug Metabolism Profile</div>
@@ -4944,8 +5582,90 @@ var AnalysisEngine = {
 
   <div style="display: flex; gap: 10px; margin-top: 20px;">
     <button class="pg-bento-btn">Schedule New Appointment</button>
-    <button class="pg-bento-btn-outline">View Calendar</button>
+    <button class="pg-bento-btn" onclick="showPage('calendar')" style="background:#2196f3;">📅 View Calendar</button>
     <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('dashboard')">← Back to Dashboard</button>
+  </div>
+</div>
+
+<!-- CALENDAR PAGE -->
+<div class="page" id="calendar">
+  <div class="pg-header pg-header-blue">
+    <div class="pg-header-title">📅 Appointment Calendar</div>
+    <div class="pg-header-sub">February 2026</div>
+  </div>
+  <div class="pg-glass-wrap">
+    <div class="pg-glass">
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center;">
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">SUN</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">MON</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">TUE</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">WED</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">THU</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">FRI</div>
+        <div style="font-weight:800; font-size:11px; padding:8px; color:rgba(255,255,255,0.6);">SAT</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.5);"></div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">1</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">2</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">3</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">4</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">5</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">6</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">7</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">8</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">9</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">10</div>
+        <div style="padding:8px; font-size:13px; border-radius:50%; background:rgba(33,150,243,0.3); color:#fff; font-weight:700;">11</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">12</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">13</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">14</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">15</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">16</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">17</div>
+        <div style="padding:8px; font-size:13px; border-radius:50%; background:rgba(220,53,69,0.3); color:#ff8a95; font-weight:700;">18</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">19</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">20</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">21</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">22</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">23</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">24</div>
+        <div style="padding:8px; font-size:13px; border-radius:50%; background:rgba(167,207,40,0.3); color:#c5e864; font-weight:700;">25</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">26</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">27</div>
+        <div style="padding:8px; font-size:13px; color:rgba(255,255,255,0.9);">28</div>
+      </div>
+    </div>
+
+    <div class="pg-glass-section">Upcoming Appointments</div>
+
+    <div class="pg-glass" style="border-left:4px solid #dc3545;">
+      <div class="pg-glass-title">Feb 18 — Dr. Rodriguez (Primary Care)</div>
+      <div class="pg-glass-body">INOVA Primary Care, 9:00 AM<br>Falls discussion, medication review, blood pressure check<br><span class="badge badge-red" style="margin-top:6px;">⚠ Discuss Falls + Drug Interactions</span></div>
+    </div>
+
+    <div class="pg-glass" style="border-left:4px solid #a7cf28;">
+      <div class="pg-glass-title">Feb 25 — Dr. Michael (Follow-up)</div>
+      <div class="pg-glass-body">Christina S Michael DO, INOVA<br>Follow-up appointment<br><span class="badge badge-green" style="margin-top:6px;">Scheduled</span></div>
+    </div>
+
+    <div class="pg-glass" style="border-left:4px solid #2196f3;">
+      <div class="pg-glass-title">Mar 4 — Dr. Goldsmith (Neurosurgery Consult)</div>
+      <div class="pg-glass-body">Virginia Spine Institute<br>Cervical myelopathy surgical consultation, C5-6/C6-7<br><span class="badge badge-blue" style="margin-top:6px;">Surgical Decision</span></div>
+    </div>
+
+    <div class="pg-glass" style="border-left:4px solid #f88a2f;">
+      <div class="pg-glass-title">Mar 10 — VA Benefits Review</div>
+      <div class="pg-glass-body">Washington DC VA Medical Center<br>Annual benefits review and disability rating assessment<br><span class="badge badge-orange" style="margin-top:6px;">Benefits Review</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px; text-align:center;">
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('appointments')">← Back to Appointments</button>
+    <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')">← Back to Dashboard</button>
   </div>
 </div>
 
@@ -4994,7 +5714,7 @@ var AnalysisEngine = {
 
   <div style="display: flex; gap: 10px; margin-top: 20px;">
     <button class="pg-bento-btn">New Message</button>
-    <button class="pg-bento-btn-outline">View All Threads</button>
+    <button class="pg-bento-btn" onclick="showPage('messages')" style="background:#2196f3;">💬 View All Threads</button>
     <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('dashboard')">← Back to Dashboard</button>
   </div>
 </div>
@@ -6089,9 +6809,9 @@ var AnalysisEngine = {
           <div style="font-size:13px;">Must have PTSD diagnosis (✓), failed at least one prior treatment (✓), willing to taper certain medications during study period.</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <span class="badge badge-blue">Recruiting — High Match</span>
-        <button class="action-btn" style="margin-top:0;">Learn More</button>
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-blue" style="margin:0;">Recruiting — High Match</span>
+        <a href="https://clinicaltrials.gov/search?cond=PTSD&intr=MDMA&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -6118,9 +6838,9 @@ var AnalysisEngine = {
           <div style="font-size:13px;">Must have MRI-confirmed DDD (✓), L4/L5 involvement (✓), chronic low back pain >6 months (✓), age 25–65 (✓, age 46). Note: Must inform Dr. Goldsmith if enrolling, as this may affect surgical timeline.</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <span class="badge badge-blue">Recruiting — High Match</span>
-        <button class="action-btn" style="margin-top:0;">Learn More</button>
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-blue" style="margin:0;">Recruiting — High Match</span>
+        <a href="https://clinicaltrials.gov/search?cond=Degenerative+Disc+Disease&intr=PRP&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -6147,9 +6867,9 @@ var AnalysisEngine = {
           <div style="font-size:13px;">Must have MDD diagnosis (✓), currently on antidepressant (✓), willing to potentially switch medications based on genetic results.</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <span class="badge badge-blue">Recruiting — Genetic Match</span>
-        <button class="action-btn" style="margin-top:0;">Learn More</button>
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-blue" style="margin:0;">Recruiting — Genetic Match</span>
+        <a href="https://clinicaltrials.gov/search?cond=Depression&intr=Pharmacogenomic&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -6176,9 +6896,9 @@ var AnalysisEngine = {
           <div style="font-size:13px;">Must be veteran (✓), chronic radiculopathy >3 months (✓), not currently on opioids (✓). VA-enrolled veterans get priority.</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <span class="badge badge-blue">Recruiting — VA Study</span>
-        <button class="action-btn" style="margin-top:0;">Learn More</button>
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-blue" style="margin:0;">Recruiting — VA Study</span>
+        <a href="https://clinicaltrials.gov/search?cond=Chronic+Radiculopathy&intr=Non-Opioid&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -6205,9 +6925,9 @@ var AnalysisEngine = {
           <div style="font-size:13px;">Must have delayed sleep phase pattern (✓), wearable sleep data >30 days (✓, you have 90+ days), known CLOCK variant (✓). Comorbid depression/PTSD acceptable.</div>
         </div>
       </div>
-      <div style="display:flex; gap:8px; margin-top:12px;">
-        <span class="badge badge-blue">Recruiting — Genetic + Wearable Match</span>
-        <button class="action-btn" style="margin-top:0;">Learn More</button>
+      <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <span class="badge badge-blue" style="margin:0;">Recruiting — Genetic + Wearable Match</span>
+        <a href="https://clinicaltrials.gov/search?cond=Circadian+Rhythm+Sleep+Disorder&intr=Chronotherapy&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -6266,10 +6986,10 @@ var AnalysisEngine = {
   </div>
 
   <!-- Navigation -->
-  <div style="padding:16px; text-align:center; display:flex; gap:12px; justify-content:center;">
-    <button class="action-btn">View All Resources</button>
-    <button class="action-btn-secondary">Request Custom Content</button>
-    <button class="action-btn-secondary" onclick="showPage('dashboard')">← Back to Dashboard</button>
+  <div style="padding:16px; text-align:center; display:flex; gap:12px; flex-direction:column; max-width:400px; margin:0 auto;">
+    <button class="action-btn" style="width:100%;">View All Resources</button>
+    <button class="action-btn-secondary" style="width:100%;">Request Custom Content</button>
+    <button class="action-btn-secondary" onclick="showPage('dashboard')" style="width:100%;">← Back to Dashboard</button>
   </div>
 </div>
 
@@ -6345,60 +7065,37 @@ var AnalysisEngine = {
     <div class="pg-header-sub">Upload & Manage Documents</div>
   </div>
 
-  <!-- Upload Card -->
-  <div class="pg-bento-card" style="max-width:600px; margin:20px auto; padding:24px; text-align:center; border:2px dashed rgba(76,175,80,0.3);">
-    <div style="font-size:32px; margin-bottom:12px;">📄</div>
-    <div style="font-weight:600; margin-bottom:8px; font-size:16px;">Upload New Document</div>
-    <div style="font-size:13px; color:#666; margin-bottom:16px;">Drag and drop or click to browse</div>
-    <button class="action-btn" style="width:100%;">Upload New File</button>
+  <div class="pg-glass">
+    <div class="pg-glass-title">📤 Upload New Document</div>
+    <div class="pg-glass-body">
+      <div id="upload-dropzone" style="border:2px dashed rgba(167,207,40,0.5); border-radius:12px; padding:40px 20px; text-align:center; cursor:pointer; transition:all 0.3s;"
+           onclick="document.getElementById('file-input-real').click()"
+           ondragover="event.preventDefault(); this.style.borderColor='#a7cf28'; this.style.background='rgba(167,207,40,0.1)';"
+           ondragleave="this.style.borderColor='rgba(167,207,40,0.5)'; this.style.background='transparent';"
+           ondrop="event.preventDefault(); this.style.borderColor='rgba(167,207,40,0.5)'; this.style.background='transparent'; handleFileUpload(event.dataTransfer.files);">
+        <div style="font-size:40px; margin-bottom:12px;">📁</div>
+        <div style="font-weight:700; font-size:16px; margin-bottom:8px;">Drag & Drop Files Here</div>
+        <div style="color:rgba(255,255,255,0.7); font-size:13px; margin-bottom:16px;">or click to browse your device</div>
+        <div style="font-size:11px; color:rgba(255,255,255,0.5);">Supported: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB)</div>
+      </div>
+      <input type="file" id="file-input-real" style="display:none;" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.csv,.xlsx" onchange="handleFileUpload(this.files)">
+    </div>
   </div>
 
-  <!-- Recent Uploads Section -->
-  <div style="margin:20px 0;">
-    <div style="font-weight:600; font-size:14px; margin-bottom:12px; padding:0 16px;">Recent Uploads</div>
+  <div class="pg-glass" id="upload-progress-area" style="display:none;">
+    <div class="pg-glass-title">Upload Progress</div>
+    <div class="pg-glass-body" id="upload-progress-list"></div>
+  </div>
 
-    <div class="pg-bento-grid" style="grid-template-columns:1fr;">
-      <!-- AncestryDNA.txt -->
-      <div class="pg-bento-card">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <div style="font-size:24px;">🧬</div>
-          <div style="flex:1;">
-            <div style="font-weight:600;">AncestryDNA.txt</div>
-            <div style="font-size:12px; color:#666;">Uploaded 02/06/2026</div>
-          </div>
-          <span class="badge badge-blue">Genome Data</span>
-        </div>
-      </div>
-
-      <!-- VA Award Letter -->
-      <div class="pg-bento-card">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <div style="font-size:24px;">📋</div>
-          <div style="flex:1;">
-            <div style="font-weight:600;">VA Award Letter</div>
-            <div style="font-size:12px; color:#666;">Uploaded 01/31/2025</div>
-          </div>
-          <span class="badge badge-blue">Official Document</span>
-        </div>
-      </div>
-
-      <!-- Oura Reports -->
-      <div class="pg-bento-card">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-          <div style="font-size:24px;">⌚</div>
-          <div style="flex:1;">
-            <div style="font-weight:600;">Oura Reports</div>
-            <div style="font-size:12px; color:#666;">Continuously synced</div>
-          </div>
-          <span class="badge badge-blue">Wearable Data</span>
-        </div>
-      </div>
+  <div class="pg-glass">
+    <div class="pg-glass-title">📋 Recently Uploaded</div>
+    <div class="pg-glass-body" id="uploaded-files-list">
+      <div style="color:rgba(255,255,255,0.6); text-align:center; padding:20px;">No files uploaded yet. Use the area above to upload your medical documents.</div>
     </div>
   </div>
 
   <!-- Navigation -->
   <div style="padding:16px; text-align:center; display:flex; gap:12px; justify-content:center;">
-    <button class="action-btn-secondary">View Upload History</button>
     <button class="action-btn-secondary" onclick="showPage('dashboard')">← Back to Dashboard</button>
   </div>
 </div>
@@ -6484,6 +7181,24 @@ var AnalysisEngine = {
                 <div style="font-size:13px; color:#666; margin-bottom:12px;">All 11 medications with dosages and refills</div>
                 <button class="action-btn" onclick="showPage('form-medication-list')" style="width:100%;">View Form</button>
             </div>
+
+            <div class="pg-bento-card">
+                <div style="font-weight:600; margin-bottom:8px;">📋 Medication List for Doctors</div>
+                <div style="font-size:13px; color:#666; margin-bottom:12px;">Print-ready medication summary with prescriber info</div>
+                <button class="action-btn" onclick="showPage('form-med-list')" style="width:100%;">View Form</button>
+            </div>
+
+            <div class="pg-bento-card">
+                <div style="font-weight:600; margin-bottom:8px;">📋 Conditions Summary</div>
+                <div style="font-size:13px; color:#666; margin-bottom:12px;">All 28+ conditions organized by system with ICD-10</div>
+                <button class="action-btn" onclick="showPage('form-conditions-summary')" style="width:100%;">View Form</button>
+            </div>
+
+            <div class="pg-bento-card">
+                <div style="font-weight:600; margin-bottom:8px;">📋 Privacy Authorization</div>
+                <div style="font-size:13px; color:#666; margin-bottom:12px;">HIPAA-compliant records release authorization</div>
+                <button class="action-btn" onclick="showPage('form-privacy-auth')" style="width:100%;">View Form</button>
+            </div>
         </div>
     </div>
 
@@ -6494,7 +7209,8 @@ var AnalysisEngine = {
             <div class="pg-bento-card">
                 <div style="font-weight:600; margin-bottom:8px;">MSPB Appeal Form</div>
                 <div style="font-size:13px; color:#666; margin-bottom:12px;">Merit Systems Protection Board</div>
-                <div><span class="badge badge-blue">Available</span></div>
+                <div style="margin-bottom:12px;"><span class="badge badge-blue">Ready to Submit</span></div>
+                <button class="action-btn" onclick="showPage('form-mspb-appeal')" style="width:100%;">View Form</button>
             </div>
 
             <div class="pg-bento-card">
@@ -7486,6 +8202,215 @@ var AnalysisEngine = {
     </div>
   </div>
 
+  <!-- GoodRx Prescription Savings Analysis -->
+  <div class="pg-glass-wrap pg-glass-wrap-green">
+    <div style="padding:16px; background:rgba(196,230,100,0.15); border-radius:8px; margin-bottom:16px;">
+      <div style="font-size:16px; font-weight:700; color:#001830; margin-bottom:4px;">💊 GoodRx Prescription Savings Analysis</div>
+      <div style="font-size:12px; color:#666;">Cross-referenced with current VA pharmacy and retail pricing</div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Gabapentin 300mg (90-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$8.42 (Costco)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Fluoxetine 40mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$4.00 (Walmart)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Omeprazole 40mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$7.99 (Kroger)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Trazodone 100mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$4.00 (Walmart)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Trelegy Ellipta (30 doses)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$178 (CVS)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">Retail Price:</span>
+          <span style="color:#dc3545;">$583</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>VA Savings:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">$583/month</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Montelukast 10mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$8.70 (Costco)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Primidone 50mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$12.99 (Walgreens)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Eliquis 5mg (60-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$275 (Costco)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">Retail Price:</span>
+          <span style="color:#dc3545;">$575</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>VA Savings:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">$575/month</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Clonazepam 0.5mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$4.00 (Walmart)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title">Prazosin 1mg (30-count)</div>
+      <div class="pg-glass-body">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">VA Copay:</span>
+          <span style="color:#001830; font-weight:700;">$0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="color:#666;">GoodRx Best Price:</span>
+          <span style="color:#666;">$4.00 (Walmart)</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
+          <span style="color:#666;"><strong>Best Option:</strong></span>
+          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-glass">
+      <div class="pg-glass-title" style="background:rgba(33,150,243,0.15);">MÉTIS Prescription Savings Analysis</div>
+      <div class="pg-glass-body">
+        <p style="margin:0 0 12px 0; font-size:13px; color:#555;"><strong>Key Finding:</strong> Your VA pharmacy benefit provides an estimated <strong style="color:#001830;">$1,248/month ($14,976/year)</strong> in prescription savings compared to retail pricing.</p>
+        <div style="margin:12px 0; padding:12px; background:rgba(33,150,243,0.1); border-radius:6px; font-size:12px; color:#555; line-height:1.8;">
+          <div style="margin-bottom:6px;"><strong style="color:#2196f3;">Highest-Cost Medications (93% of Savings):</strong></div>
+          <div style="margin-left:12px; margin-bottom:4px;">• Trelegy Ellipta: $583/month savings</div>
+          <div style="margin-left:12px;">• Eliquis: $575/month savings</div>
+        </div>
+        <p style="margin:12px 0 0 0; font-size:12px; color:#555;"><strong style="color:#001830;">Recommendation:</strong> Always fill through VA pharmacy as your first option. If VA pharmacy is unavailable, use GoodRx coupons at Costco or Walmart for best alternative pricing. Do NOT use retail pricing without comparing to GoodRx first.</p>
+      </div>
+    </div>
+  </div>
+
   <div style="margin-top:24px; text-align:center;">
     <button class="pg-glass-btn pg-glass-btn-blue" onclick="showPage('insurance-dashboard')" style="margin-right:8px;">Insurance Dashboard</button>
     <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('dashboard')">← Back to Dashboard</button>
@@ -7862,6 +8787,408 @@ var AnalysisEngine = {
   </div>
 </div>
 
+<!-- MSPB APPEAL FORM PAGE -->
+<div id="form-mspb-appeal" class="page">
+    <div class="pg-header pg-header-blue">
+        <div class="pg-header-title">MSPB Appeal Form 185</div>
+        <div class="pg-header-sub">Merit Systems Protection Board - Appeal of Agency Action</div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Appellant Information</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:14px;">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Name:</div>
+                    <input type="text" value="Keenan Skelly" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Agency:</div>
+                    <input type="text" value="Department of Homeland Security" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Duty Station:</div>
+                    <input type="text" value="Washington, DC" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Position/Title:</div>
+                    <input type="text" placeholder="Enter position title" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Appeal Details</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:14px;">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Date of Action Being Appealed:</div>
+                    <input type="date" placeholder="MM/DD/YYYY" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Type of Action:</div>
+                    <input type="text" value="Medical Disability Retirement / FERS Disability" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Representative & Contact Information</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:14px;">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Legal Representative (if any):</div>
+                    <input type="text" placeholder="Optional - attorney or representative name" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Contact Email:</div>
+                    <input type="email" value="keenanrskelly@gmail.com" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Filing Address</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body">
+                <div style="background:rgba(33,150,243,0.08); border-left:3px solid #2196f3; padding:12px; border-radius:4px; font-size:13px; line-height:1.7; color:#fff;">
+                    <strong>MSPB Regional Office — Washington Regional Office</strong><br>1901 S. Bell St., Suite 950<br>Arlington, VA 22202<br><br><strong>Email:</strong> Send electronic filing via MSPB e-Appeal portal
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">MSPB Appeal Filing Process Guide</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 1: Complete MSPB Form 185 (Appeal Form)</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">Fill out all required appellant and appeal detail information with the facts of your case.</div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 2: Attach SF-3112 Series Documentation</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">Include FERS disability application forms, medical evidence, OPM disability decisions, and agency personnel records.</div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 3: File Within 30 Days of Final Agency Decision</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">Appeal deadline is 30 calendar days from the effective date of the agency action. Expedite if approaching deadline.</div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 4: Electronic Filing via MSPB e-Appeal Portal</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">File electronically at <strong style="color:#a7cf28;">https://e-appeal.mspb.gov</strong> to ensure receipt and proper timestamping.</div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 5: Serve Copy on Agency Representative</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">Send copy to DHS legal/HR representative at time of filing. Keep proof of service.</div>
+                </div>
+                <div>
+                    <div style="font-weight:600; color:#2196f3; margin-bottom:8px;">Step 6: Await MSPB Acknowledgment & Scheduling Order</div>
+                    <div style="font-size:13px; color:#ccc; margin-left:12px;">MSPB will issue acknowledgment of receipt and scheduling order for further proceedings (typically 30-60 days).</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap pg-glass-wrap-red">
+        <div class="pg-glass-section">Important Notice</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7;">
+                <div style="background:rgba(244,67,54,0.08); border-left:3px solid #f44336; padding:12px; border-radius:4px; margin-bottom:12px;">
+                    <strong style="color:#f44336;">DEADLINE CRITICAL</strong><br>You have <strong>30 calendar days</strong> from the effective date of the agency action to file this appeal with MSPB.
+                </div>
+                <div style="margin-bottom:10px;"><strong>MTIS Pre-filled Fields:</strong> Known fields (Name, Agency, Duty Station, Type of Action, Contact Email, Filing Address) have been pre-filled from your patient record.</div>
+                <div><strong>Review All Information Before Filing:</strong> Verify all pre-filled information is accurate. Complete remaining fields (Position, Date of Action, Representative if applicable) before submission.</div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:20px; text-align:center; display:flex; gap:12px; justify-content:center;">
+        <button class="pg-glass-btn" style="background:#2196f3; color:white; font-size:14px; padding:10px 24px;" onclick="window.print();">Print Form</button>
+        <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('forms')" style="font-size:14px; padding:10px 24px;">Back to Forms</button>
+    </div>
+</div>
+
+<!-- MEDICATION LIST FOR DOCTORS PAGE -->
+<div id="form-med-list" class="page">
+    <div class="pg-header pg-header-blue">
+        <div class="pg-header-title">Medication List for Doctors</div>
+        <div class="pg-header-sub">Comprehensive Print-Ready Medication Summary</div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">How to Use This List</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7; color:#ccc;">
+                This medication list is designed to be printed or sent to new doctors, specialists, pharmacies, and emergency departments. It contains all active prescriptions with dosages, frequency, indications, and pharmacy information. Verify all medications are current before providing to new providers.
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Current Medications (14 Active)</div>
+        <div class="pg-glass">
+            <div style="overflow-x:auto; color:#fff; font-size:12px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#333; border-bottom:2px solid #555;">
+                            <th style="padding:10px; text-align:left; font-weight:700;">Medication</th>
+                            <th style="padding:10px; text-align:left; font-weight:700;">Dose</th>
+                            <th style="padding:10px; text-align:left; font-weight:700;">Frequency</th>
+                            <th style="padding:10px; text-align:left; font-weight:700;">Purpose</th>
+                            <th style="padding:10px; text-align:left; font-weight:700;">Prescriber</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Fluoxetine</td><td style="padding:10px;">40mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">Depression (MDD)</td><td style="padding:10px;">Dr. Azim</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Gabapentin</td><td style="padding:10px;">300mg</td><td style="padding:10px;">3x daily</td><td style="padding:10px;">Neuropathic pain</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Omeprazole</td><td style="padding:10px;">40mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">GERD</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Trazodone</td><td style="padding:10px;">100mg</td><td style="padding:10px;">Nightly</td><td style="padding:10px;">Insomnia</td><td style="padding:10px;">Dr. Azim</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Clonazepam</td><td style="padding:10px;">0.5mg</td><td style="padding:10px;">As needed</td><td style="padding:10px;">Panic disorder</td><td style="padding:10px;">Dr. Azim</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Montelukast</td><td style="padding:10px;">10mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">Asthma/Allergies</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Trelegy Ellipta</td><td style="padding:10px;">1 inhale</td><td style="padding:10px;">Daily</td><td style="padding:10px;">COPD/Asthma</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Ipratropium</td><td style="padding:10px;">Nasal</td><td style="padding:10px;">As needed</td><td style="padding:10px;">Allergies</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Primidone</td><td style="padding:10px;">50mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">Essential tremor</td><td style="padding:10px;">Dr. Goldsmith</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Prazosin</td><td style="padding:10px;">1mg</td><td style="padding:10px;">Nightly</td><td style="padding:10px;">PTSD nightmares</td><td style="padding:10px;">Dr. Azim</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Meloxicam</td><td style="padding:10px;">15mg</td><td style="padding:10px;">As needed</td><td style="padding:10px;">Pain/Inflammation</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">K-Phos</td><td style="padding:10px;">As directed</td><td style="padding:10px;">As directed</td><td style="padding:10px;">Phosphorus</td><td style="padding:10px;">VA</td></tr>
+                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">D-Amphetamine</td><td style="padding:10px;">Per Rx</td><td style="padding:10px;">As Rx</td><td style="padding:10px;">ADHD</td><td style="padding:10px;">Pending review</td></tr>
+                        <tr style="background:#333;"><td style="padding:10px;">Eliquis</td><td style="padding:10px;">5mg</td><td style="padding:10px;">2x daily</td><td style="padding:10px;">Anticoagulation</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Pharmacy & Allergies</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7;">
+                <div style="margin-bottom:12px;"><strong style="color:#2196f3;">Primary:</strong> Walgreens #2627, 1325 14th St NW, Washington DC 20005</div>
+                <div style="margin-bottom:12px;"><strong style="color:#2196f3;">Backup:</strong> Wegmans Pharmacy #049, Alexandria, VA</div>
+                <div style="background:rgba(244,67,54,0.08); border-left:3px solid #f44336; padding:12px; border-radius:4px; color:#ccc;"><strong style="color:#f44336;">ALLERGIES:</strong> Penicillin V (Anaphylaxis), Penicillins (Respiratory Distress), Citalopram (Respiratory Distress)</div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:20px; text-align:center; display:flex; gap:12px; justify-content:center;">
+        <button class="pg-glass-btn" style="background:#2196f3; color:white; font-size:14px; padding:10px 24px;" onclick="window.print();">Print List</button>
+        <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('forms')" style="font-size:14px; padding:10px 24px;">Back to Forms</button>
+    </div>
+</div>
+
+<!-- CONDITIONS SUMMARY PAGE -->
+<div id="form-conditions-summary" class="page">
+    <div class="pg-header pg-header-green">
+        <div class="pg-header-title">Conditions Summary for Doctors</div>
+        <div class="pg-header-sub">28+ Conditions by System with ICD-10 Codes</div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Patient Summary</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7;">
+                <div><strong>Name:</strong> Keenan Skelly | <strong>DOB:</strong> 7/5/1979 (Age 46) | <strong>VA MRN:</strong> 04082456</div>
+                <div style="color:#ccc; margin-top:10px;">Complex medical history: 28+ conditions across multiple systems. VA 100% P&T + Housebound. PCP: Christina S Michael, DO (INOVA). Psychiatry: Dr. Yusuf M. Azim (Bloom Health).</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Psychiatric & Behavioral (5)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.8;">
+                <div>1. <strong style="color:#a7cf28;">Major Depressive Disorder (MDD)</strong> [F32.9] — VA 100% | Active | Dr. Azim</div>
+                <div>2. <strong style="color:#a7cf28;">Post-Traumatic Stress Disorder (PTSD)</strong> [F43.10] — Non-SC | Active | Dr. Azim</div>
+                <div>3. <strong style="color:#a7cf28;">Generalized Anxiety Disorder (GAD)</strong> [F41.1] — Non-SC | Active | Dr. Azim</div>
+                <div>4. <strong style="color:#a7cf28;">Attention-Deficit/Hyperactivity Disorder (ADHD)</strong> [F90.9] — Non-SC | Active | Christina S Michael, DO</div>
+                <div>5. <strong style="color:#a7cf28;">Panic Disorder</strong> [F41.0] — Secondary | Controlled | Dr. Azim</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Neurological (4)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.8;">
+                <div>1. <strong style="color:#a7cf28;">Essential Tremor</strong> [G25.0] — Managed | Primidone | Dr. Goldsmith</div>
+                <div>2. <strong style="color:#a7cf28;">Neuropathic Pain Syndrome</strong> [G89.29] — Gabapentin 300mg TID | Christina S Michael, DO</div>
+                <div>3. <strong style="color:#a7cf28;">History of Seizures</strong> [G40.919] — Prophylaxis | Gabapentin/Primidone | Dr. Goldsmith</div>
+                <div>4. <strong style="color:#a7cf28;">Migraine Disorder</strong> [G43.909] — Intermittent | Christina S Michael, DO</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Musculoskeletal (6)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.8;">
+                <div>1. <strong style="color:#a7cf28;">Degenerative Disc Disease (DDD) L4/L5/S1</strong> [M47.16] — VA 40% | Dr. Goldsmith</div>
+                <div>2. <strong style="color:#a7cf28;">Sciatica, Left Leg</strong> [M54.41] — VA 20% | Dr. Goldsmith</div>
+                <div>3. <strong style="color:#a7cf28;">Sciatica, Right Leg</strong> [M54.42] — VA 20% | Dr. Goldsmith</div>
+                <div>4. <strong style="color:#a7cf28;">Patellofemoral Syndrome, Rt Knee (Flexion)</strong> [M25.361] — VA 20% | Dr. Goldsmith</div>
+                <div>5. <strong style="color:#a7cf28;">Patellofemoral Syndrome, Rt Knee (Extension)</strong> [M25.361] — VA 20% | Dr. Goldsmith</div>
+                <div>6. <strong style="color:#a7cf28;">Patellofemoral Syndrome, Rt Knee (Instability)</strong> [M25.361] — VA 10% | Dr. Goldsmith</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Cardiovascular & Other (5)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.8;">
+                <div>1. <strong style="color:#a7cf28;">Pulmonary Embolism (PE) — History</strong> [Z87.891] — Eliquis 5mg BID | Christina S Michael, DO</div>
+                <div>2. <strong style="color:#a7cf28;">Deep Vein Thrombosis (DVT) — History</strong> [Z87.891] — On anticoagulation | Christina S Michael, DO</div>
+                <div>3. <strong style="color:#a7cf28;">Chronic Obstructive Pulmonary Disease (COPD)</strong> [J44.9] — Trelegy daily | Christina S Michael, DO</div>
+                <div>4. <strong style="color:#a7cf28;">Asthma</strong> [J45.9] — Montelukast + Trelegy | Christina S Michael, DO</div>
+                <div>5. <strong style="color:#a7cf28;">Allergic Rhinitis</strong> [J30.9] — Intranasal spray | Christina S Michael, DO</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Gastrointestinal & Endocrine (3)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.8;">
+                <div>1. <strong style="color:#a7cf28;">Gastroesophageal Reflux Disease (GERD)</strong> [K21.9] — Omeprazole 40mg | Christina S Michael, DO</div>
+                <div>2. <strong style="color:#a7cf28;">Hypertension</strong> [I10] — Managed | Christina S Michael, DO</div>
+                <div>3. <strong style="color:#a7cf28;">Hyperlipidemia</strong> [E78.5] — Monitored | Christina S Michael, DO</div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Surgical History (10+ Procedures)</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:12px; line-height:1.7;">
+                <div style="color:#ccc;">Appendectomy • Arthroscopy, right knee (2000) • Spine fusion L4/L5/S1 (2004) • Spinal hardware removal (2017) • Supracervical hysterectomy (2007) • Sinus surgeries (×2) • Shoulder surgery • Cystoscopy (2019) • Robotic trachelectomy (2019) • Tumor removal • PE surgical intervention</div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:20px; text-align:center; display:flex; gap:12px; justify-content:center;">
+        <button class="pg-glass-btn" style="background:#2196f3; color:white; font-size:14px; padding:10px 24px;" onclick="window.print();">Print Summary</button>
+        <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('forms')" style="font-size:14px; padding:10px 24px;">Back to Forms</button>
+    </div>
+</div>
+
+<!-- PRIVACY AUTHORIZATION FORM PAGE -->
+<div id="form-privacy-auth" class="page">
+    <div class="pg-header pg-header-orange">
+        <div class="pg-header-title">Privacy Authorization Form</div>
+        <div class="pg-header-sub">HIPAA-Compliant Medical Records Release Authorization</div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Authorization Instructions</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7; color:#ccc;">
+                This form authorizes release of your complete medical records, test results, and health information to specified healthcare providers. HIPAA-compliant and complies with 45 CFR 164.508. Print, sign, and date before sending to requesting provider.
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Patient Information</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:14px;">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Patient Name:</div>
+                    <input type="text" value="Keenan Skelly" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Date of Birth:</div>
+                    <input type="date" placeholder="MM/DD/YYYY" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Address:</div>
+                    <input type="text" value="Washington, DC area" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Authorize Release FROM These Providers</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body">
+                <div style="margin-bottom:10px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>VA Medical Center, Washington DC</strong> — VA disability documents, treatment notes
+                </div>
+                <div style="margin-bottom:10px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Fort Belvoir Community Hospital</strong> — DoD records, military service, treatment history
+                </div>
+                <div style="margin-bottom:10px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>George Washington University Hospital</strong> — Inpatient/outpatient records, surgery, imaging
+                </div>
+                <div style="padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>INOVA Health System</strong> — Primary care, consultations, imaging, lab results
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Type of Information to Release</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body">
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Complete Medical Records</strong> — All clinical notes, diagnoses, treatment plans
+                </div>
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Laboratory Results</strong> — Blood work, urinalysis, microbiology
+                </div>
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Imaging Studies</strong> — X-rays, CT, MRI, ultrasound, PET scans
+                </div>
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Pathology Reports</strong> — Biopsy and surgical pathology
+                </div>
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Surgical Records</strong> — Operative reports, discharge summaries
+                </div>
+                <div style="margin-bottom:8px; padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Medication History</strong> — Current and past prescriptions, pharmacy records
+                </div>
+                <div style="padding:8px; background:rgba(33,150,243,0.08); border-radius:4px; font-size:13px; color:#ccc;">
+                    <input type="checkbox" checked> <strong>Genomic Data</strong> — Genetic testing, variant analysis, ancestry data
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Purpose of Release</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px;">
+                <div style="margin-bottom:10px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; color:#ccc;">
+                    <input type="radio" name="purpose" checked> <strong>Continuity of Care & Medical Decision-Making</strong>
+                </div>
+                <div style="margin-bottom:10px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; color:#ccc;">
+                    <input type="radio" name="purpose"> <strong>Insurance Review & Appeals</strong>
+                </div>
+                <div style="padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; color:#ccc;">
+                    <input type="radio" name="purpose"> <strong>Disability & Workers Compensation Claims</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Expiration & Duration</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7;">
+                <div style="margin-bottom:12px; padding:10px; background:rgba(33,150,243,0.08); border-radius:4px; color:#ccc;">
+                    <strong>Authorization Valid For:</strong> 1 year from date of signature
+                </div>
+                <div style="color:#ccc;">
+                    This authorization will expire <strong>one (1) year</strong> from the date you sign below, unless you revoke it earlier by written notice. After expiration, providers may no longer release records under this authorization.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pg-glass-wrap">
+        <div class="pg-glass-section">Patient Signature & Acknowledgment</div>
+        <div class="pg-glass">
+            <div class="pg-glass-body" style="font-size:13px; line-height:1.7;">
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Patient Signature:</div>
+                    <input type="text" placeholder="Sign your name here" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:600; margin-bottom:4px;">Date of Signature:</div>
+                    <input type="date" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                </div>
+                <div style="padding:12px; background:rgba(244,67,54,0.08); border-left:3px solid #f44336; border-radius:4px; color:#ccc; font-size:12px;">
+                    <strong style="color:#f44336;">IMPORTANT:</strong> By signing, you authorize release of your medical information as specified above. You may revoke this authorization at any time by writing to the provider. Revocation will not affect records already released before your written request.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="padding:20px; text-align:center; display:flex; gap:12px; justify-content:center;">
+        <button class="pg-glass-btn" style="background:#2196f3; color:white; font-size:14px; padding:10px 24px;" onclick="window.print();">Print & Sign</button>
+        <button class="pg-glass-btn pg-glass-btn-outline" onclick="showPage('forms')" style="font-size:14px; padding:10px 24px;">Back to Forms</button>
+    </div>
+</div>
+
 </div><!-- close app-wrap -->
 
 
@@ -8082,11 +9409,11 @@ var AnalysisEngine = {
   </div>
 </div>
 
-<!-- PAGE 3: PLATFORM ARCHITECTURE -->
+<!-- PAGE: PLATFORM ARCHITECTURE (Investors) -->
 <div class="page" id="platform-architecture">
   <div class="pg-header pg-header-blue">
     <h1 class="pg-header-title">🏗️ Platform Architecture</h1>
-    <p class="pg-header-sub">Technical foundation for personalized health</p>
+    <p class="pg-header-sub">Technical foundation for personalized health — Disabled Veteran First Design</p>
     <div class="pg-header-stats">
       <div class="pg-header-stat">
         <div style="color:#2196f3; font-weight:700;">5</div>
@@ -8219,176 +9546,6 @@ var AnalysisEngine = {
   </div>
 </div>
 
-  <!-- Technology Stack -->
-  <div class="pg-glass-wrap">
-    <div class="pg-glass-section">Technology Stack</div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">Frontend</div>
-      <div class="pg-glass-body">HTML5 PWA, Vanilla JavaScript ES6+, CSS3 with accessibility-first design, Service Workers for offline support</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">Security & Cryptography</div>
-      <div class="pg-glass-body">Web Crypto API (AES-256-GCM + PBKDF2 + RSA-OAEP), IndexedDB encrypted storage, TLS 1.3 for transit</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">Data Integration</div>
-      <div class="pg-glass-body">FHIR R4 parsers, OAuth 2.0 PKCE, REST APIs, Background Sync API, Web Workers for async processing</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">AI & Machine Learning</div>
-      <div class="pg-glass-body">Client-side analysis engine, Claude API integration (planned Phase 2), Web Workers for parallel processing</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">Infrastructure</div>
-      <div class="pg-glass-body">GitHub Pages (current), Cloudflare Workers (Phase 2), GitHub Actions (scheduled CI/CD and weekly analysis)</div>
-    </div>
-  </div>
-
-  <!-- Security Architecture Layers -->
-  <div class="pg-glass-wrap pg-glass-wrap-red">
-    <div class="pg-glass-section">Data Protection Architecture</div>
-
-    <div class="pg-glass" style="border-left: 4px solid #dc3545;">
-      <div class="pg-glass-title">🔒 Data at Rest</div>
-      <div class="pg-glass-body">AES-256-GCM encryption in IndexedDB local storage with authenticated encryption</div>
-    </div>
-
-    <div class="pg-glass" style="border-left: 4px solid #dc3545;">
-      <div class="pg-glass-title">🔒 Data in Transit</div>
-      <div class="pg-glass-body">TLS 1.3 for all network communication, HSTS headers, certificate pinning ready</div>
-    </div>
-
-    <div class="pg-glass" style="border-left: 4px solid #dc3545;">
-      <div class="pg-glass-title">🔒 Data in Use</div>
-      <div class="pg-glass-body">Web Crypto API operations, memory is cleared after processing, zero-trust computation</div>
-    </div>
-
-    <div class="pg-glass" style="border-left: 4px solid #dc3545;">
-      <div class="pg-glass-title">🔒 Key Exchange</div>
-      <div class="pg-glass-body">RSA-OAEP 4096-bit for secure provider data sharing, forward secrecy support</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-body" style="padding: 12px; background-color: #f0f4ff; border-radius: 6px; border-left: 3px solid #2196f3;">
-        <strong>Post-quantum Ready:</strong> MÉTIS is designed with crypto-agility. Algorithms can be swapped out without changing your password when NIST post-quantum standards are adopted by browsers.
-      </div>
-    </div>
-  </div>
-
-  <!-- API Integration Roadmap -->
-  <div class="pg-glass-wrap">
-    <div class="pg-glass-section">Integration Roadmap</div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-body" style="font-size:11px;">
-        <div style="padding:8px; background:rgba(167,207,40,0.15); border-radius:4px; margin-bottom:6px; font-weight:700;">Phase 1 (Current): Oura Ring, AncestryDNA, Manual Medical Records, ClinicalTrials.gov matching</div>
-        <div style="padding:8px; background:rgba(248,138,47,0.15); border-radius:4px; margin-bottom:6px; font-weight:700;">Phase 2 (Q2 2026): Epic MyChart FHIR, VA Lighthouse API, CMS Blue Button 2.0</div>
-        <div style="padding:8px; background:rgba(33,150,243,0.15); border-radius:4px; margin-bottom:6px; font-weight:700;">Phase 3 (Q3 2026): Cerner/Oracle Health, Apple HealthKit, Google Health Connect, Fitbit</div>
-        <div style="padding:8px; background:rgba(0,24,48,0.1); border-radius:4px; font-weight:700;">Phase 4 (Q4 2026): Bi-directional FHIR updates, Real-time device streaming, AI-powered auto-import</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Compliance & Certifications -->
-  <div class="pg-glass-wrap">
-    <div class="pg-glass-section">Compliance & Certifications</div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #a7cf28;">✓ HIPAA Technical Safeguards</div>
-      <div class="pg-glass-body">Aligned with encryption at rest, in transit, access controls, and audit logging requirements</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #a7cf28;">✓ WCAG 2.1 AA Accessibility</div>
-      <div class="pg-glass-body">High contrast modes, keyboard navigation, screen reader support, captions, adaptive layouts</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #a7cf28;">✓ ADA Section 508</div>
-      <div class="pg-glass-body">Disability-first design with veteran-specific accommodations and accessibility features</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #f88a2f;">🔄 FDA SaMD Pathway</div>
-      <div class="pg-glass-body">Clinical decision support tool — awareness category (planned for Phase 2 validation)</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #2196f3;">📋 SOC 2 Type II</div>
-      <div class="pg-glass-body">Security and availability audit planned for Phase 2 (Q3 2026)</div>
-    </div>
-  </div>
-
-  <!-- Veteran-First Design -->
-  <div class="pg-glass-wrap">
-    <div class="pg-glass-section">Veteran-First Design</div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">⚡ Adaptive UI for Energy Levels</div>
-      <div class="pg-glass-body">Spoon theory integration. MÉTIS adjusts complexity, detail level, and interaction density based on user energy preferences</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">🎯 Pain-Aware Recommendations</div>
-      <div class="pg-glass-body">Input current pain level. Insights and medication reviews account for pain management interactions</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">🎤 Voice Dictation (Planned)</div>
-      <div class="pg-glass-body">Hands-free operation for veterans with mobility limitations. Browser-based voice input</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">🛡️ VA Integration</div>
-      <div class="pg-glass-body">Direct connection to VA disability claims, benefits optimization, and health records</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title">🔐 Military-Grade Security</div>
-      <div class="pg-glass-body">AES-256 is the same encryption used by the US military — your data is protected at the highest level</div>
-    </div>
-  </div>
-
-  <!-- Revenue Model -->
-  <div class="pg-glass-wrap">
-    <div class="pg-glass-section">Sustainable Revenue Model</div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #a7cf28;">💚 Free Tier — Disabled Veterans</div>
-      <div class="pg-glass-body">Individual disabled veterans — mission-driven, always free. No ads, no data selling, no limits. This is who we built MÉTIS for</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #f88a2f;">🧡 Free — Disabled Individuals (with verification)</div>
-      <div class="pg-glass-body">Free for anyone with a verified disability (non-veteran). The same AI-powered health navigation for anyone managing complex medical conditions, multiple providers, and chronic health challenges. Full platform access, genome integration, wearable sync. Disability verification required</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #9c27b0;">🌍 General Population — $20/month</div>
-      <div class="pg-glass-body">Available to anyone through the App Store. Full MÉTIS platform for proactive health management — genome analysis, medication cross-referencing, wearable integration, AI correlations, and care team coordination. No medical conditions required</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #2196f3;">🏥 Provider Tier</div>
-      <div class="pg-glass-body">$500–2,000/month for VA hospitals, clinics, and veteran health organizations. Bulk user management, analytics, compliance reporting</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #2196f3;">🏢 Enterprise</div>
-      <div class="pg-glass-body">Veteran advocacy organizations, DOD medical systems, university health networks. Custom integrations, dedicated support, white-label options</div>
-    </div>
-
-    <div class="pg-glass">
-      <div class="pg-glass-title" style="color: #2196f3;">📊 Research & Data</div>
-      <div class="pg-glass-body">Anonymized, aggregated data access for VA/NIH studies with explicit user consent. Revenue supports continued free tier</div>
-    </div>
-  </div>
-</div>
 
 <script>
     // Don't show dashboard until unlocked
