@@ -1029,6 +1029,84 @@ body.high-contrast .pg-provider-card { border: 2px solid #000 !important; }
 body.high-contrast .pg-ai-tag { border: 1px solid currentColor; }
 body.high-contrast .pg-header { border: 2px solid #fff !important; }
 
+/* ═══ CRITICAL: Force readable text on ALL glass/dark panels ═══ */
+/* Override ANY inline color (color:#666, #333, #999, #001830, etc.) inside glass wraps */
+.pg-glass-wrap, .pg-glass-wrap * {
+    color: rgba(255,255,255,0.93) !important;
+}
+.pg-glass-wrap strong, .pg-glass-wrap b, .pg-glass-wrap h1,
+.pg-glass-wrap h2, .pg-glass-wrap h3, .pg-glass-wrap h4 {
+    color: #fff !important;
+}
+.pg-glass ul, .pg-glass ol { color: rgba(255,255,255,0.93) !important; }
+.pg-glass ul li, .pg-glass ol li { color: rgba(255,255,255,0.93) !important; }
+/* Preserve colored elements within glass */
+.pg-glass-wrap .badge { color: inherit !important; }
+.pg-glass-wrap .pg-ai-tag-red, .pg-glass-wrap [class*="tag-red"] { color: #ff8a95 !important; }
+.pg-glass-wrap .pg-ai-tag-green, .pg-glass-wrap [class*="tag-green"] { color: #c5e864 !important; }
+.pg-glass-wrap .pg-ai-tag-orange, .pg-glass-wrap [class*="tag-orange"] { color: #ffc08a !important; }
+.pg-glass-wrap .pg-ai-tag-blue, .pg-glass-wrap [class*="tag-blue"] { color: #82c4f8 !important; }
+.pg-glass-wrap .pg-ai-tag-default { color: rgba(255,255,255,0.7) !important; }
+.pg-glass-wrap .pg-glass-section { color: rgba(255,255,255,0.75) !important; }
+.pg-glass-wrap .pg-glass-btn { color: #c5e864 !important; }
+.pg-glass-wrap .pg-glass-btn-outline { color: #a7cf28 !important; }
+.pg-glass-wrap .pg-glass-btn-red { color: #ff8a95 !important; }
+.pg-glass-wrap .pg-glass-btn-blue { color: #82c4f8 !important; }
+.pg-glass-wrap .badge-red { color: #ff8a95 !important; }
+.pg-glass-wrap .badge-green { color: #c5e864 !important; }
+.pg-glass-wrap .badge-orange { color: #ffc08a !important; }
+.pg-glass-wrap .badge-blue { color: #82c4f8 !important; }
+.pg-glass-wrap .pg-severity-critical { color: #ff6b7a !important; }
+.pg-glass-wrap .pg-severity-warning { color: #ffc08a !important; }
+.pg-glass-wrap .pg-severity-info { color: #82c4f8 !important; }
+.pg-glass-wrap .pg-severity-good { color: #c5e864 !important; }
+/* Preserve green accent on styled elements like condition names */
+.pg-glass-wrap [style*="color:#a7cf28"], .pg-glass-wrap [style*="color: #a7cf28"] { color: #c5e864 !important; }
+.pg-glass-wrap [style*="color:#dc3545"], .pg-glass-wrap [style*="color: #dc3545"] { color: #ff8a95 !important; }
+.pg-glass-wrap [style*="color:#2196f3"], .pg-glass-wrap [style*="color: #2196f3"] { color: #82c4f8 !important; }
+.pg-glass-wrap [style*="color:#f88a2f"], .pg-glass-wrap [style*="color: #f88a2f"] { color: #ffc08a !important; }
+.pg-glass-wrap [style*="color:#9c27b0"], .pg-glass-wrap [style*="color: #9c27b0"] { color: #ce93d8 !important; }
+.pg-glass-wrap [style*="color:#ff8a95"] { color: #ff8a95 !important; }
+.pg-glass-wrap [style*="color:#ffcccc"] { color: #ffcccc !important; }
+.pg-glass-wrap [style*="color:#c5e864"] { color: #c5e864 !important; }
+.pg-glass-wrap [style*="color:#82c4f8"] { color: #82c4f8 !important; }
+/* Preserve dark text on white bento cards within glass */
+.pg-glass-wrap .pg-bento-card, .pg-glass-wrap .pg-bento-card * {
+    color: #333 !important;
+}
+.pg-glass-wrap .pg-bento-card .pg-bento-label { color: #666 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-sub { color: #999 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-val { color: #001830 !important; }
+.pg-glass-wrap .pg-bento-btn, .pg-glass-wrap .action-btn { color: #001830 !important; }
+/* Fix header stat colors */
+.pg-header, .pg-header * { color: rgba(255,255,255,0.92) !important; }
+.pg-header .pg-header-title { color: white !important; }
+.pg-header .pg-header-sub { color: rgba(255,255,255,0.88) !important; }
+/* Also fix text inside pg-glass directly (not inside pg-glass-wrap) */
+.pg-glass, .pg-glass * { color: rgba(255,255,255,0.93) !important; }
+.pg-glass strong, .pg-glass b { color: #fff !important; }
+.pg-glass .badge { color: inherit !important; }
+.pg-glass .pg-ai-tag-red { color: #ff8a95 !important; }
+.pg-glass .pg-ai-tag-green { color: #c5e864 !important; }
+.pg-glass .pg-ai-tag-orange { color: #ffc08a !important; }
+.pg-glass .pg-ai-tag-blue { color: #82c4f8 !important; }
+.pg-glass [style*="color:#a7cf28"] { color: #c5e864 !important; }
+.pg-glass [style*="color:#dc3545"] { color: #ff8a95 !important; }
+.pg-glass [style*="color:#ff8a95"] { color: #ff8a95 !important; }
+.pg-glass [style*="color:#ffcccc"] { color: #ffcccc !important; }
+/* Forms within glass - input fields */
+.pg-glass-wrap input, .pg-glass-wrap select, .pg-glass-wrap textarea {
+    color: #fff !important;
+    background: rgba(255,255,255,0.1) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+}
+.pg-glass-wrap input::placeholder { color: rgba(255,255,255,0.5) !important; }
+/* Upload page text overflow fix */
+.pg-glass .pg-glass-body { word-break: break-word !important; overflow-wrap: break-word !important; }
+/* Forms bento grid responsive fix — single column on smaller screens */
+@media (max-width: 480px) { .pg-bento-grid { grid-template-columns: 1fr !important; } }
+.pg-bento-card { overflow: hidden; word-break: break-word; }
+
 </style>
     <script>
     // Critical functions in head so they're available immediately
@@ -1463,13 +1541,30 @@ function viewDocument(id) {
     for (var i = 0; i < uploadedDocuments.length; i++) {
         if (uploadedDocuments[i].id === id) {
             var doc = uploadedDocuments[i];
+            var ext = doc.name.split('.').pop().toLowerCase();
             var win = window.open('', '_blank');
             if (doc.type.startsWith('image/')) {
                 win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e;"><img src="' + doc.data + '" style="max-width:100%; max-height:100vh;"></body></html>');
             } else if (doc.type === 'application/pdf') {
                 win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0;"><iframe src="' + doc.data + '" style="width:100%; height:100vh; border:none;"></iframe></body></html>');
+            } else if (ext === 'txt' || ext === 'csv') {
+                try { var text = atob(doc.data.split(',')[1]); } catch(e) { var text = 'Unable to decode file contents.'; }
+                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:20px; font-family:monospace; background:#1a1a2e; color:#e0e0e0; white-space:pre-wrap; word-break:break-word;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</body></html>');
             } else {
-                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:20px; font-family:monospace; background:#1a1a2e; color:#e0e0e0;"><pre>' + atob(doc.data.split(',')[1]) + '</pre></body></html>');
+                var icon = getFileIcon(doc.name);
+                var typeLabel = {doc:'Microsoft Word',docx:'Microsoft Word',xlsx:'Microsoft Excel',xls:'Microsoft Excel',pptx:'PowerPoint',zip:'Archive',rar:'Archive'}[ext] || ext.toUpperCase() + ' File';
+                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#001830,#003050); font-family:Montserrat,sans-serif;">' +
+                '<div style="background:rgba(255,255,255,0.08); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:48px; text-align:center; max-width:480px; width:90%;">' +
+                '<div style="font-size:72px; margin-bottom:20px;">' + icon + '</div>' +
+                '<div style="font-size:22px; font-weight:700; color:#fff; margin-bottom:8px; word-break:break-word;">' + doc.name + '</div>' +
+                '<div style="color:rgba(255,255,255,0.7); font-size:14px; margin-bottom:24px;">' + typeLabel + ' — ' + formatFileSize(doc.size) + '</div>' +
+                '<div style="background:rgba(255,255,255,0.06); border-radius:12px; padding:16px; text-align:left; margin-bottom:24px;">' +
+                '<div style="color:rgba(255,255,255,0.5); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">File Details</div>' +
+                '<div style="color:rgba(255,255,255,0.9); font-size:13px; line-height:2;">Type: ' + (doc.type || 'Unknown') + '<br>Size: ' + formatFileSize(doc.size) + '<br>Uploaded: ' + doc.date + '<br>Extension: .' + ext + '</div>' +
+                '</div>' +
+                '<div style="color:rgba(167,207,40,0.9); font-size:13px; font-weight:600;">This file type requires an external application to view.<br>Use the download button to open in the appropriate app.</div>' +
+                '<a href="' + doc.data + '" download="' + doc.name + '" style="display:inline-block; margin-top:16px; background:#a7cf28; color:#001830; padding:12px 32px; border-radius:10px; font-weight:700; text-decoration:none; font-size:14px;">Download File</a>' +
+                '</div></body></html>');
             }
             break;
         }
@@ -2317,6 +2412,10 @@ function loadDocumentsFromStorage() {
                 <div class="pg-glass-title" style="color:#dc3545;">Peripheral Neuropathy (G62.9)</div>
                 <div class="pg-glass-body">Cold/numb/tingling feet. Documented Fort Belvoir ER 12/2025. Multiple contributing factors: SCN5A sodium channel variant, cervical myelopathy, DDD nerve compression, Vitamin D deficiency, MTHFR-driven B12/folate impairment.<br><span class="badge badge-red" style="margin-top:6px;">New — Dec 2025</span></div>
             </div>
+            <div class="pg-glass">
+                <div class="pg-glass-title">Essential Tremor (G25.0)</div>
+                <div class="pg-glass-body">Neurological movement disorder. Treated with Primidone 50mg. Contributing to falls risk along with cervical myelopathy, peripheral neuropathy, and hyponatremia.</div>
+            </div>
             <div class="pg-glass" style="border-left:3px solid #dc3545;">
                 <div class="pg-glass-title" style="color:#dc3545;">Hypophosphatemia (E83.39)</div>
                 <div class="pg-glass-body">Phosphorus 0.97 mg/dL (critically low, normal 2.5-4.5). Fort Belvoir ER 12/26/2025. IV phosphate repletion required. Prescribed K-Phos at discharge.<br><span class="badge badge-red" style="margin-top:6px;">Critical — Dec 2025</span></div>
@@ -2332,10 +2431,6 @@ function loadDocumentsFromStorage() {
             <div class="pg-glass">
                 <div class="pg-glass-title">Left Lower Lung Pneumothorax (History)</div>
                 <div class="pg-glass-body">Prior pneumothorax documented in Fort Belvoir records. CT Angio showed nodular infiltrate left lung base + interstitial thickening.</div>
-            </div>
-            <div class="pg-glass">
-                <div class="pg-glass-title">Essential Tremor (G25.0)</div>
-                <div class="pg-glass-body">Treated with Primidone 50mg. Contributing to falls risk along with cervical myelopathy and hyponatremia.</div>
             </div>
             <div class="pg-glass">
                 <div class="pg-glass-title">Asthma / Reactive Airway Disease (J45.20)</div>
@@ -5836,7 +5931,7 @@ function loadDocumentsFromStorage() {
           <div class="list-title">🟢 Connected — Last sync: 2 minutes ago</div>
           <div class="list-subtitle">
             Tracking: Sleep Stages, HRV, Resting HR, Body Temperature, Activity, SpO2<br>
-            Account: keenanrskelly@gmail.com<br>
+            Account: k••••••••y@g••••.com (hidden for security)<br>
             Data range: Nov 8, 2025 — Present (90+ days)
           </div>
           <span class="badge">Active</span>
@@ -8841,7 +8936,7 @@ function loadDocumentsFromStorage() {
                 </div>
                 <div style="margin-bottom:16px;">
                     <div style="font-weight:600; margin-bottom:4px;">Contact Email:</div>
-                    <input type="email" value="keenanrskelly@gmail.com" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                    <input type="email" value="k••••••••y@g••••.com" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
                 </div>
             </div>
         </div>
@@ -9413,7 +9508,7 @@ function loadDocumentsFromStorage() {
 <div class="page" id="platform-architecture">
   <div class="pg-header pg-header-blue">
     <h1 class="pg-header-title">🏗️ Platform Architecture</h1>
-    <p class="pg-header-sub">Technical foundation for personalized health — Disabled Veteran First Design</p>
+    <p class="pg-header-sub">Technical foundation for personalized health — You First Design</p>
     <div class="pg-header-stats">
       <div class="pg-header-stat">
         <div style="color:#2196f3; font-weight:700;">5</div>
