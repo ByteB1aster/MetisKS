@@ -1094,6 +1094,11 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
 .pg-glass [style*="color:#dc3545"] { color: #ff8a95 !important; }
 .pg-glass [style*="color:#ff8a95"] { color: #ff8a95 !important; }
 .pg-glass [style*="color:#ffcccc"] { color: #ffcccc !important; }
+/* Fix alerts inside glass panels - preserve alert text colors */
+.pg-glass .alert, .pg-glass .alert * { color: inherit !important; }
+.pg-glass .alert { color: #155724 !important; }
+.pg-glass .alert-orange, .pg-glass .alert-orange * { color: #856404 !important; }
+.pg-glass .alert-red, .pg-glass .alert-red * { color: #721c24 !important; }
 /* Forms within glass - input fields */
 .pg-glass-wrap input, .pg-glass-wrap select, .pg-glass-wrap textarea {
     color: #fff !important;
@@ -2129,7 +2134,7 @@ function loadDocumentsFromStorage() {
     <!-- PASSWORD GATE -->
     <div id="auth-gate">
         <div class="lg">
-            <div style="font-size:48px; margin-bottom:16px;">🛡️</div>
+            <div style="margin-bottom:16px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="64" height="64"><circle cx="50" cy="45" r="35" fill="#a7cf28"/><ellipse cx="50" cy="70" rx="28" ry="18" fill="#8ab020"/><circle cx="38" cy="38" r="12" fill="white"/><circle cx="62" cy="38" r="12" fill="white"/><circle cx="40" cy="38" r="6" fill="#001830"/><circle cx="64" cy="38" r="6" fill="#001830"/><polygon points="50,48 46,54 54,54" fill="#f88a2f"/><path d="M22,45 Q15,30 28,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M78,45 Q85,30 72,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div>
             <h1>MÉTIS</h1>
             <p>Personalized Health Navigator<br>Secure Access Required</p>
             <form onsubmit="unlock(event)">
@@ -2174,7 +2179,7 @@ function loadDocumentsFromStorage() {
     <!-- Navigation Bar -->
     <div class="nav-bar" role="navigation" aria-label="Main navigation">
         <label for="menuToggle" class="nav-btn" style="touch-action:manipulation; cursor:pointer;">☰ Menu</label>
-        <div class="logo">MÉTIS</div>
+        <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32" style="vertical-align:middle; margin-right:8px;"><circle cx="50" cy="45" r="35" fill="#a7cf28"/><ellipse cx="50" cy="70" rx="28" ry="18" fill="#8ab020"/><circle cx="38" cy="38" r="12" fill="white"/><circle cx="62" cy="38" r="12" fill="white"/><circle cx="40" cy="38" r="6" fill="#001830"/><circle cx="64" cy="38" r="6" fill="#001830"/><polygon points="50,48 46,54 54,54" fill="#f88a2f"/><path d="M22,45 Q15,30 28,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M78,45 Q85,30 72,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/></svg>MÉTIS</div>
         <label class="nav-btn" onclick="showPage('dashboard')" style="touch-action:manipulation; cursor:pointer;">🏠 My Dashboard</label>
     </div>
 
@@ -2184,7 +2189,7 @@ function loadDocumentsFromStorage() {
     <!-- Side Menu -->
     <div class="menu" id="menu" role="navigation" aria-label="Application menu">
         <label for="menuToggle" class="menu-close-label">✕ Close</label>
-        <div class="menu-header">MÉTIS Navigator</div>
+        <div class="menu-header"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="24" height="24" style="vertical-align:middle; margin-right:6px;"><circle cx="50" cy="45" r="35" fill="#a7cf28"/><ellipse cx="50" cy="70" rx="28" ry="18" fill="#8ab020"/><circle cx="38" cy="38" r="12" fill="white"/><circle cx="62" cy="38" r="12" fill="white"/><circle cx="40" cy="38" r="6" fill="#001830"/><circle cx="64" cy="38" r="6" fill="#001830"/><polygon points="50,48 46,54 54,54" fill="#f88a2f"/><path d="M22,45 Q15,30 28,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M78,45 Q85,30 72,25" stroke="#8ab020" stroke-width="4" fill="none" stroke-linecap="round"/></svg>MÉTIS Navigator</div>
 
         <div class="menu-section">
             <div class="menu-section-title">Dashboard</div>
@@ -5249,7 +5254,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-header-title">👪 Family History</div>
     <div class="pg-header-sub">Genetic risk factors inherited from family members</div>
     <div class="pg-header-stats">
-      <span class="pg-header-stat"><span style="color:#2196f3;">●</span> 8 Family Members</span>
+      <span class="pg-header-stat"><span style="color:#2196f3;">●</span> 6 Family Members</span>
       <span class="pg-header-stat">5 Major Conditions</span>
     </div>
   </div>
@@ -5259,14 +5264,14 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass-section">👨‍👩‍👦 Immediate Family</div>
 
     <div class="pg-glass">
-      <div class="pg-glass-title">Mother</div>
+      <div class="pg-glass-title">Mother (Deceased)</div>
       <div class="pg-glass-body">
-        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Breast Cancer</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 52, treated with chemotherapy and radiation</span></div>
-        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Managed with lisinopril and amlodipine since age 48</span></div>
-        <div><strong style="color:#2196f3;">Depression</strong><br><span style="font-size:12px; color:#666;">Treated with sertraline; positive family history for mood disorders</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Diabetes</strong><br><span style="font-size:12px; color:#666;">Both parents had diabetes; mother died from kidney failure after not following medical recommendations</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Managed with medication</span></div>
+        <div><strong style="color:#2196f3;">Narcissistic Personality Disorder</strong><br><span style="font-size:12px; color:#666;">Mental health issues associated with narcissistic personality disorder</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="pg-ai-tag pg-ai-tag-red">Cancer Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Metabolic Risk</span>
         <span class="pg-ai-tag pg-ai-tag-orange">Cardiovascular</span>
         <span class="pg-ai-tag pg-ai-tag-blue">Mental Health</span>
       </div>
@@ -5275,35 +5280,38 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Father (Deceased)</div>
       <div class="pg-glass-body">
-        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Heart Disease</strong><br><span style="font-size:12px; color:#666;">Myocardial infarction at age 58; primary cause of death</span></div>
-        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Type 2 Diabetes</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 51; managed with insulin and metformin</span></div>
-        <div><strong style="color:#dc3545;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Uncontrolled at time of cardiac event; on multiple antihypertensives</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Esophageal Cancer</strong><br><span style="font-size:12px; color:#666;">Cancer spread; primary cause of death</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Type 2 Diabetes</strong><br><span style="font-size:12px; color:#666;">Both parents had diabetes</span></div>
+        <div><strong style="color:#dc3545;">Hypertension</strong><br><span style="font-size:12px; color:#666;">Managed with antihypertensive agents</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="pg-ai-tag pg-ai-tag-red">CRITICAL - Cardiac Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-red">CRITICAL - Cancer</span>
         <span class="pg-ai-tag pg-ai-tag-orange">Metabolic Risk</span>
       </div>
     </div>
 
     <div class="pg-glass">
-      <div class="pg-glass-title">Sister</div>
+      <div class="pg-glass-title">Sister (Half-Cousin)</div>
       <div class="pg-glass-body">
-        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Depression & Anxiety</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 28; currently on escitalopram and buspirone</span></div>
-        <div><strong style="color:#2196f3;">Asthma</strong><br><span style="font-size:12px; color:#666;">Childhood-onset; well-controlled with albuterol inhaler and seasonal flares</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Borderline Personality Disorder (BPD)</strong><br><span style="font-size:12px; color:#666;">Diagnosed; ongoing treatment</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Depression</strong><br><span style="font-size:12px; color:#666;">Co-occurring with BPD</span></div>
+        <div><strong style="color:#2196f3;">Anxiety</strong><br><span style="font-size:12px; color:#666;">Co-occurring with BPD and depression</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
         <span class="pg-ai-tag pg-ai-tag-blue">Mental Health</span>
-        <span class="pg-ai-tag pg-ai-tag-orange">Respiratory</span>
       </div>
     </div>
 
     <div class="pg-glass">
-      <div class="pg-glass-title">Brother</div>
+      <div class="pg-glass-title">Brother (Half-Cousin)</div>
       <div class="pg-glass-body">
-        <div><strong style="color:#2196f3;">ADHD</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 8; treated with methylphenidate through adolescence; symptoms persist in adulthood</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Essential Tremor</strong><br><span style="font-size:12px; color:#666;">Since childhood; both siblings have had it since childhood — possibly linked to grandmother's Parkinson's disease</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">PTSD</strong><br><span style="font-size:12px; color:#666;">From Army service</span></div>
+        <div><strong style="color:#2196f3;">Other Conditions</strong><br><span style="font-size:12px; color:#666;">Additional issues — details unknown</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="pg-ai-tag pg-ai-tag-blue">Neurodevelopmental</span>
+        <span class="pg-ai-tag pg-ai-tag-blue">Neurological</span>
+        <span class="pg-ai-tag pg-ai-tag-red">Mental Health</span>
       </div>
     </div>
   </div>
@@ -5316,7 +5324,8 @@ function loadDocumentsFromStorage() {
       <div class="pg-glass-title">Maternal Grandmother</div>
       <div class="pg-glass-body">
         <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Breast Cancer</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 59; treated with mastectomy and adjuvant therapy</span></div>
-        <div><strong style="color:#2196f3;">Arthritis</strong><br><span style="font-size:12px; color:#666;">Rheumatoid arthritis; developed age 61; managed with methotrexate and biologics</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Arthritis</strong><br><span style="font-size:12px; color:#666;">Rheumatoid arthritis; developed age 61; managed with methotrexate and biologics</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Parkinson's Disease</strong><br><span style="font-size:12px; color:#666;">May be linked to Essential Tremor seen in grandchildren</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
         <span class="pg-ai-tag pg-ai-tag-red">Cancer Risk</span>
@@ -5325,14 +5334,14 @@ function loadDocumentsFromStorage() {
     </div>
 
     <div class="pg-glass">
-      <div class="pg-glass-title">Paternal Grandfather</div>
+      <div class="pg-glass-title">Aunt (Mother's Half-Sister)</div>
       <div class="pg-glass-body">
-        <div style="margin-bottom:10px;"><strong style="color:#dc3545;">Stroke</strong><br><span style="font-size:12px; color:#666;">Ischemic stroke at age 71; residual right-sided weakness</span></div>
-        <div><strong style="color:#dc3545;">Type 2 Diabetes</strong><br><span style="font-size:12px; color:#666;">Diagnosed age 54; on insulin regimen; contributed to cardiovascular complications</span></div>
+        <div style="margin-bottom:10px;"><strong style="color:#2196f3;">Endometriosis</strong><br><span style="font-size:12px; color:#666;">Diagnosed; ongoing management</span></div>
+        <div><strong style="color:#2196f3;">History of Falls & Bone Fractures</strong><br><span style="font-size:12px; color:#666;">Recurring falls resulting in broken bones; possible osteoporosis or balance issues</span></div>
       </div>
       <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="pg-ai-tag pg-ai-tag-red">Cerebrovascular Risk</span>
-        <span class="pg-ai-tag pg-ai-tag-orange">Metabolic Risk</span>
+        <span class="pg-ai-tag pg-ai-tag-orange">Reproductive Health</span>
+        <span class="pg-ai-tag pg-ai-tag-default">Musculoskeletal</span>
       </div>
     </div>
   </div>
@@ -5344,7 +5353,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Depression & Mental Health (Your 100% VA Rating)</div>
       <div class="pg-glass-body">
-        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Mother and sister both have depression/anxiety diagnoses. Strong familial aggregation suggests genetic predisposition.</p>
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Mother had narcissistic personality disorder; sister has BPD, depression, and anxiety. Strong familial aggregation suggests genetic predisposition to personality and mood disorders.</p>
         <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> Major Depressive Disorder (100% VA rating) + Insomnia + Anxiety. Current treatment: Fluoxetine 40mg (elevated due to HTR2A variant affecting SSRI metabolism).</p>
         <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue psychiatric monitoring. Genetic susceptibility validates ongoing pharmacotherapy. Monitor for medication interactions.</p>
       </div>
@@ -5357,7 +5366,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Cardiovascular Risk (Your PE/DVT History)</div>
       <div class="pg-glass-body">
-        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father had myocardial infarction at age 58 (DECEASED). Paternal grandfather had stroke at age 71. Both parents hypertensive.</p>
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father died from esophageal cancer that spread. Both parents hypertensive.</p>
         <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> History of PE/DVT (2020) despite Factor V Leiden negative. Currently on Eliquis 5mg BID for thrombotic prophylaxis. Requires surveillance.</p>
         <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue anticoagulation. Annual cardiovascular screening. Monitor blood pressure. Lifestyle modifications (exercise, diet) critical given family history.</p>
       </div>
@@ -5370,7 +5379,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Breast Cancer Surveillance (Your BI-RADS 3 Finding)</div>
       <div class="pg-glass-body">
-        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Mother diagnosed breast cancer age 52. Maternal grandmother diagnosed age 59. Two-generation history.</p>
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> 2 maternal aunts and 4 paternal aunts had breast cancer. Maternal grandmother diagnosed age 59. Extended family history.</p>
         <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> BI-RADS 3 nodule on recent imaging (probably benign but requires follow-up). Given family history, aggressive surveillance recommended.</p>
         <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> 6-month follow-up mammography/ultrasound. Consider genetic counseling for BRCA testing. Annual screening. Discuss hormone therapy risks (if applicable) with oncology.</p>
       </div>
@@ -5383,7 +5392,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Type 2 Diabetes Risk (Your Metabolic Profile)</div>
       <div class="pg-glass-body">
-        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father diagnosed age 51 (on insulin). Paternal grandfather diagnosed age 54 (on insulin). Genetic predisposition very strong.</p>
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Father had diabetes. Mother had diabetes and died from kidney failure after not following medical recommendations. Genetic predisposition very strong.</p>
         <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> NOT diabetic (glucose 89, HbA1c 5.4%), but you have TCF7L2 dual heterozygous variants + abnormal lipid panel (Cholesterol 269, Triglycerides 251). Metabolic syndrome precursor state.</p>
         <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Monitor HbA1c every 6 months. Intensive lifestyle modification (diet, exercise). Avoid weight gain. Consider statin therapy for lipid management. Glucose monitoring at routine visits.</p>
       </div>
@@ -5396,7 +5405,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-glass">
       <div class="pg-glass-title">Asthma/Reactive Airway (Your Current Trelegy + Montelukast)</div>
       <div class="pg-glass-body">
-        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Sister has childhood-onset asthma (still active). Suggests genetic predisposition to airway hyperreactivity.</p>
+        <p style="margin:0 0 8px 0; font-size:13px; color:#555;"><strong>Family Connection:</strong> Sister has BPD, depression, and anxiety. Limited respiratory disease in immediate family.</p>
         <p style="margin:0; font-size:13px; color:#555;"><strong>Your Profile:</strong> Asthma since 2006 + history of left lower lung pneumothorax (2019) + lung nodule on CT (12/2025). On Trelegy Ellipta (ICS/LABA/LAMA) + Montelukast 10mg. Requires pulmonology follow-up.</p>
         <p style="margin-top:8px; font-size:12px; color:#666;"><strong>Recommendation:</strong> Continue dual therapy. Pulmonology referral for nodule surveillance and pneumothorax recurrence risk assessment. Annual spirometry. Monitor for medication compliance.</p>
       </div>
@@ -5414,11 +5423,11 @@ function loadDocumentsFromStorage() {
       <div class="pg-glass-body">
         <p style="margin:0 0 12px 0; font-size:13px; color:#555;">Your family history demonstrates significant genetic predisposition to several conditions that are present in your current health profile:</p>
         <div style="margin-top:12px; padding:12px; background:rgba(33,150,243,0.1); border-radius:8px; font-size:12px; color:#555; line-height:1.8;">
-          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cardiovascular Risk:</strong> Multiple family members with MI, stroke, hypertension. Your PE/DVT and current anticoagulation are appropriate given genetics.</div>
-          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Metabolic Syndrome:</strong> Both parents diabetic; you show early lipid abnormalities and genetic variants (TCF7L2). Prevention critical.</div>
-          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Mental Health:</strong> Mother and sister both depressed; your 100% MDD rating reflects hereditary component.</div>
-          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cancer Surveillance:</strong> Maternal breast cancer in two generations; your BI-RADS 3 finding requires aggressive follow-up.</div>
-          <div><strong style="color:#2196f3;">✓ Respiratory:</strong> Sister has asthma; your lung nodule and pneumothorax history warrant pulmonology oversight.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cardiovascular Risk:</strong> Father died from esophageal cancer; both parents hypertensive. Your PE/DVT and current anticoagulation are appropriate given genetics.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Metabolic Syndrome:</strong> Both parents diabetic; mother died from kidney failure after not following medical recommendations. You show early lipid abnormalities and genetic variants (TCF7L2). Prevention critical.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Mental Health:</strong> Mother had narcissistic personality disorder; sister has BPD, depression, and anxiety. Your 100% MDD rating reflects hereditary component.</div>
+          <div style="margin-bottom:8px;"><strong style="color:#2196f3;">✓ Cancer Surveillance:</strong> 2 maternal aunts and 4 paternal aunts had breast cancer; maternal grandmother diagnosed age 59; father died from esophageal cancer. Your BI-RADS 3 finding requires aggressive follow-up.</div>
+          <div><strong style="color:#2196f3;">✓ Respiratory:</strong> Your lung nodule and pneumothorax history warrant pulmonology oversight. Brother has Essential Tremor since childhood, possibly linked to grandmother's Parkinson's disease.</div>
         </div>
         <p style="margin-top:12px; margin-bottom:0; font-size:12px; color:#666;"><strong>Overall Risk Profile:</strong> Moderate-to-high genetic predisposition to chronic disease. Recommend genetic counseling for BRCA (breast cancer) and detailed family history discussion with all treating providers.</p>
       </div>
