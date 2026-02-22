@@ -1923,6 +1923,7 @@ body.light-mode .nav-bar, body.light-mode .menu {
             }
         }
     }
+    </script>
     <style>
         #auth-gate { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg, #001830 0%, #003050 100%); z-index:99999; display:flex; align-items:center; justify-content:center; }
         #auth-gate .lg { background:white; border-radius:20px; padding:48px 36px; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); color:#333; }
@@ -2541,194 +2542,154 @@ function loadDocumentsFromStorage() {
     <!-- DASHBOARD v2 — Patient-First AI-Powered Overview -->
     <div class="page" id="dashboard">
 
-        <!-- ── HERO CRITICAL ALERT — above fold ── -->
-        <div class="dash-hero-alert" onclick="showPage('alerts')">
-            <div class="dash-hero-tag">
-                <span class="dash-hero-pulse"></span>
-                Critical Alert — Needs Your Attention
+        <!-- ── BENTO HERO GRID ── -->
+        <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+
+            <!-- Health Score — spans 2 rows -->
+            <div class="pg-bento-card" onclick="showPage('comorbidity')" style="grid-row:span 2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(167,207,40,0.12),rgba(167,207,40,0.04)); border:1px solid rgba(167,207,40,0.2); cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:8px;">Health Score</div>
+                <svg viewBox="0 0 80 80" style="width:80px;height:80px;">
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(167,207,40,0.15)" stroke-width="6"/>
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="#a7cf28" stroke-width="6" stroke-dasharray="149 214" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+                </svg>
+                <div style="font-size:32px; font-weight:900; color:#a7cf28; margin-top:-54px; margin-bottom:30px;">70</div>
+                <div style="font-size:12px; color:#a7cf28; font-weight:600;">+5 this week</div>
+                <div style="display:flex; align-items:flex-end; gap:2px; height:30px; margin-top:10px;">
+                    <div style="width:4px;height:40%;border-radius:2px;background:rgba(167,207,40,0.3);"></div>
+                    <div style="width:4px;height:50%;border-radius:2px;background:rgba(167,207,40,0.4);"></div>
+                    <div style="width:4px;height:45%;border-radius:2px;background:rgba(167,207,40,0.4);"></div>
+                    <div style="width:4px;height:55%;border-radius:2px;background:rgba(167,207,40,0.5);"></div>
+                    <div style="width:4px;height:60%;border-radius:2px;background:rgba(167,207,40,0.5);"></div>
+                    <div style="width:4px;height:65%;border-radius:2px;background:rgba(167,207,40,0.6);"></div>
+                    <div style="width:4px;height:70%;border-radius:2px;background:#a7cf28;"></div>
+                </div>
             </div>
-            <h3><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg4IEw0NDggNDE2IEg2NCBMMjU2IDg4eiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjIzOCIgeT0iMjAwIiB3aWR0aD0iMzYiIGhlaWdodD0iMTMwIiByeD0iMTgiIHJ5PSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjM2OCIgcj0iMjAiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Recurring Falls + Drug Interaction</h3>
-            <p>MÉTIS noticed 3 falls in the past 30 days. When we cross-referenced your peripheral neuropathy, gabapentin dose, and blood pressure medications, a potential compounding interaction was flagged. Worth discussing with Dr. Rodriguez at your Feb 18 appointment.</p>
-            <button class="dash-hero-btn" onclick="event.stopPropagation(); showPage('alerts')">Review Health Alerts →</button>
+
+            <!-- Critical Alert — spans 2 cols -->
+            <div class="pg-bento-card" onclick="showPage('alerts')" style="grid-column:span 2; background:linear-gradient(135deg,rgba(220,53,69,0.12),rgba(220,53,69,0.04)); border:1px solid rgba(220,53,69,0.2); cursor:pointer;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                    <div style="width:8px;height:8px;border-radius:50%;background:#dc3545;box-shadow:0 0 6px rgba(220,53,69,0.6);"></div>
+                    <div style="font-size:11px; font-weight:700; color:#ff8a95; text-transform:uppercase;">Critical Alert</div>
+                </div>
+                <div style="font-size:15px; font-weight:700;">Recurring Falls + Drug Interaction</div>
+                <div style="font-size:12px; opacity:0.6; margin-top:4px;">3 falls in 30 days — neuropathy + gabapentin flagged</div>
+                <div style="display:flex; gap:8px; margin-top:10px;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(220,53,69,0.2);color:#ff8a95;">Action Required</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">Dr. Rodriguez · Feb 18</span>
+                </div>
+            </div>
+
+            <!-- AI Correlations -->
+            <div class="pg-bento-card" onclick="showPage('genome-correlations')" style="background:linear-gradient(135deg,rgba(56,189,248,0.12),rgba(56,189,248,0.04)); border:1px solid rgba(56,189,248,0.2); cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:4px;">AI Correlations</div>
+                <div style="font-size:36px; font-weight:900; line-height:1; color:#38bdf8;">21</div>
+                <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-top:8px;"><div style="height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#38bdf8,#a7cf28);"></div></div>
+            </div>
+
+            <!-- Active Alerts -->
+            <div class="pg-bento-card" onclick="showPage('alerts')" style="background:linear-gradient(135deg,rgba(248,138,47,0.12),rgba(248,138,47,0.04)); border:1px solid rgba(248,138,47,0.2); cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:4px;">Active Alerts</div>
+                <div style="font-size:36px; font-weight:900; line-height:1; color:#f88a2f;">8</div>
+                <div style="display:flex;gap:4px;margin-top:6px;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(220,53,69,0.2);color:#ff8a95;">3 Critical</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">5 Watch</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats Row — spans full width -->
+            <div class="pg-bento-card" style="grid-column:span 3; display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
+                <div style="text-align:center;">
+                    <div style="font-size:18px; font-weight:800; color:#ff8a95;">17+</div>
+                    <div style="font-size:10px; opacity:0.5;">Conditions</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:18px; font-weight:800; color:#38bdf8;">7</div>
+                    <div style="font-size:10px; opacity:0.5;">Medications</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:18px; font-weight:800; color:#a7cf28;">12</div>
+                    <div style="font-size:10px; opacity:0.5;">Gene Links</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:18px; font-weight:800; color:#ce93d8;">62</div>
+                    <div style="font-size:10px; opacity:0.5;">Sleep Score</div>
+                </div>
+            </div>
         </div>
 
-        <!-- ── PULSE DATA RINGS — AI analysis at a glance ── -->
-        <div class="dash-pulse-row">
-            <div class="dash-pulse-card" onclick="showPage('comorbidity')">
-                <div class="dash-ring">
-                    <div class="dash-ring-bg" style="background:conic-gradient(#a7cf28 0deg 252deg, #e8e8e8 252deg 360deg); border-radius:50%;"></div>
-                    <div class="dash-ring-inner">
-                        <div class="dash-ring-val" style="color:#a7cf28">70</div>
-                        <div class="dash-ring-unit">Score</div>
-                    </div>
-                </div>
-                <div class="dash-pulse-label">Health Score</div>
-                <div class="dash-pulse-sub">+5 from last week</div>
-            </div>
-            <div class="dash-pulse-card" onclick="showPage('genome-correlations')">
-                <div class="dash-ring">
-                    <div class="dash-ring-bg" style="background:conic-gradient(#9c27b0 0deg 216deg, #e8e8e8 216deg 360deg); border-radius:50%;"></div>
-                    <div class="dash-ring-inner">
-                        <div class="dash-ring-val" style="color:#9c27b0">21</div>
-                        <div class="dash-ring-unit">Found</div>
-                    </div>
-                </div>
-                <div class="dash-pulse-label">AI Correlations</div>
-                <div class="dash-pulse-sub">Cross-system links</div>
-            </div>
-            <div class="dash-pulse-card" onclick="showPage('alerts')">
-                <div class="dash-ring">
-                    <div class="dash-ring-bg" style="background:conic-gradient(#dc3545 0deg 120deg, #f88a2f 120deg 200deg, #e8e8e8 200deg 360deg); border-radius:50%;"></div>
-                    <div class="dash-ring-inner">
-                        <div class="dash-ring-val" style="color:#dc3545">8</div>
-                        <div class="dash-ring-unit">Active</div>
-                    </div>
-                </div>
-                <div class="dash-pulse-label">Alerts</div>
-                <div class="dash-pulse-sub">3 critical, 5 watch</div>
-            </div>
-        </div>
-
-        <!-- ── SECTION DIVIDER ── -->
-        <div class="dash-divider">
-            <span class="dash-divider-line"></span>
-            <span class="dash-divider-text">What MÉTIS Found For You</span>
-            <span class="dash-divider-line"></span>
-        </div>
-
-        <!-- ── GLASS SECTION INSIGHT CARDS ── -->
-        <div class="dash-glass-wrap">
+        <!-- ── INSIGHT CARDS BENTO GRID ── -->
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.4; margin-bottom:12px; text-align:center;">What MÉTIS Found For You</div>
+        <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:12px;">
 
             <!-- Health Data -->
-            <div class="dash-glass" onclick="showPage('alerts')">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Health Data</div>
-                        <div class="dash-glass-sub">17+ Conditions • 7 Medications</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">MÉTIS noticed your falls pattern correlates with peripheral neuropathy progression. A possible gabapentin + lisinopril interaction was flagged. Your D-Amphetamine 30mg is delayed at the pharmacy.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-red">Falls ↔ Neuropathy</span>
-                    <span class="dash-ai-chip chip-orange">Drug Interaction</span>
-                    <span class="dash-ai-chip chip-default">Rx Delayed</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-red">3 Critical Alerts</span>
-                    <span class="dash-glass-arrow">→</span>
+            <div class="pg-bento-card bento-clickable" onclick="showPage('alerts')" style="cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#ff8a95; margin-bottom:6px;">Health Data</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">17+ Conditions · 7 Meds</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">Falls correlate with neuropathy progression. Drug interaction flagged. D-Amphetamine 30mg delayed at pharmacy.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(220,53,69,0.2);color:#ff8a95;">Falls ↔ Neuropathy</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">Drug Interaction</span>
                 </div>
             </div>
 
             <!-- Genomics -->
-            <div class="dash-glass" onclick="showPage('genome-dashboard')">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMTg4IDk2Yy00MCAyOC01NiA3Mi01NiAxMjAgMCA3MiA0MCAxMjAgODAgMTY0IDMwIDM0IDUwIDYyIDUwIDk2IDAgMjQtMTAgNDQtMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMyNCA5NmM0MCAyOCA1NiA3MiA1NiAxMjAgMCA3Mi00MCAxMjAtODAgMTY0LTMwIDM0LTUwIDYyLTUwIDk2IDAgMjQgMTAgNDQgMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAxNTYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDIwNiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMDYgMjU2IEgzMDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdFRDk1NyIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAzMDYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDM1NiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Genomics</div>
-                        <div class="dash-glass-sub">650K Variants Analyzed</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">Your genome revealed an SCN5A variant linked to anesthesia resistance — important for any future procedures. MÉTIS also found your CYP2D6 rapid metabolizer status may be reducing how well Prazosin works for you. 12 medical-genomic connections mapped so far.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-red">SCN5A → Anesthesia</span>
-                    <span class="dash-ai-chip chip-orange">CYP2D6 → Prazosin</span>
-                    <span class="dash-ai-chip chip-default">12 Correlations</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-orange">1 Critical + 2 Pharma</span>
-                    <span class="dash-glass-arrow">→</span>
+            <div class="pg-bento-card bento-clickable" onclick="showPage('genome-dashboard')" style="cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#ce93d8; margin-bottom:6px;">Genomics</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">650K Variants Analyzed</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">SCN5A anesthesia resistance variant found. CYP2D6 rapid metabolizer may reduce Prazosin efficacy.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(220,53,69,0.2);color:#ff8a95;">SCN5A → Anesthesia</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">CYP2D6 → Prazosin</span>
                 </div>
             </div>
 
-            <!-- Benefits & Money -->
-            <div class="dash-glass" onclick="showPage('benefits-hub')">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE2OCIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik0yNzYgMTU4Yy00Mi0xMC04NiAxMC04NiA1NCAwIDQ0IDQ0IDU0IDg2IDY0IDM0IDggMzQgMzQgMCA0NC0yMCA2LTQ0IDItNjItOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjU2IDEzNnY0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjU2IDMzMnY0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Benefits & Money</div>
-                        <div class="dash-glass-sub">$51K+ Annual Active</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">Your SSDI appeal was filed — decision expected within 90 days. MÉTIS matched 3 clinical trials to your diagnosis profile, including an MDMA-assisted PTSD therapy study nearby. If SSDI is approved, that's an additional ~$4K annually.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-default">SSDI → 90 Days</span>
-                    <span class="dash-ai-chip chip-default">3 Trials Matched</span>
-                    <span class="dash-ai-chip chip-green">+$4K Potential</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-green">On Track</span>
-                    <span class="dash-glass-arrow">→</span>
+            <!-- Benefits -->
+            <div class="pg-bento-card bento-clickable" onclick="showPage('benefits-hub')" style="cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#a7cf28; margin-bottom:6px;">Benefits & Money</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">$51K+ Annual Active</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">SSDI appeal filed — 90 day decision window. 3 clinical trials matched including MDMA-PTSD study.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(167,207,40,0.2);color:#a7cf28;">On Track</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);">+$4K Potential</span>
                 </div>
             </div>
 
-            <!-- Insurance & Bills -->
-            <div class="dash-glass" onclick="showPage('insurance-dashboard')" style="border-color:rgba(220,53,69,0.4)">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxOTAiIHk9IjI0NiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSIxOCIgcng9IjkiIHJ5PSI5IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTkwIiB5PSIyODIiIHdpZHRoPSIxMzIiIGhlaWdodD0iMTgiIHJ4PSI5IiByeT0iOSIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjE5MCIgeT0iMzE4IiB3aWR0aD0iOTAiIGhlaWdodD0iMTgiIHJ4PSI5IiByeT0iOSIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjIzOCIgeT0iMTc4IiB3aWR0aD0iMzYiIGhlaWdodD0iNDQiIHJ4PSIxMCIgcnk9IjEwIiBmaWxsPSIjN0VEOTU3Ii8+PC9zdmc+" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Insurance & Bills</div>
-                        <div class="dash-glass-sub">Gap: 8 Months</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">You've been without coverage since June 2025. VA covers prescriptions, but specialist visits, imaging, and ER are at full cost. MÉTIS found 3 enrollment paths — DC Medicaid, ACA Special Enrollment, and VA community care expansion — with deadlines approaching this month.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-red">No Coverage</span>
-                    <span class="dash-ai-chip chip-orange">Deadlines This Month</span>
-                    <span class="dash-ai-chip chip-default">3 Options Found</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-red">Action Required</span>
-                    <span class="dash-glass-arrow">→</span>
+            <!-- Insurance -->
+            <div class="pg-bento-card bento-clickable" onclick="showPage('insurance-dashboard')" style="border-color:rgba(220,53,69,0.3); cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#dc3545; margin-bottom:6px;">Insurance & Bills</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">Coverage Gap: 8 Months</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">No coverage since June 2025. 3 enrollment paths found — DC Medicaid, ACA, VA community care.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(220,53,69,0.2);color:#ff8a95;">Action Required</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">Deadlines This Month</span>
                 </div>
             </div>
 
             <!-- Connected Health -->
-            <div class="dash-glass" onclick="showPage('insights')">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE1MCIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwxNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwzNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNTYgMjEwIEwxODAgMzMwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zNTYgMjEwIEwzMzIgMzQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xODAgMzMwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMzIgMzQwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiMwODI2M0EiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE0MCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIxNTYiIGN5PSIyMTAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMzU2IiBjeT0iMjEwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjMzMCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIzMzIiIGN5PSIzNDAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMzgwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxwYXRoIGQ9Ik0yMjAgMjU2aDcyIiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Connected Health</div>
-                        <div class="dash-glass-sub">Oura Ring Synced</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">Your REM sleep is at 10% — your brain needs 20-25%. Your bedtime has been averaging 12:34 AM, past the optimal window. MÉTIS correlated your Prazosin timing with REM suppression, and your PTSD nightmares may be fragmenting sleep architecture.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-orange">REM ↔ Prazosin</span>
-                    <span class="dash-ai-chip chip-orange">Late Bedtime</span>
-                    <span class="dash-ai-chip chip-default">PTSD ↔ Sleep</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-orange">Sleep Warning</span>
-                    <span class="dash-glass-arrow">→</span>
+            <div class="pg-bento-card bento-clickable" onclick="showPage('insights')" style="cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#f88a2f; margin-bottom:6px;">Connected Health</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">Oura Ring Synced</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">REM at 10% (needs 20-25%). Prazosin timing correlates with REM suppression. PTSD fragmenting sleep.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">REM ↔ Prazosin</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(248,138,47,0.2);color:#ffc08a;">Late Bedtime</span>
                 </div>
             </div>
 
             <!-- Care Team -->
-            <div class="dash-glass" onclick="showPage('care-team')">
-                <div class="dash-glass-hdr">
-                    <div class="dash-glass-ico"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyMTQiIGN5PSIyMzAiIHI9IjU0IiBmaWxsPSIjRkZGRkZGIi8+PGNpcmNsZSBjeD0iMzEwIiBjeT0iMjQwIiByPSI0NiIgZmlsbD0iI0ZGRkZGRiIvPjxwYXRoIGQ9Ik0xMjYgNDEyYzE4LTY2IDc0LTkyIDEyOC05MnMxMTAgMjYgMTI4IDkyIiBmaWxsPSIjRkZGRkZGIi8+PHBhdGggZD0iTTMyMCAxMzBoMTI0YTQwIDQwIDAgMCAxIDQwIDQwdjU4YTQwIDQwIDAgMCAxLTQwIDQwaC01OGwtNDQgMzZ2LTM2aC0yMmE0MCA0MCAwIDAgMS00MC00MHYtNThhNDAgNDAgMCAwIDEgNDAtNDB6IiBmaWxsPSIjRkZGRkZGIi8+PGNpcmNsZSBjeD0iMzYwIiBjeT0iMjAwIiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjM5NCIgY3k9IjIwMCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSI0MjgiIGN5PSIyMDAiIHI9IjEwIiBmaWxsPSIjN0VEOTU3Ii8+PC9zdmc+" class="metis-ico-xl" style="width:3em;height:3em;" alt=""></div>
-                    <div class="dash-glass-titles">
-                        <div class="dash-glass-title">Care Team & Comms</div>
-                        <div class="dash-glass-sub">4 Providers Active</div>
-                    </div>
-                </div>
-                <div class="dash-glass-body">Your next appointment is with Dr. Rodriguez on Feb 18. You have 2 unread messages from the VA pharmacy about refills. Based on recent findings, MÉTIS suggests bringing up the falls pattern, Prazosin timing, and your anesthesia gene card.</div>
-                <div class="dash-ai-row">
-                    <span class="dash-ai-chip chip-default">Feb 18 Appt</span>
-                    <span class="dash-ai-chip chip-default">2 Messages</span>
-                    <span class="dash-ai-chip chip-green">3 Topics Prepared</span>
-                </div>
-                <div class="dash-glass-foot" style="margin-top:12px">
-                    <span class="dash-glass-badge bg-blue">2 Unread</span>
-                    <span class="dash-glass-arrow">→</span>
+            <div class="pg-bento-card bento-clickable" onclick="showPage('care-team')" style="cursor:pointer;">
+                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:#38bdf8; margin-bottom:6px;">Care Team & Comms</div>
+                <div style="font-size:14px; font-weight:700; margin-bottom:6px;">4 Providers Active</div>
+                <div style="font-size:12px; opacity:0.6; line-height:1.5; margin-bottom:8px;">Dr. Rodriguez Feb 18. 2 unread VA pharmacy messages. 3 AI-prepared discussion topics.</div>
+                <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(56,189,248,0.2);color:#38bdf8;">2 Unread</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(167,207,40,0.2);color:#a7cf28;">3 Topics Ready</span>
                 </div>
             </div>
+        </div>
 
-        </div><!-- /dash-glass-wrap -->
-
-        <div class="dash-footer-note">
-            <strong>MÉTIS AI</strong> — Last scan: 2 minutes ago • 21 correlations active across your health data
+        <div style="font-size:10px; opacity:0.3; text-align:center; margin-top:16px; padding:8px;">
+            <strong>MÉTIS AI</strong> — Last scan: 2 minutes ago · 21 correlations active across your health data
         </div>
 
     </div>
