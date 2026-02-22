@@ -133,8 +133,8 @@
             left: -320px;
             width: 300px;
             height: 100vh;
-            background: white;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+            background: #0d1b2e;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
             z-index: 1999;
             transition: left 0.3s ease;
             overflow-y: auto;
@@ -206,17 +206,19 @@
 
         /* Cards */
         .card {
-            background: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            color: #e0e8f0;
         }
 
         .card-title {
             font-size: 22px;
             font-weight: 700;
-            color: #001830;
+            color: #e0e8f0;
             margin-bottom: 8px;
         }
 
@@ -259,18 +261,19 @@
         }
 
         .stat-card {
-            background: white;
+            background: rgba(255,255,255,0.06);
             padding: 20px;
             border-radius: 12px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 2px solid #f0f0f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e0e8f0;
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: 800;
-            color: #001830;
+            color: #a7cf28;
             margin-bottom: 4px;
         }
 
@@ -291,7 +294,7 @@
 
         .list-title {
             font-weight: 700;
-            color: #001830;
+            color: #e0e8f0;
             margin-bottom: 8px;
             font-size: 16px;
         }
@@ -350,7 +353,7 @@
         }
 
         .action-btn-secondary {
-            background: white;
+            background: rgba(255,255,255,0.06);
             border: 2px solid #a7cf28;
             color: #a7cf28;
             padding: 16px 24px;
@@ -426,7 +429,7 @@
 
         .timeline-year {
             font-weight: 800;
-            color: #001830;
+            color: #a7cf28;
             font-size: 16px;
             margin-bottom: 4px;
         }
@@ -460,17 +463,17 @@
         .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
         .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px;  }
         .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-        .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .metric-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .metric-label { font-size: 14px;  }
-        .metric-value { font-size: 14px; font-weight: 700; color: #001830; }
+        .metric-value { font-size: 14px; font-weight: 700; color: #e0e8f0; }
         .metric-change { font-size: 12px; margin-left: 6px; }
         .metric-up { color: #a7cf28; }
         .metric-down { color: #dc3545; }
         .metric-flat { color: #f88a2f; }
-        .insight-card { background: white; color: #222; border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 2px solid #001830; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-        .insight-card .card-title { color: #001830; font-weight: 800; }
+        .insight-card { background: rgba(255,255,255,0.06); color: #e0e8f0; border-radius: 16px; padding: 24px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+        .insight-card .card-title { color: #e0e8f0; font-weight: 800; }
         .insight-card .list-subtitle {  }
-        .insight-card strong { color: #001830; }
+        .insight-card strong { color: #e0e8f0; }
         .insight-card .insight-tag { background: #001830; color: #a7cf28; }
         .insight-tag { background: rgba(167,207,40,0.2); color: #a7cf28; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block; margin: 4px 4px 4px 0; }
         .alert-red { background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); border: 2px solid #dc3545; color: #721c24; }
@@ -714,8 +717,9 @@ body.dark-mode .a11y-panel h3 { color: #a7cf28; }
 .dash-pulse-row::-webkit-scrollbar { display: none; }
 .dash-pulse-card {
     flex: 1 1 0; min-width: 110px;
-    background: white; border-radius: 18px; padding: 18px 10px;
-    text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px; padding: 18px 10px;
+    text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     cursor: pointer; transition: all 0.2s;
 }
 .dash-pulse-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
@@ -727,13 +731,13 @@ body.dark-mode .a11y-panel h3 { color: #a7cf28; }
 .dash-ring-bg { position: absolute; inset: 0; border-radius: 50%; }
 .dash-ring-inner {
     width: 64px; height: 64px; border-radius: 50%;
-    background: white; display: flex; flex-direction: column;
+    background: #0a0e17; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     position: relative; z-index: 1;
 }
 .dash-ring-val { font-size: 24px; font-weight: 900; line-height: 1; }
 .dash-ring-unit { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-.dash-pulse-label { font-size: 12px; font-weight: 800; color: #001830; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.dash-pulse-label { font-size: 12px; font-weight: 800; color: #e0e8f0; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
 .dash-pulse-sub { font-size: 11px; color: #777; font-weight: 600; line-height: 1.3; }
 
 /* Section Divider */
@@ -1218,14 +1222,14 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
 .pg-glass-wrap [style*="color:#ffcccc"] { color: #ffcccc !important; }
 .pg-glass-wrap [style*="color:#c5e864"] { color: #c5e864 !important; }
 .pg-glass-wrap [style*="color:#82c4f8"] { color: #82c4f8 !important; }
-/* Preserve dark text on white bento cards within glass */
+/* Dark glass text on bento cards within glass */
 .pg-glass-wrap .pg-bento-card, .pg-glass-wrap .pg-bento-card * {
-    color: #333 !important;
+    color: #e0e8f0 !important;
 }
-.pg-glass-wrap .pg-bento-card .pg-bento-label { color: #666 !important; }
-.pg-glass-wrap .pg-bento-card .pg-bento-sub { color: #999 !important; }
-.pg-glass-wrap .pg-bento-card .pg-bento-val { color: #001830 !important; }
-.pg-glass-wrap .pg-bento-btn, .pg-glass-wrap .action-btn { color: #001830 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-label { color: #aaa !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-sub { color: #888 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-val { color: #e0e8f0 !important; }
+.pg-glass-wrap .pg-bento-btn, .pg-glass-wrap .action-btn { color: #a7cf28 !important; }
 /* Fix header stat colors */
 .pg-header, .pg-header * { color: rgba(255,255,255,0.92) !important; }
 .pg-header .pg-header-title { color: white !important; }
@@ -1338,16 +1342,17 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
 .pg-glass .insight-card strong { color: #fff !important; }
 .pg-glass .insight-card .insight-tag { background: rgba(56,189,248,0.2) !important; color: #a7cf28 !important; }
 
-/* Fix bento cards that appear inside glass-wrap but outside glass panels */
+/* Fix bento cards that appear inside glass-wrap — dark glass style */
 .pg-glass-wrap .pg-bento-card {
-    background: white !important;
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
 }
 .pg-glass-wrap .pg-bento-card, .pg-glass-wrap .pg-bento-card * {
-    color: #333 !important;
+    color: #e0e8f0 !important;
 }
-.pg-glass-wrap .pg-bento-card .pg-bento-label { color: #666 !important; }
-.pg-glass-wrap .pg-bento-card .pg-bento-sub { color: #999 !important; }
-.pg-glass-wrap .pg-bento-card .pg-bento-val { color: #001830 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-label { color: #aaa !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-sub { color: #888 !important; }
+.pg-glass-wrap .pg-bento-card .pg-bento-val { color: #e0e8f0 !important; }
 .pg-glass-wrap .pg-bento-card .badge { color: white !important; }
 
 /* Fix appointments page font sizes */
