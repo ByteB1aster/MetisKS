@@ -2648,20 +2648,20 @@ function loadDocumentsFromStorage() {
             </div>
 
             <!-- Quick Stats Row — spans full width -->
-            <div class="pg-bento-card" style="grid-column:span 3; display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
-                <div style="text-align:center;">
+            <div class="pg-bento-card" style="grid-column:span 3; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:0;">
+                <div onclick="showPage('diagnoses')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
                     <div style="font-size:18px; font-weight:800; color:var(--badge-red-text);">17+</div>
                     <div style="font-size:10px; opacity:0.5;">Conditions</div>
                 </div>
-                <div style="text-align:center;">
+                <div onclick="showPage('medications')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
                     <div style="font-size:18px; font-weight:800; color:var(--badge-blue-text);">7</div>
                     <div style="font-size:10px; opacity:0.5;">Medications</div>
                 </div>
-                <div style="text-align:center;">
+                <div onclick="showPage('genetic-risks')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
                     <div style="font-size:18px; font-weight:800; color:#a7cf28;">12</div>
                     <div style="font-size:10px; opacity:0.5;">Gene Links</div>
                 </div>
-                <div style="text-align:center;">
+                <div onclick="showPage('wearables')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
                     <div style="font-size:18px; font-weight:800; color:#ce93d8;">62</div>
                     <div style="font-size:10px; opacity:0.5;">Sleep Score</div>
                 </div>
