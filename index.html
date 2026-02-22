@@ -2025,7 +2025,8 @@ function toggleA11yPanel() {
 }
 
 function setFontSize(val) {
-    document.documentElement.style.fontSize = (16 * val / 100) + 'px';
+    const scale = val / 100;
+    document.getElementById('app-wrap').style.zoom = scale;
     document.getElementById('a11yFontSizeVal').textContent = val + '%';
     saveA11ySettings();
 }
