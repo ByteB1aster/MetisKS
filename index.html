@@ -2416,12 +2416,25 @@ var AutoSync = {
     },
 
     runSync: function() {
+        var self = this;
         var synced = [];
         var now = new Date();
+
+        // First: pull REAL data from authenticated MasterSync connectors
+        if (typeof MasterSync !== 'undefined') {
+            MasterSync.syncAll().then(function(results) {
+                if (results && results.length > 0) {
+                    console.log('[MÉTIS AutoSync] MasterSync pulled real data from ' + results.length + ' source(s)');
+                }
+            }).catch(function(err) {
+                console.warn('[MÉTIS AutoSync] MasterSync.syncAll error:', err);
+            });
+        }
+
+        // Then: update timestamps for all connected sources (legacy + real)
         for (var key in DataIntegration.sources) {
             var source = DataIntegration.sources[key];
             if (source.status === 'connected' || source.status === 'imported' || source.status === 'uploaded') {
-                // Check if source needs sync (older than 5 minutes)
                 var lastSync = source.lastSync ? new Date(source.lastSync) : new Date(0);
                 if (now - lastSync > this.syncIntervalMs) {
                     source.lastSync = now.toISOString();
@@ -2432,12 +2445,12 @@ var AutoSync = {
         if (synced.length > 0) {
             // Update AnalysisEngine
             AnalysisEngine.lastRun = now.toISOString();
-            AnalysisEngine.nextRun = new Date(now.getTime() + this.syncIntervalMs).toISOString();
+            AnalysisEngine.nextRun = new Date(now.getTime() + self.syncIntervalMs).toISOString();
             // Update dashboard footer
             var footer = document.querySelector('#dashboard [style*="opacity:0.3"]');
             if (footer) footer.innerHTML = '<strong>MÉTIS AI</strong> — Last sync: just now · ' + AnalysisEngine.correlationsFound + ' correlations · ' + synced.length + ' sources synced';
             // Update sync status indicators
-            this.updateSyncUI();
+            self.updateSyncUI();
             console.log('[MÉTIS AutoSync] Synced: ' + synced.join(', '));
         }
     },
@@ -2470,6 +2483,17 @@ var AutoSync = {
 
 // Start auto-sync when dashboard loads
 document.addEventListener('DOMContentLoaded', function() {
+    // Check for OAuth callbacks FIRST (user returning from Oura/VA/CMS/Epic login)
+    if (typeof MasterSync !== 'undefined') {
+        var oauthResult = MasterSync.checkCallbacks();
+        if (oauthResult) {
+            console.log('[MÉTIS] OAuth callback handled for: ' + oauthResult);
+            // Clean URL after handling callback
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    }
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
     // Initialize MÉTIS AI Engine (Rule Engine + Predictive Analysis)
@@ -2499,23 +2523,43 @@ function connectNewSource(sourceKey) {
     notif.innerHTML = 'Connecting ' + source.name + '...<br><span style="font-size:12px; font-weight:500;">Initiating ' + (source.endpoint ? 'FHIR/OAuth' : 'API') + ' handshake...</span>';
     document.body.appendChild(notif);
 
-    setTimeout(function() {
-        notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Authenticating with ' + (source.endpoint || 'API endpoint') + '...</span>';
-    }, 1500);
+    // Route through MasterSync for real OAuth connectors; fall back to legacy for others
+    var hasMasterSync = typeof MasterSync !== 'undefined' && MasterSync.connectorMap && MasterSync.connectorMap[sourceKey];
+    if (hasMasterSync) {
+        // Real OAuth flow — MasterSync will redirect to provider's auth page
+        setTimeout(function() {
+            notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Redirecting to secure ' + source.name + ' login...</span>';
+        }, 800);
+        setTimeout(function() {
+            MasterSync.connect(sourceKey);
+        }, 1500);
+        // The page will redirect; clean up notification in case user cancels
+        setTimeout(function() {
+            if (document.body.contains(notif)) {
+                notif.style.opacity = '0';
+                notif.style.transition = 'opacity 0.5s';
+                setTimeout(function() { notif.remove(); }, 500);
+            }
+        }, 10000);
+    } else {
+        // Legacy flow for sources without real connectors (Ancestry, etc.)
+        setTimeout(function() {
+            notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Authenticating with ' + (source.endpoint || 'API endpoint') + '...</span>';
+        }, 1500);
 
-    setTimeout(function() {
-        // Actually connect the source
-        DataIntegration.connectSource(sourceKey);
-        notif.innerHTML = 'Connecting ' + source.name + ' Connected!<br><span style="font-size:12px; font-weight:500;">Syncing ' + source.dataTypes.join(', ') + '...</span>';
-        notif.style.background = 'linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95))';
-        notif.style.color = '#001830';
-    }, 3000);
+        setTimeout(function() {
+            DataIntegration.connectSource(sourceKey);
+            notif.innerHTML = source.name + ' Connected!<br><span style="font-size:12px; font-weight:500;">Syncing ' + source.dataTypes.join(', ') + '...</span>';
+            notif.style.background = 'linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95))';
+            notif.style.color = '#001830';
+        }, 3000);
 
-    setTimeout(function() {
-        notif.style.opacity = '0';
-        notif.style.transition = 'opacity 0.5s';
-        setTimeout(function() { notif.remove(); }, 500);
-    }, 6000);
+        setTimeout(function() {
+            notif.style.opacity = '0';
+            notif.style.transition = 'opacity 0.5s';
+            setTimeout(function() { notif.remove(); }, 500);
+        }, 6000);
+    }
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -4565,6 +4609,914 @@ var MetisAPI = {
                 console.error('[MÉTIS API] Refresh error:', error);
                 return false;
             });
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// REAL DEVICE & PORTAL INTEGRATION CONNECTORS
+// Each connector implements OAuth flows and real data fetching
+// Data feeds into KeenanHealthData for AI engine re-analysis
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Oura Ring API v2 ──
+var OuraConnector = {
+    baseUrl: 'https://api.ouraring.com/v2',
+    authUrl: 'https://cloud.ouraring.com/oauth/authorize',
+    tokenUrl: 'https://api.ouraring.com/oauth/token',
+    clientId: null, // Set via OuraConnector.configure('your-client-id')
+    accessToken: null,
+    tokenExpiry: null,
+    rateLimitRemaining: 5000,
+
+    configure: function(clientId) {
+        this.clientId = clientId;
+        // Check for stored token
+        try {
+            var stored = JSON.parse(sessionStorage.getItem('oura_token') || 'null');
+            if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
+                this.accessToken = stored.access_token;
+                this.tokenExpiry = stored.expires_at;
+                console.log('[Oura] Restored token from session (expires ' + this.tokenExpiry + ')');
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    },
+
+    // Initiate OAuth2 authorization (client-side implicit flow)
+    authorize: function(redirectUri) {
+        if (!this.clientId) { console.error('[Oura] No client ID configured'); return; }
+        redirectUri = redirectUri || window.location.origin + window.location.pathname;
+        var state = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('oura_state', state);
+        var url = this.authUrl +
+            '?response_type=token' +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&redirect_uri=' + encodeURIComponent(redirectUri) +
+            '&scope=daily+personal+heartrate+spo2+session' +
+            '&state=' + state;
+        window.location.href = url;
+    },
+
+    // Handle OAuth callback (parse token from URL fragment)
+    handleCallback: function() {
+        var hash = window.location.hash;
+        if (!hash || hash.indexOf('access_token') === -1) return false;
+        var params = {};
+        hash.substring(1).split('&').forEach(function(part) {
+            var kv = part.split('=');
+            params[kv[0]] = decodeURIComponent(kv[1] || '');
+        });
+        if (params.access_token) {
+            var savedState = sessionStorage.getItem('oura_state');
+            if (params.state && params.state !== savedState) {
+                console.error('[Oura] State mismatch — possible CSRF');
+                return false;
+            }
+            this.accessToken = params.access_token;
+            var expiresIn = parseInt(params.expires_in) || 2592000; // 30 days default
+            this.tokenExpiry = new Date(Date.now() + expiresIn * 1000).toISOString();
+            sessionStorage.setItem('oura_token', JSON.stringify({
+                access_token: this.accessToken,
+                expires_at: this.tokenExpiry
+            }));
+            // Clean URL
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+            console.log('[Oura] Authenticated — token expires ' + this.tokenExpiry);
+            return true;
+        }
+        return false;
+    },
+
+    isAuthenticated: function() {
+        return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
+    },
+
+    // Generic API call
+    _fetch: function(endpoint, params) {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var url = this.baseUrl + endpoint;
+        if (params) {
+            var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
+            url += '?' + qs;
+        }
+        var self = this;
+        return fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + this.accessToken }
+        }).then(function(r) {
+            self.rateLimitRemaining = parseInt(r.headers.get('x-ratelimit-remaining') || '5000');
+            if (r.status === 429) throw new Error('Oura rate limit exceeded');
+            if (!r.ok) throw new Error('Oura API error: ' + r.status);
+            return r.json();
+        });
+    },
+
+    // Fetch sleep data (last N days)
+    getSleep: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/daily_sleep', { start_date: start });
+    },
+
+    // Fetch activity data
+    getActivity: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/daily_activity', { start_date: start });
+    },
+
+    // Fetch readiness scores
+    getReadiness: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/daily_readiness', { start_date: start });
+    },
+
+    // Fetch heart rate data
+    getHeartRate: function(days) {
+        var start = new Date(Date.now() - (days || 1) * 86400000).toISOString();
+        return this._fetch('/usercollection/heartrate', { start_datetime: start });
+    },
+
+    // Fetch SpO2 data
+    getSpO2: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/daily_spo2', { start_date: start });
+    },
+
+    // Fetch stress data
+    getStress: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/daily_stress', { start_date: start });
+    },
+
+    // Pull all data and normalize into KeenanHealthData.wearables format
+    syncAll: function() {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var self = this;
+        console.log('[Oura] Syncing all data...');
+        return Promise.all([
+            self.getSleep(7).catch(function() { return { data: [] }; }),
+            self.getActivity(7).catch(function() { return { data: [] }; }),
+            self.getReadiness(7).catch(function() { return { data: [] }; }),
+            self.getHeartRate(1).catch(function() { return { data: [] }; }),
+            self.getSpO2(7).catch(function() { return { data: [] }; })
+        ]).then(function(results) {
+            var sleep = results[0].data || [];
+            var activity = results[1].data || [];
+            var readiness = results[2].data || [];
+            var heartrate = results[3].data || [];
+            var spo2 = results[4].data || [];
+
+            // Compute averages from real data
+            var wearableData = {
+                source: 'Oura Ring Gen 3 (Live API)',
+                lastSynced: new Date().toISOString()
+            };
+
+            // Sleep
+            if (sleep.length > 0) {
+                var sleepScores = sleep.map(function(s) { return s.score; }).filter(Boolean);
+                var sleepDurations = sleep.map(function(s) { return s.contributors ? s.contributors.total_sleep : null; }).filter(Boolean);
+                wearableData.sleepScore = sleepScores.length ? Math.round(sleepScores.reduce(function(a,b){return a+b;},0) / sleepScores.length) : null;
+                wearableData.avgSleepDuration = sleepDurations.length ? Math.round(sleepDurations.reduce(function(a,b){return a+b;},0) / sleepDurations.length / 3600 * 10) / 10 : null;
+            }
+
+            // Activity — steps
+            if (activity.length > 0) {
+                var steps = activity.map(function(a) { return a.steps; }).filter(function(v) { return v != null; });
+                wearableData.steps7DayAvg = steps.length ? Math.round(steps.reduce(function(a,b){return a+b;},0) / steps.length) : null;
+            }
+
+            // Readiness — HRV
+            if (readiness.length > 0) {
+                var hrvs = readiness.map(function(r) { return r.contributors ? r.contributors.hrv_balance : null; }).filter(Boolean);
+                wearableData.hrvAvg = hrvs.length ? Math.round(hrvs.reduce(function(a,b){return a+b;},0) / hrvs.length) : null;
+                // Trend: compare latest 3 days to previous 4
+                if (hrvs.length >= 5) {
+                    var recent = hrvs.slice(0, 3).reduce(function(a,b){return a+b;},0) / 3;
+                    var earlier = hrvs.slice(3).reduce(function(a,b){return a+b;},0) / (hrvs.length - 3);
+                    wearableData.hrvTrend = earlier > 0 ? Math.round((recent - earlier) / earlier * 100) : 0;
+                }
+            }
+
+            // Heart rate — resting
+            if (heartrate.length > 0) {
+                var restingHRs = heartrate.filter(function(h) { return h.source === 'rest' || h.source === 'sleep'; }).map(function(h) { return h.bpm; });
+                wearableData.restingHR = restingHRs.length ? Math.round(restingHRs.reduce(function(a,b){return a+b;},0) / restingHRs.length) : null;
+            }
+
+            // SpO2
+            if (spo2.length > 0) {
+                var spo2Vals = spo2.map(function(s) { return s.spo2_percentage ? s.spo2_percentage.average : null; }).filter(Boolean);
+                wearableData.spo2 = spo2Vals.length ? Math.round(spo2Vals.reduce(function(a,b){return a+b;},0) / spo2Vals.length * 10) / 10 : null;
+            }
+
+            console.log('[Oura] Sync complete:', wearableData);
+            return wearableData;
+        });
+    }
+};
+
+// ── VA Lighthouse FHIR R4 API ──
+var VALighthouseConnector = {
+    baseUrl: 'https://sandbox-api.va.gov/services/fhir/v0/r4',
+    authUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/authorization',
+    tokenUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/token',
+    clientId: null,
+    accessToken: null,
+    patientId: null,
+    tokenExpiry: null,
+
+    configure: function(clientId) {
+        this.clientId = clientId;
+        try {
+            var stored = JSON.parse(sessionStorage.getItem('va_token') || 'null');
+            if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
+                this.accessToken = stored.access_token;
+                this.patientId = stored.patient;
+                this.tokenExpiry = stored.expires_at;
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    },
+
+    // Generate PKCE challenge for secure browser auth
+    _generatePKCE: async function() {
+        var verifier = '';
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+        for (var i = 0; i < 128; i++) verifier += chars.charAt(Math.floor(Math.random() * chars.length));
+        var encoder = new TextEncoder();
+        var data = encoder.encode(verifier);
+        var hash = await crypto.subtle.digest('SHA-256', data);
+        var challenge = btoa(String.fromCharCode.apply(null, new Uint8Array(hash)))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        return { verifier: verifier, challenge: challenge };
+    },
+
+    authorize: async function(redirectUri) {
+        if (!this.clientId) { console.error('[VA] No client ID configured'); return; }
+        redirectUri = redirectUri || window.location.origin + window.location.pathname;
+        var pkce = await this._generatePKCE();
+        var state = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('va_pkce_verifier', pkce.verifier);
+        sessionStorage.setItem('va_state', state);
+        var url = this.authUrl +
+            '?response_type=code' +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&redirect_uri=' + encodeURIComponent(redirectUri) +
+            '&scope=' + encodeURIComponent('openid profile patient/Patient.read patient/Condition.read patient/Observation.read patient/MedicationRequest.read patient/AllergyIntolerance.read patient/Immunization.read patient/Procedure.read launch/patient') +
+            '&state=' + state +
+            '&code_challenge=' + pkce.challenge +
+            '&code_challenge_method=S256';
+        window.location.href = url;
+    },
+
+    handleCallback: async function() {
+        var params = new URLSearchParams(window.location.search);
+        var code = params.get('code');
+        var state = params.get('state');
+        if (!code) return false;
+        var savedState = sessionStorage.getItem('va_state');
+        if (state && state !== savedState) { console.error('[VA] State mismatch'); return false; }
+        var verifier = sessionStorage.getItem('va_pkce_verifier');
+        if (!verifier) { console.error('[VA] No PKCE verifier found'); return false; }
+        try {
+            var response = await fetch(this.tokenUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'grant_type=authorization_code' +
+                    '&code=' + encodeURIComponent(code) +
+                    '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
+                    '&client_id=' + encodeURIComponent(this.clientId) +
+                    '&code_verifier=' + encodeURIComponent(verifier)
+            });
+            var token = await response.json();
+            if (token.access_token) {
+                this.accessToken = token.access_token;
+                this.patientId = token.patient;
+                this.tokenExpiry = new Date(Date.now() + (token.expires_in || 3600) * 1000).toISOString();
+                sessionStorage.setItem('va_token', JSON.stringify({
+                    access_token: this.accessToken, patient: this.patientId, expires_at: this.tokenExpiry
+                }));
+                history.replaceState(null, '', window.location.pathname);
+                console.log('[VA] Authenticated — patient ' + this.patientId);
+                return true;
+            }
+        } catch(e) { console.error('[VA] Token exchange failed:', e); }
+        return false;
+    },
+
+    isAuthenticated: function() {
+        return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
+    },
+
+    _fhirFetch: function(resource, params) {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var url = this.baseUrl + '/' + resource;
+        if (params) {
+            var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
+            url += '?' + qs;
+        }
+        return fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' }
+        }).then(function(r) {
+            if (!r.ok) throw new Error('VA FHIR error: ' + r.status);
+            return r.json();
+        });
+    },
+
+    getConditions: function() { return this._fhirFetch('Condition', { patient: this.patientId, 'clinical-status': 'active' }); },
+    getMedications: function() { return this._fhirFetch('MedicationRequest', { patient: this.patientId, status: 'active' }); },
+    getLabs: function() { return this._fhirFetch('Observation', { patient: this.patientId, category: 'laboratory', _sort: '-date', _count: '50' }); },
+    getAllergies: function() { return this._fhirFetch('AllergyIntolerance', { patient: this.patientId }); },
+    getImmunizations: function() { return this._fhirFetch('Immunization', { patient: this.patientId }); },
+    getPatient: function() { return this._fhirFetch('Patient/' + this.patientId); },
+
+    // Pull all and normalize into KeenanHealthData format
+    syncAll: function() {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var self = this;
+        console.log('[VA] Syncing all FHIR data...');
+        return Promise.all([
+            self.getConditions().catch(function() { return { entry: [] }; }),
+            self.getMedications().catch(function() { return { entry: [] }; }),
+            self.getLabs().catch(function() { return { entry: [] }; })
+        ]).then(function(results) {
+            var data = { conditions: [], medications: [], labs: [], source: 'VA Lighthouse FHIR R4', lastSynced: new Date().toISOString() };
+
+            // Parse FHIR Conditions → conditions array
+            (results[0].entry || []).forEach(function(e) {
+                var r = e.resource;
+                if (!r) return;
+                data.conditions.push({
+                    name: r.code && r.code.text ? r.code.text : (r.code && r.code.coding && r.code.coding[0] ? r.code.coding[0].display : 'Unknown'),
+                    icd10: r.code && r.code.coding ? (r.code.coding.find(function(c){ return c.system && c.system.indexOf('icd') >= 0; }) || {}).code || '' : '',
+                    status: r.clinicalStatus && r.clinicalStatus.coding ? r.clinicalStatus.coding[0].code : 'active',
+                    diagnosedDate: r.onsetDateTime || r.recordedDate || '',
+                    source: 'VA'
+                });
+            });
+
+            // Parse FHIR MedicationRequests → medications array
+            (results[1].entry || []).forEach(function(e) {
+                var r = e.resource;
+                if (!r) return;
+                var medName = 'Unknown';
+                if (r.medicationCodeableConcept && r.medicationCodeableConcept.text) medName = r.medicationCodeableConcept.text;
+                else if (r.medicationCodeableConcept && r.medicationCodeableConcept.coding && r.medicationCodeableConcept.coding[0]) medName = r.medicationCodeableConcept.coding[0].display || medName;
+                var rxCode = '';
+                if (r.medicationCodeableConcept && r.medicationCodeableConcept.coding) {
+                    var rxnorm = r.medicationCodeableConcept.coding.find(function(c){ return c.system && c.system.indexOf('rxnorm') >= 0; });
+                    if (rxnorm) rxCode = rxnorm.code;
+                }
+                data.medications.push({
+                    name: medName, code: rxCode, rxNormCode: rxCode,
+                    status: r.status || 'active', startDate: r.authoredOn || '',
+                    source: 'VA'
+                });
+            });
+
+            // Parse FHIR Observations (labs) → labs array
+            (results[2].entry || []).forEach(function(e) {
+                var r = e.resource;
+                if (!r || !r.code) return;
+                var loincCode = '';
+                if (r.code.coding) {
+                    var loinc = r.code.coding.find(function(c){ return c.system && c.system.indexOf('loinc') >= 0; });
+                    if (loinc) loincCode = loinc.code;
+                }
+                var value = null;
+                if (r.valueQuantity) value = r.valueQuantity.value;
+                else if (r.valueString) value = parseFloat(r.valueString);
+                if (value === null || isNaN(value)) return;
+                data.labs.push({
+                    loincCode: loincCode,
+                    name: r.code.text || (r.code.coding && r.code.coding[0] ? r.code.coding[0].display : ''),
+                    value: value, unit: r.valueQuantity ? r.valueQuantity.unit : '',
+                    date: r.effectiveDateTime || r.issued || '',
+                    source: 'VA'
+                });
+            });
+
+            console.log('[VA] Sync complete: ' + data.conditions.length + ' conditions, ' + data.medications.length + ' meds, ' + data.labs.length + ' labs');
+            return data;
+        });
+    }
+};
+
+// ── CMS Blue Button 2.0 API ──
+// NOTE: CMS requires confidential client (server-side secret).
+// This connector implements the OAuth redirect flow; token exchange
+// must be completed by a backend proxy. For demo/sandbox, direct exchange works.
+var CMSBlueButtonConnector = {
+    sandboxUrl: 'https://sandbox.bluebutton.cms.gov/v2/fhir',
+    prodUrl: 'https://api.bluebutton.cms.gov/v2/fhir',
+    authUrl: 'https://sandbox.bluebutton.cms.gov/v2/o/authorize/',
+    tokenUrl: 'https://sandbox.bluebutton.cms.gov/v2/o/token/',
+    clientId: null,
+    clientSecret: null, // Required — CMS does not support public clients
+    accessToken: null,
+    patientId: null,
+    tokenExpiry: null,
+    useSandbox: true,
+
+    configure: function(clientId, clientSecret, useSandbox) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret || null;
+        this.useSandbox = useSandbox !== false;
+        if (!this.useSandbox) {
+            this.authUrl = 'https://api.bluebutton.cms.gov/v2/o/authorize/';
+            this.tokenUrl = 'https://api.bluebutton.cms.gov/v2/o/token/';
+        }
+        try {
+            var stored = JSON.parse(sessionStorage.getItem('cms_token') || 'null');
+            if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
+                this.accessToken = stored.access_token;
+                this.patientId = stored.patient;
+                this.tokenExpiry = stored.expires_at;
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    },
+
+    authorize: function(redirectUri) {
+        if (!this.clientId) { console.error('[CMS] No client ID configured'); return; }
+        redirectUri = redirectUri || window.location.origin + window.location.pathname;
+        var state = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('cms_state', state);
+        var url = this.authUrl +
+            '?response_type=code' +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&redirect_uri=' + encodeURIComponent(redirectUri) +
+            '&state=' + state;
+        window.location.href = url;
+    },
+
+    handleCallback: async function() {
+        var params = new URLSearchParams(window.location.search);
+        var code = params.get('code');
+        if (!code) return false;
+        var savedState = sessionStorage.getItem('cms_state');
+        if (params.get('state') && params.get('state') !== savedState) { console.error('[CMS] State mismatch'); return false; }
+
+        // CMS requires confidential client — send client_id + secret
+        var body = 'grant_type=authorization_code' +
+            '&code=' + encodeURIComponent(code) +
+            '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname);
+
+        var headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+        if (this.clientSecret) {
+            headers['Authorization'] = 'Basic ' + btoa(this.clientId + ':' + this.clientSecret);
+        } else {
+            body += '&client_id=' + encodeURIComponent(this.clientId);
+        }
+
+        try {
+            var response = await fetch(this.tokenUrl, { method: 'POST', headers: headers, body: body });
+            var token = await response.json();
+            if (token.access_token) {
+                this.accessToken = token.access_token;
+                this.patientId = token.patient;
+                this.tokenExpiry = new Date(Date.now() + (token.expires_in || 36000) * 1000).toISOString();
+                sessionStorage.setItem('cms_token', JSON.stringify({
+                    access_token: this.accessToken, patient: this.patientId, expires_at: this.tokenExpiry
+                }));
+                history.replaceState(null, '', window.location.pathname);
+                console.log('[CMS] Authenticated — patient ' + this.patientId);
+                return true;
+            }
+        } catch(e) { console.error('[CMS] Token exchange failed:', e); }
+        return false;
+    },
+
+    isAuthenticated: function() {
+        return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
+    },
+
+    _fhirFetch: function(resource, params) {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var base = this.useSandbox ? this.sandboxUrl : this.prodUrl;
+        var url = base + '/' + resource;
+        if (params) {
+            var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
+            url += '?' + qs;
+        }
+        return fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' }
+        }).then(function(r) {
+            if (!r.ok) throw new Error('CMS FHIR error: ' + r.status);
+            return r.json();
+        });
+    },
+
+    getPatient: function() { return this._fhirFetch('Patient/' + this.patientId); },
+    getCoverage: function() { return this._fhirFetch('Coverage', { beneficiary: 'Patient/' + this.patientId }); },
+    getEOB: function(since) {
+        var params = { patient: 'Patient/' + this.patientId };
+        if (since) params['_lastUpdated'] = 'ge' + since;
+        return this._fhirFetch('ExplanationOfBenefit', params);
+    },
+
+    syncAll: function() {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var self = this;
+        console.log('[CMS] Syncing Medicare data...');
+        return Promise.all([
+            self.getCoverage().catch(function() { return { entry: [] }; }),
+            self.getEOB('2025-01-01').catch(function() { return { entry: [] }; })
+        ]).then(function(results) {
+            var data = { coverage: [], claims: [], source: 'CMS Blue Button 2.0', lastSynced: new Date().toISOString() };
+
+            (results[0].entry || []).forEach(function(e) {
+                var r = e.resource;
+                if (!r) return;
+                data.coverage.push({
+                    type: r.type && r.type.coding ? r.type.coding[0].display : 'Medicare',
+                    status: r.status || 'active',
+                    period: r.period || {},
+                    payor: r.payor && r.payor[0] ? r.payor[0].display : 'CMS'
+                });
+            });
+
+            (results[1].entry || []).forEach(function(e) {
+                var r = e.resource;
+                if (!r) return;
+                data.claims.push({
+                    type: r.type && r.type.coding ? r.type.coding[0].display : 'Claim',
+                    created: r.created || '',
+                    provider: r.provider && r.provider.display ? r.provider.display : '',
+                    total: r.payment && r.payment.amount ? r.payment.amount.value : 0,
+                    status: r.status || ''
+                });
+            });
+
+            console.log('[CMS] Sync complete: ' + data.coverage.length + ' coverage records, ' + data.claims.length + ' claims');
+            return data;
+        });
+    }
+};
+
+// ── Epic MyChart FHIR R4 (SMART on FHIR with PKCE) ──
+var EpicFHIRConnector = {
+    fhirBaseUrl: null, // Set per organization
+    authUrl: null,
+    tokenUrl: null,
+    clientId: null,
+    accessToken: null,
+    patientId: null,
+    tokenExpiry: null,
+
+    // Known Epic endpoints (user selects their organization)
+    knownEndpoints: {
+        'epic-sandbox': { name: 'Epic Sandbox', base: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4' },
+        'mychart-general': { name: 'MyChart (General)', base: 'https://mychart.epic.com/api/FHIR/R4' }
+    },
+
+    configure: function(clientId, fhirBaseUrl) {
+        this.clientId = clientId;
+        this.fhirBaseUrl = fhirBaseUrl || this.knownEndpoints['epic-sandbox'].base;
+        try {
+            var stored = JSON.parse(sessionStorage.getItem('epic_token') || 'null');
+            if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
+                this.accessToken = stored.access_token;
+                this.patientId = stored.patient;
+                this.tokenExpiry = stored.expires_at;
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    },
+
+    // Discover SMART endpoints from FHIR server metadata
+    discoverEndpoints: async function() {
+        try {
+            var r = await fetch(this.fhirBaseUrl + '/.well-known/smart-configuration');
+            var config = await r.json();
+            this.authUrl = config.authorization_endpoint;
+            this.tokenUrl = config.token_endpoint;
+            console.log('[Epic] Discovered endpoints:', this.authUrl, this.tokenUrl);
+            return true;
+        } catch(e) {
+            // Fallback: try metadata endpoint
+            try {
+                var r2 = await fetch(this.fhirBaseUrl + '/metadata', { headers: { 'Accept': 'application/fhir+json' } });
+                var meta = await r2.json();
+                var security = meta.rest && meta.rest[0] && meta.rest[0].security;
+                if (security && security.extension) {
+                    security.extension.forEach(function(ext) {
+                        (ext.extension || []).forEach(function(inner) {
+                            if (inner.url === 'authorize') this.authUrl = inner.valueUri;
+                            if (inner.url === 'token') this.tokenUrl = inner.valueUri;
+                        }.bind(this));
+                    }.bind(this));
+                }
+                return !!(this.authUrl && this.tokenUrl);
+            } catch(e2) { console.error('[Epic] Endpoint discovery failed:', e2); return false; }
+        }
+    },
+
+    _generatePKCE: async function() {
+        var verifier = '';
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+        for (var i = 0; i < 128; i++) verifier += chars.charAt(Math.floor(Math.random() * chars.length));
+        var hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+        var challenge = btoa(String.fromCharCode.apply(null, new Uint8Array(hash)))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        return { verifier: verifier, challenge: challenge };
+    },
+
+    authorize: async function(redirectUri) {
+        if (!this.clientId) { console.error('[Epic] No client ID configured'); return; }
+        if (!this.authUrl) {
+            var discovered = await this.discoverEndpoints();
+            if (!discovered) { console.error('[Epic] Could not discover SMART endpoints'); return; }
+        }
+        redirectUri = redirectUri || window.location.origin + window.location.pathname;
+        var pkce = await this._generatePKCE();
+        var state = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('epic_pkce_verifier', pkce.verifier);
+        sessionStorage.setItem('epic_state', state);
+        var url = this.authUrl +
+            '?response_type=code' +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&redirect_uri=' + encodeURIComponent(redirectUri) +
+            '&scope=' + encodeURIComponent('openid fhirUser patient/Patient.read patient/Condition.read patient/Observation.read patient/MedicationRequest.read patient/AllergyIntolerance.read patient/Procedure.read patient/DocumentReference.read') +
+            '&state=' + state +
+            '&aud=' + encodeURIComponent(this.fhirBaseUrl) +
+            '&code_challenge=' + pkce.challenge +
+            '&code_challenge_method=S256';
+        window.location.href = url;
+    },
+
+    handleCallback: async function() {
+        var params = new URLSearchParams(window.location.search);
+        var code = params.get('code');
+        if (!code) return false;
+        if (params.get('state') !== sessionStorage.getItem('epic_state')) { console.error('[Epic] State mismatch'); return false; }
+        var verifier = sessionStorage.getItem('epic_pkce_verifier');
+        if (!this.tokenUrl) await this.discoverEndpoints();
+        try {
+            var response = await fetch(this.tokenUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'grant_type=authorization_code' +
+                    '&code=' + encodeURIComponent(code) +
+                    '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
+                    '&client_id=' + encodeURIComponent(this.clientId) +
+                    '&code_verifier=' + encodeURIComponent(verifier)
+            });
+            var token = await response.json();
+            if (token.access_token) {
+                this.accessToken = token.access_token;
+                this.patientId = token.patient;
+                this.tokenExpiry = new Date(Date.now() + (token.expires_in || 3600) * 1000).toISOString();
+                sessionStorage.setItem('epic_token', JSON.stringify({
+                    access_token: this.accessToken, patient: this.patientId, expires_at: this.tokenExpiry
+                }));
+                history.replaceState(null, '', window.location.pathname);
+                console.log('[Epic] Authenticated — patient ' + this.patientId);
+                return true;
+            }
+        } catch(e) { console.error('[Epic] Token exchange failed:', e); }
+        return false;
+    },
+
+    isAuthenticated: function() {
+        return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
+    },
+
+    _fhirFetch: function(resource, params) {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var url = this.fhirBaseUrl + '/' + resource;
+        if (params) {
+            var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
+            url += '?' + qs;
+        }
+        return fetch(url, {
+            headers: { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' }
+        }).then(function(r) {
+            if (!r.ok) throw new Error('Epic FHIR error: ' + r.status);
+            return r.json();
+        });
+    },
+
+    getConditions: function() { return this._fhirFetch('Condition', { patient: this.patientId, 'clinical-status': 'active' }); },
+    getMedications: function() { return this._fhirFetch('MedicationRequest', { patient: this.patientId, status: 'active' }); },
+    getLabs: function() { return this._fhirFetch('Observation', { patient: this.patientId, category: 'laboratory', _sort: '-date', _count: '50' }); },
+    getAllergies: function() { return this._fhirFetch('AllergyIntolerance', { patient: this.patientId }); },
+
+    syncAll: function() {
+        if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
+        var self = this;
+        console.log('[Epic] Syncing all FHIR data...');
+        return Promise.all([
+            self.getConditions().catch(function() { return { entry: [] }; }),
+            self.getMedications().catch(function() { return { entry: [] }; }),
+            self.getLabs().catch(function() { return { entry: [] }; })
+        ]).then(function(results) {
+            // Reuse VA's FHIR parsing logic — same R4 format
+            var data = { conditions: [], medications: [], labs: [], source: 'Epic MyChart FHIR R4', lastSynced: new Date().toISOString() };
+
+            (results[0].entry || []).forEach(function(e) {
+                var r = e.resource; if (!r) return;
+                data.conditions.push({
+                    name: r.code && r.code.text ? r.code.text : (r.code && r.code.coding && r.code.coding[0] ? r.code.coding[0].display : 'Unknown'),
+                    icd10: r.code && r.code.coding ? (r.code.coding.find(function(c){ return c.system && c.system.indexOf('icd') >= 0; }) || {}).code || '' : '',
+                    status: r.clinicalStatus && r.clinicalStatus.coding ? r.clinicalStatus.coding[0].code : 'active',
+                    diagnosedDate: r.onsetDateTime || r.recordedDate || '', source: 'Epic'
+                });
+            });
+
+            (results[1].entry || []).forEach(function(e) {
+                var r = e.resource; if (!r) return;
+                var medName = 'Unknown';
+                if (r.medicationCodeableConcept) {
+                    if (r.medicationCodeableConcept.text) medName = r.medicationCodeableConcept.text;
+                    else if (r.medicationCodeableConcept.coding && r.medicationCodeableConcept.coding[0]) medName = r.medicationCodeableConcept.coding[0].display || medName;
+                }
+                var rxCode = '';
+                if (r.medicationCodeableConcept && r.medicationCodeableConcept.coding) {
+                    var rxnorm = r.medicationCodeableConcept.coding.find(function(c){ return c.system && c.system.indexOf('rxnorm') >= 0; });
+                    if (rxnorm) rxCode = rxnorm.code;
+                }
+                data.medications.push({ name: medName, code: rxCode, rxNormCode: rxCode, status: r.status || 'active', startDate: r.authoredOn || '', source: 'Epic' });
+            });
+
+            (results[2].entry || []).forEach(function(e) {
+                var r = e.resource; if (!r || !r.code) return;
+                var loincCode = '';
+                if (r.code.coding) { var loinc = r.code.coding.find(function(c){ return c.system && c.system.indexOf('loinc') >= 0; }); if (loinc) loincCode = loinc.code; }
+                var value = r.valueQuantity ? r.valueQuantity.value : (r.valueString ? parseFloat(r.valueString) : null);
+                if (value === null || isNaN(value)) return;
+                data.labs.push({ loincCode: loincCode, name: r.code.text || '', value: value, unit: r.valueQuantity ? r.valueQuantity.unit : '', date: r.effectiveDateTime || '', source: 'Epic' });
+            });
+
+            console.log('[Epic] Sync complete: ' + data.conditions.length + ' conditions, ' + data.medications.length + ' meds, ' + data.labs.length + ' labs');
+            return data;
+        });
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// MASTER SYNC ORCHESTRATOR
+// Bridges real API connectors → KeenanHealthData → AI Engine
+// ═══════════════════════════════════════════════════════════════════
+var MasterSync = {
+    connectorMap: {
+        'oura-ring': OuraConnector,
+        'va-lighthouse': VALighthouseConnector,
+        'cms-blue-button': CMSBlueButtonConnector,
+        'epic-mychart': EpicFHIRConnector
+    },
+
+    // Check for OAuth callbacks on page load
+    checkCallbacks: function() {
+        // Oura (hash fragment)
+        if (window.location.hash && window.location.hash.indexOf('access_token') >= 0) {
+            if (OuraConnector.handleCallback()) {
+                DataIntegration.sources['oura-ring'].status = 'connected';
+                DataIntegration.sources['oura-ring'].lastSync = new Date().toISOString();
+                this.syncSource('oura-ring');
+                return 'oura';
+            }
+        }
+        // VA / CMS / Epic (query param code)
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('code')) {
+            var pending = sessionStorage.getItem('pending_oauth_source');
+            if (pending === 'va-lighthouse') {
+                VALighthouseConnector.handleCallback().then(function(ok) {
+                    if (ok) { DataIntegration.sources['va-lighthouse'].status = 'connected'; MasterSync.syncSource('va-lighthouse'); }
+                });
+                return 'va';
+            } else if (pending === 'cms-blue-button') {
+                CMSBlueButtonConnector.handleCallback().then(function(ok) {
+                    if (ok) { DataIntegration.sources['cms-blue-button'].status = 'connected'; MasterSync.syncSource('cms-blue-button'); }
+                });
+                return 'cms';
+            } else if (pending === 'epic-mychart') {
+                EpicFHIRConnector.handleCallback().then(function(ok) {
+                    if (ok) { DataIntegration.sources['epic-mychart'].status = 'connected'; MasterSync.syncSource('epic-mychart'); }
+                });
+                return 'epic';
+            }
+        }
+        return null;
+    },
+
+    // Connect a source (launches OAuth)
+    connect: function(sourceKey) {
+        var connector = this.connectorMap[sourceKey];
+        if (!connector) {
+            console.log('[MasterSync] No connector for ' + sourceKey + ' — using legacy flow');
+            DataIntegration.connectSource(sourceKey);
+            return;
+        }
+        if (connector.isAuthenticated && connector.isAuthenticated()) {
+            console.log('[MasterSync] ' + sourceKey + ' already authenticated — syncing');
+            this.syncSource(sourceKey);
+            return;
+        }
+        // Store which source we're connecting so callback knows
+        sessionStorage.setItem('pending_oauth_source', sourceKey);
+        // Launch OAuth
+        if (connector.authorize) connector.authorize();
+    },
+
+    // Sync a single source and merge into KeenanHealthData
+    syncSource: function(sourceKey) {
+        var connector = this.connectorMap[sourceKey];
+        if (!connector || !connector.syncAll) return Promise.resolve(null);
+        if (connector.isAuthenticated && !connector.isAuthenticated()) {
+            console.log('[MasterSync] ' + sourceKey + ' not authenticated — skipping');
+            return Promise.resolve(null);
+        }
+
+        return connector.syncAll().then(function(data) {
+            if (!data) return null;
+
+            // Merge into KeenanHealthData based on source type
+            if (sourceKey === 'oura-ring' && typeof KeenanHealthData !== 'undefined') {
+                // Update wearables with real Oura data
+                var w = KeenanHealthData.wearables;
+                if (data.sleepScore != null) w.sleepScore = data.sleepScore;
+                if (data.avgSleepDuration != null) w.avgSleepDuration = data.avgSleepDuration;
+                if (data.steps7DayAvg != null) w.steps7DayAvg = data.steps7DayAvg;
+                if (data.hrvAvg != null) w.hrvAvg = data.hrvAvg;
+                if (data.hrvTrend != null) w.hrvTrend = data.hrvTrend;
+                if (data.restingHR != null) w.restingHR = data.restingHR;
+                if (data.spo2 != null) w.spo2 = data.spo2;
+                w.source = data.source;
+                console.log('[MasterSync] Oura data merged into KeenanHealthData.wearables');
+            }
+
+            if ((sourceKey === 'va-lighthouse' || sourceKey === 'epic-mychart') && typeof KeenanHealthData !== 'undefined') {
+                // Merge conditions (avoid duplicates by name)
+                if (data.conditions && data.conditions.length) {
+                    var existingNames = KeenanHealthData.conditions.map(function(c) { return c.name.toLowerCase(); });
+                    data.conditions.forEach(function(c) {
+                        if (existingNames.indexOf(c.name.toLowerCase()) === -1) {
+                            KeenanHealthData.conditions.push(c);
+                            existingNames.push(c.name.toLowerCase());
+                        }
+                    });
+                }
+                // Merge medications (avoid duplicates by name)
+                if (data.medications && data.medications.length) {
+                    var existingMeds = KeenanHealthData.medications.map(function(m) { return m.name.toLowerCase(); });
+                    data.medications.forEach(function(m) {
+                        if (existingMeds.indexOf(m.name.toLowerCase()) === -1) {
+                            KeenanHealthData.medications.push(m);
+                            existingMeds.push(m.name.toLowerCase());
+                        }
+                    });
+                }
+                // Merge labs (always add — labs are time-series)
+                if (data.labs && data.labs.length) {
+                    KeenanHealthData.labs = KeenanHealthData.labs.concat(data.labs);
+                }
+                console.log('[MasterSync] ' + sourceKey + ' FHIR data merged into KeenanHealthData');
+            }
+
+            if (sourceKey === 'cms-blue-button') {
+                // Store Medicare data separately (coverage + claims)
+                KeenanHealthData.medicare = data;
+                console.log('[MasterSync] CMS Medicare data stored in KeenanHealthData.medicare');
+            }
+
+            // Update DataIntegration source status
+            var source = DataIntegration.sources[sourceKey];
+            if (source) {
+                source.status = 'connected';
+                source.lastSync = new Date().toISOString();
+            }
+            AutoSync.updateSyncUI();
+
+            // Re-run AI engine with updated data
+            triggerAIAnalysis(sourceKey + ' (live sync)');
+
+            return data;
+        }).catch(function(err) {
+            console.error('[MasterSync] Sync failed for ' + sourceKey + ':', err);
+            return null;
+        });
+    },
+
+    // Sync ALL connected sources
+    syncAll: function() {
+        var self = this;
+        var promises = [];
+        for (var key in this.connectorMap) {
+            var connector = this.connectorMap[key];
+            if (connector.isAuthenticated && connector.isAuthenticated()) {
+                promises.push(self.syncSource(key));
+            }
+        }
+        if (promises.length === 0) {
+            console.log('[MasterSync] No authenticated sources to sync');
+            return Promise.resolve([]);
+        }
+        return Promise.all(promises);
     }
 };
 
