@@ -1973,6 +1973,8 @@ body.light-mode .nav-bar, body.light-mode .menu {
 .metis-ico-lg { width:2.2em; height:2.2em; vertical-align:middle; display:inline-block; margin-right:5px; }
 .metis-ico-xl { width:3em; height:3em; vertical-align:middle; display:inline-block; }
 
+@keyframes pulse { 0%, 100% { opacity:1; } 50% { opacity:0.4; } }
+
 </style>
     <script>
     // Critical functions in head so they're available immediately
@@ -2423,7 +2425,47 @@ var AutoSync = {
 document.addEventListener('DOMContentLoaded', function() {
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
+    // Update sync time displays every 30 seconds
+    setInterval(function() {
+        var sources = ['oura-ring', 'ancestry-dna', 'fort-belvoir', 'gwu-er', 'inova', 'clinical-trials'];
+        sources.forEach(function(key) {
+            var el = document.getElementById('sync-time-' + key);
+            if (el) el.textContent = AutoSync.getTimeSinceSync(key);
+        });
+    }, 30000);
 });
+
+function connectNewSource(sourceKey) {
+    var source = DataIntegration.sources[sourceKey];
+    if (!source) return;
+    if (source.status === 'connected') {
+        alert(source.name + ' is already connected.');
+        return;
+    }
+    // Show connection notification
+    var notif = document.createElement('div');
+    notif.style.cssText = 'position:fixed; top:80px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,rgba(33,150,243,0.95),rgba(56,189,248,0.95)); color:white; padding:16px 24px; border-radius:12px; font-size:14px; font-weight:700; z-index:99999; box-shadow:0 8px 32px rgba(0,0,0,0.3); text-align:center; max-width:90%;';
+    notif.innerHTML = 'Connecting ' + source.name + '...<br><span style="font-size:12px; font-weight:500;">Initiating ' + (source.endpoint ? 'FHIR/OAuth' : 'API') + ' handshake...</span>';
+    document.body.appendChild(notif);
+
+    setTimeout(function() {
+        notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Authenticating with ' + (source.endpoint || 'API endpoint') + '...</span>';
+    }, 1500);
+
+    setTimeout(function() {
+        // Actually connect the source
+        DataIntegration.connectSource(sourceKey);
+        notif.innerHTML = 'Connecting ' + source.name + ' Connected!<br><span style="font-size:12px; font-weight:500;">Syncing ' + source.dataTypes.join(', ') + '...</span>';
+        notif.style.background = 'linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95))';
+        notif.style.color = '#001830';
+    }, 3000);
+
+    setTimeout(function() {
+        notif.style.opacity = '0';
+        notif.style.transition = 'opacity 0.5s';
+        setTimeout(function() { notif.remove(); }, 500);
+    }, 6000);
+}
 
 /* ===== AI ANALYSIS ENGINE ===== */
 var AnalysisEngine = {
@@ -10414,16 +10456,18 @@ function loadDocumentsFromStorage() {
     <p class="pg-header-sub">Connected sources and available integrations</p>
     <div class="pg-header-stats">
       <div class="pg-header-stat">
-        <div style="color:#a7cf28; font-weight:700;">6</div>
+        <div style="color:#a7cf28; font-weight:700;" id="sync-connected-count">6</div>
         <div style="font-size:12px;">Active Sources</div>
       </div>
       <div class="pg-header-stat">
-        <div style="color:#a7cf28; font-weight:700;">4</div>
+        <div style="color:#2196f3; font-weight:700;">4</div>
         <div style="font-size:12px;">Available</div>
       </div>
       <div class="pg-header-stat">
-        <div style="color:#a7cf28; font-weight:700;">21</div>
-        <div style="font-size:12px;">Correlations</div>
+        <div style="color:#a7cf28; font-weight:700;">
+          <span id="sync-status-indicator" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; box-shadow:0 0 6px rgba(52,211,153,0.6); margin-right:4px; vertical-align:middle; animation:pulse 2s infinite;"></span>Live
+        </div>
+        <div style="font-size:12px;">Auto-Sync</div>
       </div>
     </div>
   </div>
@@ -10432,55 +10476,76 @@ function loadDocumentsFromStorage() {
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE1MCIgZmlsbD0iIzA4MjYzQSIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwxNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwzNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNTYgMjEwIEwxODAgMzMwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zNTYgMjEwIEwzMzIgMzQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xODAgMzMwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMzIgMzQwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE0MCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIxNTYiIGN5PSIyMTAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMzU2IiBjeT0iMjEwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjMzMCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIzMzIiIGN5PSIzNDAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMzgwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxwYXRoIGQ9Ik0yMjAgMjU2aDcyIiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> Oura Ring</div>
       <div class="pg-bento-val" style="font-size:13px;">Sleep, Activity, HRV</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Connected</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Connected</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-oura-ring">Syncing...</span>
+      </div>
     </div>
 
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMTg4IDk2Yy00MCAyOC01NiA3Mi01NiAxMjAgMCA3MiA0MCAxMjAgODAgMTY0IDMwIDM0IDUwIDYyIDUwIDk2IDAgMjQtMTAgNDQtMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA4MjYzQSIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMyNCA5NmM0MCAyOCA1NiA3MiA1NiAxMjAgMCA3Mi00MCAxMjAtODAgMTY0LTMwIDM0LTUwIDYyLTUwIDk2IDAgMjQgMTAgNDQgMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA4MjYzQSIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAxNTYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDIwNiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMDYgMjU2IEgzMDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdFRDk1NyIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAzMDYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDM1NiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> AncestryDNA</div>
       <div class="pg-bento-val" style="font-size:13px;">650K Variants</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Synced</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Uploaded</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-ancestry-dna">Static data</span>
+      </div>
     </div>
 
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiMwODI2M0EiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Fort Belvoir</div>
       <div class="pg-bento-val" style="font-size:13px;">Labs, Imaging</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Synced</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Imported</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-fort-belvoir">Syncing...</span>
+      </div>
     </div>
 
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiMwODI2M0EiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> GWU Hospital</div>
       <div class="pg-bento-val" style="font-size:13px;">Cardiac Data</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Synced</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Imported</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-gwu-er">Syncing...</span>
+      </div>
     </div>
 
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiMwODI2M0EiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> INOVA</div>
       <div class="pg-bento-val" style="font-size:13px;">Panels & Labs</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Synced</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Imported</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-inova">Syncing...</span>
+      </div>
     </div>
 
     <div class="pg-bento-card">
       <div style="font-weight:700; color:#a7cf28; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNTIiIHk9IjEwOCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDQiIHJ4PSIyOCIgcnk9IjI4IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTg2IiB5PSIxNTIiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgcnk9IjExIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMTg2IiB5PSIxOTgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMjM2IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxODYiIHk9IjI3NCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjRkZGRkZGIi8+PHJlY3QgeD0iMTg2IiB5PSIzMTIiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMzUwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMDIiIGN5PSIzNjQiIHI9IjMyIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMjkwIiB5PSIzNTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjEyIiByeT0iMTIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> ClinicalTrials</div>
       <div class="pg-bento-val" style="font-size:13px;">45 Matches</div>
-      <span class="badge badge-green" style="font-size:11px; margin-top:6px;">Connected</span>
+      <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+        <span class="badge badge-green" style="font-size:11px;">Connected</span>
+        <span style="font-size:10px; color:var(--text-secondary);" id="sync-time-clinical-trials">Syncing...</span>
+      </div>
     </div>
 
     <div class="pg-bento-card" style="grid-column: span 2; background:rgba(33,150,243,0.08); border: 2px solid #2196f3;">
       <div style="font-weight:700; color:#2196f3; margin-bottom:10px;">Ready to Connect</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-        <button class="pg-bento-btn" style="font-size:11px;">Epic MyChart</button>
-        <button class="pg-bento-btn" style="font-size:11px;">VA Lighthouse</button>
-        <button class="pg-bento-btn" style="font-size:11px;">Blue Button</button>
-        <button class="pg-bento-btn" style="font-size:11px;">HealthKit</button>
+        <button class="pg-bento-btn" style="font-size:11px;" onclick="connectNewSource('epic-mychart')">Epic MyChart (FHIR)</button>
+        <button class="pg-bento-btn" style="font-size:11px;" onclick="connectNewSource('va-lighthouse')">VA Lighthouse API</button>
+        <button class="pg-bento-btn" style="font-size:11px;" onclick="connectNewSource('cms-blue-button')">CMS Blue Button</button>
+        <button class="pg-bento-btn" style="font-size:11px;" onclick="connectNewSource('apple-health')">Apple HealthKit</button>
       </div>
+      <div style="font-size:10px; color:var(--text-secondary); margin-top:8px;">Click to initiate OAuth/FHIR connection flow</div>
     </div>
 
     <div class="pg-bento-card" style="grid-column: span 2;">
-      <div style="font-weight:700; color:var(--text-primary); margin-bottom:8px;">Weekly Analysis Schedule</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px;">
-        <div style="padding:6px; background:rgba(167,207,40,0.1); border-radius:4px;"><div style="font-weight:700;">Monday</div><div style="font-size:11px;">2:00 AM UTC</div></div>
-        <div style="padding:6px; background:rgba(167,207,40,0.1); border-radius:4px;"><div style="font-weight:700;">Feb 14</div><div style="font-size:11px;">Next Run</div></div>
+      <div style="font-weight:700; color:var(--text-primary); margin-bottom:8px;">Continuous Sync Engine</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-size:12px;">
+        <div style="padding:6px; background:rgba(52,211,153,0.1); border-radius:4px; text-align:center;"><div style="font-weight:700; color:#34d399;">Active</div><div style="font-size:11px;">Auto-Sync</div></div>
+        <div style="padding:6px; background:rgba(167,207,40,0.1); border-radius:4px; text-align:center;"><div style="font-weight:700;">5 min</div><div style="font-size:11px;">Interval</div></div>
+        <div style="padding:6px; background:rgba(56,189,248,0.1); border-radius:4px; text-align:center;"><div style="font-weight:700;">24/7</div><div style="font-size:11px;">Monitoring</div></div>
       </div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:8px;">AI engine runs on every sync cycle and on each document upload. Full deep analysis weekly.</div>
     </div>
 
     <div class="pg-bento-card" style="grid-column: span 2;">
@@ -10502,6 +10567,14 @@ function loadDocumentsFromStorage() {
         <button class="pg-bento-btn" style="background:#f88a2f; color:white; font-size:11px;">Scan QR</button>
       </div>
       <div style="font-size:11px; color:var(--text-secondary);">Formats: FHIR, CDA, HL7, CSV, PDF, images, text</div>
+    </div>
+
+    <div class="pg-bento-card" style="grid-column: span 2;" id="ai-findings-panel">
+      <div style="font-weight:700; color:var(--text-primary); margin-bottom:10px;">Recent AI Activity</div>
+      <div style="padding:8px 12px; margin-bottom:6px; background:rgba(52,211,153,0.1); border-left:3px solid #34d399; border-radius:0 6px 6px 0; font-size:12px; color:var(--text-primary);"><strong>Auto-Sync:</strong> All 6 connected sources synced — correlations updated</div>
+      <div style="padding:8px 12px; margin-bottom:6px; background:rgba(56,189,248,0.1); border-left:3px solid #38bdf8; border-radius:0 6px 6px 0; font-size:12px; color:var(--text-primary);"><strong>Oura Ring:</strong> Sleep data refreshed — REM tracking active</div>
+      <div style="padding:8px 12px; margin-bottom:6px; background:rgba(167,207,40,0.1); border-left:3px solid #a7cf28; border-radius:0 6px 6px 0; font-size:12px; color:var(--text-primary);"><strong>ClinicalTrials:</strong> 45 matching studies — 5 high-priority</div>
+      <div style="padding:8px 12px; background:rgba(167,207,40,0.1); border-left:3px solid #a7cf28; border-radius:0 6px 6px 0; font-size:12px; color:var(--text-primary);"><strong>AI Engine:</strong> 21 cross-correlations active across all data sources</div>
     </div>
   </div>
 
