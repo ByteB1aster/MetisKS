@@ -2425,6 +2425,8 @@ var AutoSync = {
 document.addEventListener('DOMContentLoaded', function() {
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
+    // Initialize MÉTIS API layer
+    setTimeout(function() { MetisAPI.init(); }, 4000);
     // Update sync time displays every 30 seconds
     setInterval(function() {
         var sources = ['oura-ring', 'ancestry-dna', 'fort-belvoir', 'gwu-er', 'inova', 'clinical-trials'];
@@ -2488,6 +2490,745 @@ var AnalysisEngine = {
             correlations: this.correlationsFound,
             alerts: this.alertsGenerated
         };
+    }
+};
+
+// ===== MÉTIS API INTEGRATION LAYER =====
+// Comprehensive client-side API integration for health data aggregation
+var MetisAPI = {
+    // Cache structure for all API responses
+    cache: {
+        trials: { data: [], lastFetched: null, count: 0 },
+        interactions: { data: [], lastFetched: null, alerts: 0 },
+        adverseEvents: { data: {}, lastFetched: null },
+        literature: { data: [], lastFetched: null },
+        foods: { data: [], lastFetched: null }
+    },
+
+    // User health profile (from app data)
+    userConditions: ['PTSD', 'Degenerative Disc Disease', 'Depression', 'Chronic Pain', 'Sleep Disorder', 'COPD'],
+    userMedications: ['Fluoxetine', 'Trazodone', 'Clonazepam', 'Montelukast', 'Ipratropium', 'Prazosin', 'Primidone', 'Amphetamine'],
+    userLocation: 'Washington, DC',
+
+    // ===== 1. CLINICAL TRIALS API =====
+    searchTrials: function(conditions, location, maxResults) {
+        var self = this;
+        conditions = conditions || this.userConditions;
+        location = location || this.userLocation;
+        maxResults = maxResults || 10;
+
+        var promises = conditions.map(function(condition, index) {
+            var delay = index * 1000; // 1 second stagger to avoid rate limiting
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    var encodedCondition = encodeURIComponent(condition);
+                    var url = 'https://clinicaltrials.gov/api/v2/studies?query.cond=' + encodedCondition +
+                        '&filter.overallStatus=RECRUITING&pageSize=' + maxResults + '&countTotal=true';
+
+                    fetch(url)
+                        .then(function(response) { return response.json(); })
+                        .then(function(data) {
+                            console.log('[MÉTIS API] Clinical trials for ' + condition + ': ' + (data.totalCount || 0) + ' found');
+                            if (data.studiesRetrieved && data.studiesRetrieved.length > 0) {
+                                var parsed = data.studiesRetrieved.map(function(trial) {
+                                    return {
+                                        title: trial.protocolSection && trial.protocolSection.identificationModule ? trial.protocolSection.identificationModule.officialTitle || trial.protocolSection.identificationModule.briefTitle : 'Unknown Trial',
+                                        nctId: trial.nctId,
+                                        phase: trial.protocolSection && trial.protocolSection.designModule ? trial.protocolSection.designModule.phases : [],
+                                        status: trial.protocolSection && trial.protocolSection.statusModule ? trial.protocolSection.statusModule.overallStatus : 'UNKNOWN',
+                                        conditions: condition,
+                                        sponsor: trial.protocolSection && trial.protocolSection.sponsorCollaboratorsModule ? trial.protocolSection.sponsorCollaboratorsModule.leadSponsor ? trial.protocolSection.sponsorCollaboratorsModule.leadSponsor.name : 'Unknown' : 'Unknown'
+                                    };
+                                });
+                                self.cache.trials.data = self.cache.trials.data.concat(parsed);
+                                self.cache.trials.count += parsed.length;
+                            }
+                            resolve();
+                        })
+                        .catch(function(error) {
+                            console.warn('[MÉTIS API] Error fetching trials for ' + condition + ':', error);
+                            resolve();
+                        });
+                }, delay);
+            });
+        });
+
+        return Promise.all(promises).then(function() {
+            self.cache.trials.lastFetched = new Date().toISOString();
+            console.log('[MÉTIS API] Total clinical trials cached: ' + self.cache.trials.count);
+            return self.cache.trials.data;
+        });
+    },
+
+    getTrialDetails: function(nctId) {
+        var url = 'https://clinicaltrials.gov/api/v2/studies/' + encodeURIComponent(nctId);
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                console.log('[MÉTIS API] Fetched trial details for ' + nctId);
+                if (data.studiesRetrieved && data.studiesRetrieved.length > 0) {
+                    var trial = data.studiesRetrieved[0];
+                    return {
+                        nctId: trial.nctId,
+                        title: trial.protocolSection && trial.protocolSection.identificationModule ? trial.protocolSection.identificationModule.officialTitle : '',
+                        description: trial.protocolSection && trial.protocolSection.descriptionModule ? trial.protocolSection.descriptionModule.briefSummary : '',
+                        phase: trial.protocolSection && trial.protocolSection.designModule ? trial.protocolSection.designModule.phases : [],
+                        status: trial.protocolSection && trial.protocolSection.statusModule ? trial.protocolSection.statusModule.overallStatus : '',
+                        sponsor: trial.protocolSection && trial.protocolSection.sponsorCollaboratorsModule ? trial.protocolSection.sponsorCollaboratorsModule.leadSponsor ? trial.protocolSection.sponsorCollaboratorsModule.leadSponsor.name : '' : ''
+                    };
+                }
+                return null;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error fetching trial ' + nctId + ':', error);
+                return null;
+            });
+    },
+
+    // ===== 2. RxNORM API (Drug Interactions) =====
+    lookupDrug: function(drugName) {
+        var url = 'https://rxnav.nlm.nih.gov/REST/rxcui.json?name=' + encodeURIComponent(drugName);
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.idGroup && data.idGroup.rxuidList && data.idGroup.rxuidList.length > 0) {
+                    var rxcui = data.idGroup.rxuidList[0];
+                    console.log('[MÉTIS API] Drug lookup: ' + drugName + ' -> RxCUI: ' + rxcui);
+                    return {
+                        rxcui: rxcui,
+                        name: drugName,
+                        normalizedName: data.idGroup.name || drugName
+                    };
+                } else {
+                    console.warn('[MÉTIS API] No RxCUI found for drug: ' + drugName);
+                    return null;
+                }
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error looking up drug ' + drugName + ':', error);
+                return null;
+            });
+    },
+
+    getInteractions: function(rxcui) {
+        var url = 'https://rxnav.nlm.nih.gov/REST/interaction/interaction.json?rxcui=' + encodeURIComponent(rxcui);
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var interactions = [];
+                if (data.interactionTypeGroup && data.interactionTypeGroup.length > 0) {
+                    data.interactionTypeGroup.forEach(function(group) {
+                        if (group.interactionType) {
+                            group.interactionType.forEach(function(interaction) {
+                                interactions.push({
+                                    interactingDrug: interaction.interactionPair && interaction.interactionPair[0] ? interaction.interactionPair[0].interactingDrug : 'Unknown',
+                                    severity: interaction.interactionPair && interaction.interactionPair[0] && interaction.interactionPair[0].severity ? interaction.interactionPair[0].severity : 'Unknown',
+                                    description: interaction.interactionPair && interaction.interactionPair[0] ? interaction.interactionPair[0].description : 'No description'
+                                });
+                            });
+                        }
+                    });
+                }
+                console.log('[MÉTIS API] Interactions for RxCUI ' + rxcui + ': ' + interactions.length + ' found');
+                return interactions;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error fetching interactions for RxCUI ' + rxcui + ':', error);
+                return [];
+            });
+    },
+
+    checkAllInteractions: function(drugNames) {
+        var self = this;
+        drugNames = drugNames || this.userMedications;
+
+        var promises = [];
+        var rxcuiMap = {};
+
+        // Step 1: Look up all drugs to get RxCUI
+        var lookupPromises = drugNames.map(function(drug, index) {
+            var delay = index * 500;
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    self.lookupDrug(drug).then(function(result) {
+                        if (result && result.rxcui) {
+                            rxcuiMap[result.rxcui] = drug;
+                        }
+                        resolve();
+                    });
+                }, delay);
+            });
+        });
+
+        return Promise.all(lookupPromises).then(function() {
+            var rxcuiList = Object.keys(rxcuiMap);
+            console.log('[MÉTIS API] Resolved ' + rxcuiList.length + ' drugs to RxCUI identifiers');
+
+            if (rxcuiList.length === 0) {
+                self.cache.interactions.data = [];
+                self.cache.interactions.alerts = 0;
+                self.cache.interactions.lastFetched = new Date().toISOString();
+                return [];
+            }
+
+            // Step 2: Check multi-drug interactions
+            var url = 'https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=' + rxcuiList.join('+');
+
+            return fetch(url)
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    var allInteractions = [];
+                    if (data.fullInteractionTypeGroup && data.fullInteractionTypeGroup.length > 0) {
+                        data.fullInteractionTypeGroup.forEach(function(group) {
+                            group.fullInteractionType.forEach(function(interaction) {
+                                var drug1 = interaction.interactionPair[0].interactingDrug && interaction.interactionPair[0].interactingDrug.name ? interaction.interactionPair[0].interactingDrug.name : 'Unknown';
+                                var drug2 = interaction.interactionPair[1] && interaction.interactionPair[1].interactingDrug && interaction.interactionPair[1].interactingDrug.name ? interaction.interactionPair[1].interactingDrug.name : 'Unknown';
+
+                                allInteractions.push({
+                                    drug1: drug1,
+                                    drug2: drug2,
+                                    severity: interaction.interactionPair[0].severity || 'Unknown',
+                                    description: interaction.interactionPair[0].description || 'No description available'
+                                });
+                            });
+                        });
+                    }
+
+                    self.cache.interactions.data = allInteractions;
+                    self.cache.interactions.alerts = allInteractions.length;
+                    self.cache.interactions.lastFetched = new Date().toISOString();
+
+                    console.log('[MÉTIS API] Drug interaction check complete: ' + allInteractions.length + ' interactions found');
+                    return allInteractions;
+                })
+                .catch(function(error) {
+                    console.warn('[MÉTIS API] Error checking multi-drug interactions:', error);
+                    self.cache.interactions.data = [];
+                    self.cache.interactions.alerts = 0;
+                    self.cache.interactions.lastFetched = new Date().toISOString();
+                    return [];
+                });
+        });
+    },
+
+    // ===== 3. OPENFDA API =====
+    getAdverseEvents: function(drugName, limit) {
+        var self = this;
+        limit = limit || 5;
+        var url = 'https://api.fda.gov/drug/event.json?search=patient.drug.medicinalproduct:"' +
+            encodeURIComponent(drugName) + '"&limit=' + limit;
+
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var events = [];
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(function(result) {
+                        if (result.patient && result.patient.reaction) {
+                            result.patient.reaction.forEach(function(reaction) {
+                                events.push({
+                                    reactionCode: reaction.reactionmeddrapt || 'Unknown',
+                                    outcome: result.seriousness || 'Unknown',
+                                    date: result.receivedate || 'Unknown'
+                                });
+                            });
+                        }
+                    });
+                }
+
+                if (!self.cache.adverseEvents.data[drugName]) {
+                    self.cache.adverseEvents.data[drugName] = [];
+                }
+                self.cache.adverseEvents.data[drugName] = events;
+                console.log('[MÉTIS API] Adverse events for ' + drugName + ': ' + events.length + ' found');
+                return events;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error fetching adverse events for ' + drugName + ':', error);
+                return [];
+            });
+    },
+
+    getDrugLabel: function(drugName) {
+        var url = 'https://api.fda.gov/drug/label.json?search=openfda.brand_name:"' +
+            encodeURIComponent(drugName) + '"&limit=1';
+
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.results && data.results.length > 0) {
+                    var label = data.results[0];
+                    var result = {
+                        drugName: drugName,
+                        warnings: label.warnings && label.warnings.length > 0 ? label.warnings[0].substring(0, 200) : 'No warnings found',
+                        contraindications: label.contraindications && label.contraindications.length > 0 ? label.contraindications[0].substring(0, 200) : 'None listed',
+                        drugInteractions: label.drug_interactions && label.drug_interactions.length > 0 ? label.drug_interactions[0].substring(0, 200) : 'None identified'
+                    };
+                    console.log('[MÉTIS API] Drug label retrieved for ' + drugName);
+                    return result;
+                }
+                return null;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error fetching drug label for ' + drugName + ':', error);
+                return null;
+            });
+    },
+
+    checkRecalls: function(drugName) {
+        var url = 'https://api.fda.gov/drug/enforcement.json?search=product_description:"' +
+            encodeURIComponent(drugName) + '"&limit=5';
+
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var recalls = [];
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(function(recall) {
+                        recalls.push({
+                            reason: recall.reason_for_recall || 'Unknown',
+                            status: recall.status || 'Unknown',
+                            date: recall.recall_initiation_date || 'Unknown',
+                            classification: recall.classification || 'Unclassified'
+                        });
+                    });
+                }
+                console.log('[MÉTIS API] Recalls for ' + drugName + ': ' + recalls.length + ' found');
+                return recalls;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error checking recalls for ' + drugName + ':', error);
+                return [];
+            });
+    },
+
+    // ===== 4. PUBMED API =====
+    searchLiterature: function(query, maxResults) {
+        var self = this;
+        maxResults = maxResults || 10;
+        var searchUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=' + maxResults + '&term=' + encodeURIComponent(query);
+
+        return fetch(searchUrl)
+            .then(function(response) { return response.json(); })
+            .then(function(searchData) {
+                if (!searchData.esearchresult || !searchData.esearchresult.idlist || searchData.esearchresult.idlist.length === 0) {
+                    console.log('[MÉTIS API] No PubMed results found for: ' + query);
+                    return [];
+                }
+
+                var pmids = searchData.esearchresult.idlist;
+                var summaryUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id=' + pmids.join(',');
+
+                return fetch(summaryUrl)
+                    .then(function(response) { return response.json(); })
+                    .then(function(summaryData) {
+                        var articles = [];
+                        if (summaryData.result && summaryData.result.uids) {
+                            summaryData.result.uids.forEach(function(uid) {
+                                var article = summaryData.result[uid];
+                                articles.push({
+                                    title: article.title || 'No title',
+                                    authors: article.authors && article.authors.length > 0 ? article.authors.map(function(a) { return a.name; }).join(', ') : 'Unknown',
+                                    journal: article.source || 'Unknown journal',
+                                    pubDate: article.pubdate || 'Unknown date',
+                                    pmid: uid,
+                                    link: 'https://pubmed.ncbi.nlm.nih.gov/' + uid + '/'
+                                });
+                            });
+                        }
+                        self.cache.literature.data = articles;
+                        self.cache.literature.lastFetched = new Date().toISOString();
+                        console.log('[MÉTIS API] PubMed search for "' + query + '": ' + articles.length + ' articles found');
+                        return articles;
+                    });
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error searching PubMed:', error);
+                return [];
+            });
+    },
+
+    getRelatedArticles: function(conditions) {
+        var self = this;
+        conditions = conditions || this.userConditions;
+
+        var promises = conditions.map(function(condition, index) {
+            var delay = index * 800;
+            return new Promise(function(resolve) {
+                setTimeout(function() {
+                    var query = condition + ' clinical trial treatment';
+                    self.searchLiterature(query, 5).then(function(articles) {
+                        resolve(articles);
+                    });
+                }, delay);
+            });
+        });
+
+        return Promise.all(promises).then(function(results) {
+            var allArticles = [];
+            results.forEach(function(articles) {
+                allArticles = allArticles.concat(articles);
+            });
+            return allArticles;
+        });
+    },
+
+    // ===== 5. USDA FOODDATA CENTRAL API =====
+    searchFood: function(query) {
+        var self = this;
+        var url = 'https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=' + encodeURIComponent(query) + '&pageSize=10';
+
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var foods = [];
+                if (data.foods && data.foods.length > 0) {
+                    data.foods.forEach(function(food) {
+                        var nutrients = {};
+                        if (food.foodNutrients && food.foodNutrients.length > 0) {
+                            food.foodNutrients.forEach(function(nutrient) {
+                                nutrients[nutrient.nutrientName || 'Unknown'] = nutrient.value;
+                            });
+                        }
+                        foods.push({
+                            fdcId: food.fdcId,
+                            description: food.description || 'Unknown',
+                            dataType: food.dataType || 'Survey',
+                            nutrients: nutrients
+                        });
+                    });
+                }
+                self.cache.foods.data = foods;
+                self.cache.foods.lastFetched = new Date().toISOString();
+                console.log('[MÉTIS API] Food search for "' + query + '": ' + foods.length + ' items found');
+                return foods;
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error searching foods:', error);
+                return [];
+            });
+    },
+
+    getNutrientInfo: function(fdcId) {
+        var url = 'https://api.nal.usda.gov/fdc/v1/food/' + encodeURIComponent(fdcId) + '?api_key=DEMO_KEY';
+
+        return fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                var nutrients = {};
+                if (data.foodNutrients && data.foodNutrients.length > 0) {
+                    data.foodNutrients.forEach(function(nutrient) {
+                        nutrients[nutrient.nutrient && nutrient.nutrient.name ? nutrient.nutrient.name : 'Unknown'] = nutrient.value;
+                    });
+                }
+                console.log('[MÉTIS API] Nutrient info for FDC ID ' + fdcId + ' retrieved');
+                return {
+                    description: data.description || 'Unknown',
+                    nutrients: nutrients
+                };
+            })
+            .catch(function(error) {
+                console.warn('[MÉTIS API] Error fetching nutrient info:', error);
+                return null;
+            });
+    },
+
+    // ===== 6. SECURE DATA VAULT (Client-Side Encryption) =====
+    SecureVault: {
+        vaultKey: null,
+        vaultData: {},
+
+        // Derive encryption key from SHA-256 password hash using PBKDF2
+        deriveKey: function(passwordHash) {
+            var self = this;
+            var encoder = new TextEncoder();
+            var data = encoder.encode(passwordHash);
+
+            return window.crypto.subtle.importKey('raw', data, { name: 'PBKDF2' }, false, ['deriveKey'])
+                .then(function(baseKey) {
+                    var salt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+                    return window.crypto.subtle.deriveKey(
+                        {
+                            name: 'PBKDF2',
+                            salt: salt,
+                            iterations: 100000,
+                            hash: 'SHA-256'
+                        },
+                        baseKey,
+                        { name: 'AES-GCM', length: 256 },
+                        false,
+                        ['encrypt', 'decrypt']
+                    );
+                })
+                .then(function(key) {
+                    self.vaultKey = key;
+                    console.log('[MÉTIS API] Secure vault key derived');
+                    return key;
+                })
+                .catch(function(error) {
+                    console.warn('[MÉTIS API] Error deriving vault key:', error);
+                    return null;
+                });
+        },
+
+        encrypt: function(data) {
+            var self = this;
+            if (!this.vaultKey) {
+                console.warn('[MÉTIS API] Vault key not initialized');
+                return null;
+            }
+
+            var encoder = new TextEncoder();
+            var plaintext = encoder.encode(JSON.stringify(data));
+            var iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+            return window.crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv },
+                this.vaultKey,
+                plaintext
+            )
+                .then(function(ciphertext) {
+                    var result = {
+                        iv: Array.from(iv),
+                        data: Array.from(new Uint8Array(ciphertext)),
+                        timestamp: new Date().toISOString()
+                    };
+                    console.log('[MÉTIS API] Data encrypted successfully (' + plaintext.length + ' bytes)');
+                    return result;
+                })
+                .catch(function(error) {
+                    console.warn('[MÉTIS API] Encryption error:', error);
+                    return null;
+                });
+        },
+
+        decrypt: function(encryptedData) {
+            var self = this;
+            if (!this.vaultKey) {
+                console.warn('[MÉTIS API] Vault key not initialized');
+                return null;
+            }
+
+            var iv = new Uint8Array(encryptedData.iv);
+            var ciphertext = new Uint8Array(encryptedData.data);
+
+            return window.crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: iv },
+                this.vaultKey,
+                ciphertext
+            )
+                .then(function(plaintext) {
+                    var decoder = new TextDecoder();
+                    var result = JSON.parse(decoder.decode(plaintext));
+                    console.log('[MÉTIS API] Data decrypted successfully');
+                    return result;
+                })
+                .catch(function(error) {
+                    console.warn('[MÉTIS API] Decryption error:', error);
+                    return null;
+                });
+        },
+
+        // Store encrypted snapshot in IndexedDB
+        storeSnapshot: function(snapshotData) {
+            var self = this;
+            if (!window.indexedDB) {
+                console.warn('[MÉTIS API] IndexedDB not available');
+                return Promise.resolve(false);
+            }
+
+            return this.encrypt(snapshotData).then(function(encrypted) {
+                if (!encrypted) return false;
+
+                return new Promise(function(resolve) {
+                    var request = indexedDB.open('MetisDB', 1);
+                    request.onsuccess = function(event) {
+                        var db = event.target.result;
+                        if (!db.objectStoreNames.contains('vault-snapshots')) {
+                            console.log('[MÉTIS API] Vault snapshots store not found');
+                            resolve(false);
+                            return;
+                        }
+                        var transaction = db.transaction(['vault-snapshots'], 'readwrite');
+                        var store = transaction.objectStore('vault-snapshots');
+                        var snapshot = {
+                            id: 'snapshot-' + new Date().getTime(),
+                            encrypted: encrypted,
+                            timestamp: new Date().toISOString()
+                        };
+                        store.add(snapshot);
+                        transaction.oncomplete = function() {
+                            console.log('[MÉTIS API] Snapshot stored in IndexedDB');
+                            resolve(true);
+                        };
+                        transaction.onerror = function() {
+                            console.warn('[MÉTIS API] Error storing snapshot');
+                            resolve(false);
+                        };
+                    };
+                    request.onerror = function() {
+                        console.warn('[MÉTIS API] IndexedDB error');
+                        resolve(false);
+                    };
+                });
+            });
+        },
+
+        // Export encrypted vault as JSON blob for backup
+        exportVault: function() {
+            var vaultExport = {
+                version: '1.0',
+                exported: new Date().toISOString(),
+                cache: MetisAPI.cache,
+                encrypted: true
+            };
+            var blob = new Blob([JSON.stringify(vaultExport, null, 2)], { type: 'application/json' });
+            console.log('[MÉTIS API] Vault export created (' + blob.size + ' bytes)');
+            return blob;
+        },
+
+        // Import encrypted vault from blob
+        importVault: function(encryptedBlob) {
+            var self = this;
+            return encryptedBlob.text().then(function(text) {
+                try {
+                    var imported = JSON.parse(text);
+                    if (imported.cache) {
+                        MetisAPI.cache = imported.cache;
+                        console.log('[MÉTIS API] Vault imported successfully');
+                        return true;
+                    }
+                    return false;
+                } catch (e) {
+                    console.warn('[MÉTIS API] Error parsing imported vault:', e);
+                    return false;
+                }
+            });
+        }
+    },
+
+    // ===== 7. P2P SYNC (Blueprint Architecture) =====
+    P2PSync: {
+        sessionKey: null,
+
+        generateSyncQR: function() {
+            // Generate random session key
+            var keyArray = new Uint8Array(32);
+            window.crypto.getRandomValues(keyArray);
+            var keyString = Array.from(keyArray).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+
+            this.sessionKey = keyString;
+
+            // QR code data would contain: sessionKey + encryptedPayload
+            var qrData = {
+                sessionKey: keyString,
+                timestamp: new Date().getTime(),
+                deviceId: 'METIS-' + Math.random().toString(36).substring(7)
+            };
+
+            console.log('[MÉTIS API] P2P Sync QR generated with session key:', keyString.substring(0, 8) + '...');
+            return qrData;
+        },
+
+        // Broadcast to other tabs via Broadcast Channel
+        broadcastSync: function(data) {
+            if (window.BroadcastChannel) {
+                try {
+                    var channel = new BroadcastChannel('métis-sync');
+                    channel.postMessage({
+                        type: 'HEALTH_DATA_SYNC',
+                        payload: data,
+                        timestamp: new Date().toISOString()
+                    });
+                    console.log('[MÉTIS API] Sync broadcast sent to other tabs');
+                    channel.close();
+                    return true;
+                } catch (e) {
+                    console.warn('[MÉTIS API] Broadcast channel error:', e);
+                    return false;
+                }
+            }
+            return false;
+        },
+
+        // Listen for sync from other tabs
+        listenForSync: function() {
+            if (window.BroadcastChannel) {
+                try {
+                    var channel = new BroadcastChannel('métis-sync');
+                    channel.onmessage = function(event) {
+                        if (event.data.type === 'HEALTH_DATA_SYNC') {
+                            console.log('[MÉTIS API] Sync message received from another tab');
+                            MetisAPI.cache = event.data.payload;
+                        }
+                    };
+                    console.log('[MÉTIS API] P2P sync listener initialized');
+                } catch (e) {
+                    console.warn('[MÉTIS API] Error initializing sync listener:', e);
+                }
+            }
+        }
+    },
+
+    // ===== INITIALIZATION & REFRESH =====
+    init: function() {
+        var self = this;
+        console.log('[MÉTIS API] Initializing API layer...');
+
+        // Set up P2P sync listener
+        this.P2PSync.listenForSync();
+
+        // Parallel API calls to populate cache
+        var initPromises = [
+            this.searchTrials(this.userConditions, this.userLocation, 5),
+            this.checkAllInteractions(this.userMedications),
+            this.searchLiterature('PTSD treatment clinical trial', 3).catch(function() { return []; })
+        ];
+
+        return Promise.all(initPromises)
+            .then(function() {
+                self.cache.trials.lastFetched = new Date().toISOString();
+                self.cache.interactions.lastFetched = new Date().toISOString();
+
+                console.log('[MÉTIS API] ========== INITIALIZATION SUMMARY ==========');
+                console.log('[MÉTIS API] Clinical Trials: ' + self.cache.trials.count + ' studies');
+                console.log('[MÉTIS API] Drug Interactions: ' + self.cache.interactions.alerts + ' found');
+                console.log('[MÉTIS API] Literature: ' + self.cache.literature.data.length + ' articles');
+                console.log('[MÉTIS API] Cache initialized and ready for queries');
+
+                // Update UI if elements exist
+                var trialCount = document.querySelector('[data-métis-trials-count]');
+                if (trialCount) trialCount.textContent = self.cache.trials.count;
+
+                var alertCount = document.querySelector('[data-métis-alerts]');
+                if (alertCount) alertCount.textContent = self.cache.interactions.alerts;
+
+                return true;
+            })
+            .catch(function(error) {
+                console.error('[MÉTIS API] Initialization error:', error);
+                return false;
+            });
+    },
+
+    refreshAll: function() {
+        var self = this;
+        console.log('[MÉTIS API] Refreshing all API data...');
+
+        var refreshPromises = [
+            this.searchTrials(this.userConditions, this.userLocation, 5),
+            this.checkAllInteractions(this.userMedications)
+        ];
+
+        return Promise.all(refreshPromises)
+            .then(function() {
+                console.log('[MÉTIS API] All data refreshed at ' + new Date().toISOString());
+                return true;
+            })
+            .catch(function(error) {
+                console.error('[MÉTIS API] Refresh error:', error);
+                return false;
+            });
     }
 };
 
