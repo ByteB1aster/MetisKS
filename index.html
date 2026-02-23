@@ -5438,6 +5438,12 @@ var EpicFHIRConnector = {
     patientId: null,
     tokenExpiry: null,
 
+    // Registered SMART on FHIR Client IDs (public client — safe to embed)
+    registeredClientIds: {
+        production: '79d82ee6-9e17-440e-bc45-0ecc86a024ec',
+        sandbox: 'ff33ab65-2bf5-42b7-a652-df513cf4eb08'
+    },
+
     // Known Epic endpoints (user selects their organization)
     knownEndpoints: {
         'inova': { name: 'INOVA Health System', base: 'https://mychart.inova.org/MyChart/api/FHIR/R4' },
@@ -5448,13 +5454,17 @@ var EpicFHIRConnector = {
         'epic-sandbox': { name: 'Epic Sandbox (Testing)', base: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4' }
     },
 
-    // Initialize from localStorage
+    // Initialize from localStorage (falls back to registered production client ID)
     init: function() {
         try {
             var config = JSON.parse(localStorage.getItem('metis_epic_config') || 'null');
             if (config && config.clientId) {
                 this.clientId = config.clientId;
                 this.fhirBaseUrl = config.fhirBaseUrl || this.knownEndpoints['inova'].base;
+            } else if (this.registeredClientIds && this.registeredClientIds.production) {
+                // Use pre-registered production client ID by default
+                this.clientId = this.registeredClientIds.production;
+                this.fhirBaseUrl = this.knownEndpoints['inova'].base;
             }
             var stored = JSON.parse(sessionStorage.getItem('epic_token') || 'null');
             if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
@@ -5492,22 +5502,24 @@ var EpicFHIRConnector = {
         modal.style.cssText = 'background:#0a1628;border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px;max-width:480px;width:90%;color:white;font-family:-apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.5);';
         var opts = '';
         for (var key in self.knownEndpoints) { var ep = self.knownEndpoints[key]; opts += '<option value="' + ep.base + '"' + (key === 'inova' ? ' selected' : '') + '>' + ep.name + '</option>'; }
+        var defaultCid = (self.registeredClientIds && self.registeredClientIds.production) || '';
         modal.innerHTML = '<div style="font-size:18px;font-weight:700;margin-bottom:8px;">🏥 Connect Epic MyChart</div>' +
-            '<div style="font-size:13px;opacity:0.7;margin-bottom:16px;">To connect your MyChart records, you need a SMART on FHIR Client ID from <a href="https://fhir.epic.com" target="_blank" style="color:#38bdf8;">fhir.epic.com</a>. Register a free "Patient" app, then paste your Client ID below.</div>' +
+            '<div style="font-size:13px;opacity:0.7;margin-bottom:16px;">Select your hospital system below and sign in with your MyChart credentials. Your data stays in your browser.</div>' +
             '<label style="font-size:12px;opacity:0.6;display:block;margin-bottom:4px;">Hospital System</label>' +
             '<select id="epic-ep-sel" style="width:100%;padding:10px;background:#001830;border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:white;font-size:14px;margin-bottom:12px;box-sizing:border-box;">' + opts + '</select>' +
-            '<label style="font-size:12px;opacity:0.6;display:block;margin-bottom:4px;">SMART Client ID</label>' +
-            '<input id="epic-cid" type="text" placeholder="e.g. abc123-def456-..." style="width:100%;padding:12px;background:#001830;border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:white;font-size:14px;margin-bottom:16px;box-sizing:border-box;" />' +
+            '<details style="margin-bottom:16px;"><summary style="font-size:12px;opacity:0.5;cursor:pointer;">Advanced: Custom Client ID</summary>' +
+            '<input id="epic-cid" type="text" value="' + defaultCid + '" style="width:100%;padding:10px;background:#001830;border:1px solid rgba(56,189,248,0.2);border-radius:8px;color:white;font-size:12px;margin-top:8px;box-sizing:border-box;font-family:monospace;" /></details>' +
             '<div style="display:flex;gap:12px;">' +
             '<button id="epic-x" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;cursor:pointer;">Cancel</button>' +
-            '<button id="epic-go" style="flex:1;padding:10px;background:linear-gradient(135deg,#ef4444,#dc2626);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:700;">Connect via MyChart</button></div>';
+            '<button id="epic-go" style="flex:1;padding:10px;background:linear-gradient(135deg,#ef4444,#dc2626);border:none;border-radius:8px;color:white;cursor:pointer;font-weight:700;">Sign in with MyChart</button></div>';
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
         document.getElementById('epic-x').onclick = function() { overlay.remove(); };
         document.getElementById('epic-go').onclick = function() {
-            var cid = document.getElementById('epic-cid').value.trim();
+            var cid = document.getElementById('epic-cid') ? document.getElementById('epic-cid').value.trim() : defaultCid;
+            if (!cid) cid = defaultCid;
             var fhir = document.getElementById('epic-ep-sel').value;
-            if (!cid) { document.getElementById('epic-cid').style.borderColor = '#ef4444'; return; }
+            if (!cid) { alert('No Client ID available'); return; }
             self.configure(cid, fhir);
             overlay.remove();
             sessionStorage.setItem('pending_oauth_source', 'epic-mychart');
@@ -5555,13 +5567,18 @@ var EpicFHIRConnector = {
 
     authorize: async function(redirectUri) {
         if (!this.clientId) {
-            // No client ID — show config prompt
+            // No client ID — show config prompt to pick hospital
+            this.promptForConfig();
+            return;
+        }
+        if (!this.fhirBaseUrl) {
+            // Show hospital picker if no endpoint selected yet
             this.promptForConfig();
             return;
         }
         if (!this.authUrl) {
             var discovered = await this.discoverEndpoints();
-            if (!discovered) { console.error('[Epic] Could not discover SMART endpoints'); return; }
+            if (!discovered) { console.error('[Epic] Could not discover SMART endpoints for ' + this.fhirBaseUrl); return; }
         }
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
         var pkce = await this._generatePKCE();
