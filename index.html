@@ -1034,7 +1034,7 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     display: grid; grid-template-columns: repeat(2, 1fr);
     gap: 12px; margin-bottom: 16px;
 }
-@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr; } }
+@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } }
 .pg-bento-card {
     background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
     border: 1px solid rgba(255,255,255,0.08);
@@ -1083,7 +1083,41 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 
 /* Bento Grid */
 .pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-@media (max-width: 480px) { .pg-bento-grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 480px) {
+  .pg-bento-grid { grid-template-columns: 1fr !important; }
+  /* Reset all multi-column spans to single column on mobile */
+  .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  /* Dashboard hero grid: stack everything single column */
+  .pg-bento-grid[style*="1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
+  /* Quick Stats row: keep as 2x2 grid on mobile, not 4-across */
+  .pg-bento-card[style*="repeat(4,1fr)"] { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; }
+  /* Reduce oversized numbers on mobile */
+  .pg-bento-val { font-size: 24px !important; }
+  /* Compact the Health Score SVG */
+  .pg-bento-card svg[viewBox="0 0 80 80"] { width: 60px !important; height: 60px !important; }
+  /* Tighten card padding on mobile */
+  .pg-bento-card { padding: 12px !important; }
+  /* Reduce header padding on mobile */
+  .pg-header { padding: 20px 16px 16px !important; }
+  .pg-header-title { font-size: 18px !important; }
+  .pg-header-sub { font-size: 12px !important; }
+  .pg-header-stats { gap: 8px !important; }
+  .pg-header-stat { font-size: 11px !important; }
+  /* Page padding */
+  .page { padding: 74px 12px 30px !important; }
+  /* Provider cards */
+  .pg-provider-card { padding: 12px !important; }
+  /* Buttons */
+  .pg-bento-btn, .pg-glass-btn { font-size: 13px !important; padding: 10px 14px !important; }
+  /* Section headers */
+  .pg-bento-section { font-size: 16px !important; padding: 10px 14px !important; }
+  /* AI banner */
+  .pg-ai-banner { padding: 10px 12px !important; font-size: 12px !important; }
+  /* Tags smaller */
+  .pg-ai-tag { font-size: 9px !important; padding: 2px 6px !important; }
+  /* Menu responsive */
+  .menu { width: 280px !important; }
+}
 
 /* Bento Typography — light on dark */
 .bento-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -1309,7 +1343,7 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
 /* Upload page text overflow fix */
 .pg-glass .pg-glass-body { word-break: break-word !important; overflow-wrap: break-word !important; }
 /* Forms bento grid responsive fix — single column on smaller screens */
-@media (max-width: 480px) { .pg-bento-grid { grid-template-columns: 1fr !important; } }
+@media (max-width: 480px) { .pg-bento-grid { grid-template-columns: 1fr !important; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } }
 .pg-bento-card { overflow: hidden; word-break: break-word; }
 
 /* === GLOBAL GLASS-PANEL READABILITY FIXES === */
