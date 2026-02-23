@@ -5107,16 +5107,27 @@ var VALighthouseConnector = {
         if (state && state !== savedState) { console.error('[VA] State mismatch'); return false; }
         var verifier = sessionStorage.getItem('va_pkce_verifier');
         if (!verifier) { console.error('[VA] No PKCE verifier found'); return false; }
+        var tokenBody = 'grant_type=authorization_code' +
+            '&code=' + encodeURIComponent(code) +
+            '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&code_verifier=' + encodeURIComponent(verifier);
         try {
-            var response = await fetch(this.tokenUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'grant_type=authorization_code' +
-                    '&code=' + encodeURIComponent(code) +
-                    '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
-                    '&client_id=' + encodeURIComponent(this.clientId) +
-                    '&code_verifier=' + encodeURIComponent(verifier)
-            });
+            var response;
+            try {
+                response = await fetch(this.tokenUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: tokenBody
+                });
+            } catch(corsErr) {
+                console.warn('[VA] Token exchange CORS blocked, using proxy...', corsErr);
+                response = await fetch('https://corsproxy.io/?' + encodeURIComponent(this.tokenUrl), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: tokenBody
+                });
+            }
             var token = await response.json();
             if (token.access_token) {
                 this.accessToken = token.access_token;
@@ -5144,11 +5155,17 @@ var VALighthouseConnector = {
             var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
             url += '?' + qs;
         }
-        return fetch(url, {
-            headers: { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' }
-        }).then(function(r) {
+        var headers = { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' };
+        // Try direct first, fall back to CORS proxy
+        return fetch(url, { headers: headers }).then(function(r) {
             if (!r.ok) throw new Error('VA FHIR error: ' + r.status);
             return r.json();
+        }).catch(function(err) {
+            console.warn('[VA] Direct FHIR fetch failed, trying CORS proxy...', err.message);
+            return fetch('https://corsproxy.io/?' + encodeURIComponent(url), { headers: headers }).then(function(r) {
+                if (!r.ok) throw new Error('VA FHIR proxy error: ' + r.status);
+                return r.json();
+            });
         });
     },
 
@@ -5455,14 +5472,45 @@ var EpicFHIRConnector = {
         sandbox: 'ff33ab65-2bf5-42b7-a652-df513cf4eb08'
     },
 
-    // Known Epic endpoints (user selects their organization)
+    // Known Epic endpoints with pre-resolved auth URLs (avoids CORS on SMART discovery)
+    // Epic MyChart pattern: {base}/oauth2/authorize and {base}/oauth2/token
     knownEndpoints: {
-        'inova': { name: 'INOVA Health System', base: 'https://mychart.inova.org/MyChart/api/FHIR/R4' },
-        'vhc': { name: 'Virginia Hospital Center', base: 'https://mychart.virginiahospitalcenter.com/MyChart/api/FHIR/R4' },
-        'gwu': { name: 'GW Medical Faculty Associates', base: 'https://mfa-mychart.gwu.edu/MyChart/api/FHIR/R4' },
-        'medstar': { name: 'MedStar Health', base: 'https://mychart.medstarhealth.org/MyChart/api/FHIR/R4' },
-        'kaiser-mid-atlantic': { name: 'Kaiser Mid-Atlantic', base: 'https://healthy.kaiserpermanente.org/api/FHIR/R4' },
-        'epic-sandbox': { name: 'Epic Sandbox (Testing)', base: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4' }
+        'inova': { name: 'INOVA Health System', base: 'https://mychart.inova.org/MyChart/api/FHIR/R4',
+            auth: 'https://mychart.inova.org/MyChart/oauth2/authorize', token: 'https://mychart.inova.org/MyChart/oauth2/token' },
+        'vhc': { name: 'Virginia Hospital Center', base: 'https://mychart.virginiahospitalcenter.com/MyChart/api/FHIR/R4',
+            auth: 'https://mychart.virginiahospitalcenter.com/MyChart/oauth2/authorize', token: 'https://mychart.virginiahospitalcenter.com/MyChart/oauth2/token' },
+        'gwu': { name: 'GW Medical Faculty Associates', base: 'https://mfa-mychart.gwu.edu/MyChart/api/FHIR/R4',
+            auth: 'https://mfa-mychart.gwu.edu/MyChart/oauth2/authorize', token: 'https://mfa-mychart.gwu.edu/MyChart/oauth2/token' },
+        'medstar': { name: 'MedStar Health', base: 'https://mychart.medstarhealth.org/MyChart/api/FHIR/R4',
+            auth: 'https://mychart.medstarhealth.org/MyChart/oauth2/authorize', token: 'https://mychart.medstarhealth.org/MyChart/oauth2/token' },
+        'kaiser-mid-atlantic': { name: 'Kaiser Mid-Atlantic', base: 'https://healthy.kaiserpermanente.org/api/FHIR/R4',
+            auth: 'https://healthy.kaiserpermanente.org/oauth2/authorize', token: 'https://healthy.kaiserpermanente.org/oauth2/token' },
+        'epic-sandbox': { name: 'Epic Sandbox (Testing)', base: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4',
+            auth: 'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize', token: 'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/token' }
+    },
+
+    // Resolve auth/token URLs from known endpoints (no CORS-blocked discovery needed)
+    _resolveAuthUrls: function() {
+        if (this.authUrl && this.tokenUrl) return true;
+        // Find matching known endpoint
+        for (var key in this.knownEndpoints) {
+            var ep = this.knownEndpoints[key];
+            if (ep.base === this.fhirBaseUrl && ep.auth && ep.token) {
+                this.authUrl = ep.auth;
+                this.tokenUrl = ep.token;
+                console.log('[Epic] Auth URLs resolved from known endpoints: ' + this.authUrl);
+                return true;
+            }
+        }
+        // Fallback: derive from base URL pattern (Epic standard)
+        if (this.fhirBaseUrl) {
+            var baseNoFhir = this.fhirBaseUrl.replace(/\/api\/FHIR\/R4\/?$/, '');
+            this.authUrl = baseNoFhir + '/oauth2/authorize';
+            this.tokenUrl = baseNoFhir + '/oauth2/token';
+            console.log('[Epic] Auth URLs derived from base: ' + this.authUrl);
+            return true;
+        }
+        return false;
     },
 
     // Initialize from localStorage (falls back to registered production client ID)
@@ -5588,8 +5636,9 @@ var EpicFHIRConnector = {
             return;
         }
         if (!this.authUrl) {
-            var discovered = await this.discoverEndpoints();
-            if (!discovered) { console.error('[Epic] Could not discover SMART endpoints for ' + this.fhirBaseUrl); return; }
+            // Use pre-resolved URLs (no CORS-blocked SMART discovery)
+            var resolved = this._resolveAuthUrls();
+            if (!resolved) { console.error('[Epic] Could not resolve auth endpoints for ' + this.fhirBaseUrl); return; }
         }
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
         var pkce = await this._generatePKCE();
@@ -5614,17 +5663,29 @@ var EpicFHIRConnector = {
         if (!code) return false;
         if (params.get('state') !== sessionStorage.getItem('epic_state')) { console.error('[Epic] State mismatch'); return false; }
         var verifier = sessionStorage.getItem('epic_pkce_verifier');
-        if (!this.tokenUrl) await this.discoverEndpoints();
+        if (!this.tokenUrl) this._resolveAuthUrls();
+        // Token exchange — try direct first, fall back to CORS proxy
+        var tokenBody = 'grant_type=authorization_code' +
+            '&code=' + encodeURIComponent(code) +
+            '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
+            '&client_id=' + encodeURIComponent(this.clientId) +
+            '&code_verifier=' + encodeURIComponent(verifier);
         try {
-            var response = await fetch(this.tokenUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'grant_type=authorization_code' +
-                    '&code=' + encodeURIComponent(code) +
-                    '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
-                    '&client_id=' + encodeURIComponent(this.clientId) +
-                    '&code_verifier=' + encodeURIComponent(verifier)
-            });
+            var response;
+            try {
+                response = await fetch(this.tokenUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: tokenBody
+                });
+            } catch(corsErr) {
+                console.warn('[Epic] Token exchange CORS blocked, using proxy...', corsErr);
+                response = await fetch('https://corsproxy.io/?' + encodeURIComponent(this.tokenUrl), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: tokenBody
+                });
+            }
             var token = await response.json();
             if (token.access_token) {
                 this.accessToken = token.access_token;
@@ -5652,11 +5713,17 @@ var EpicFHIRConnector = {
             var qs = Object.keys(params).map(function(k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
             url += '?' + qs;
         }
-        return fetch(url, {
-            headers: { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' }
-        }).then(function(r) {
+        var headers = { 'Authorization': 'Bearer ' + this.accessToken, 'Accept': 'application/fhir+json' };
+        // Try direct first, fall back to CORS proxy
+        return fetch(url, { headers: headers }).then(function(r) {
             if (!r.ok) throw new Error('Epic FHIR error: ' + r.status);
             return r.json();
+        }).catch(function(err) {
+            console.warn('[Epic] Direct FHIR fetch failed, trying CORS proxy...', err.message);
+            return fetch('https://corsproxy.io/?' + encodeURIComponent(url), { headers: headers }).then(function(r) {
+                if (!r.ok) throw new Error('Epic FHIR proxy error: ' + r.status);
+                return r.json();
+            });
         });
     },
 
