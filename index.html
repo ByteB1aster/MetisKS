@@ -1034,7 +1034,7 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     display: grid; grid-template-columns: repeat(2, 1fr);
     gap: 12px; margin-bottom: 16px;
 }
-@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } }
+@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr !important; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; } }
 .pg-bento-card {
     background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
     border: 1px solid rgba(255,255,255,0.08);
@@ -1083,40 +1083,88 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 
 /* Bento Grid */
 .pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-@media (max-width: 480px) {
+/* ── TABLET BREAKPOINT ── */
+@media (max-width: 768px) {
+  /* Force ALL bento grids to 1 column — overrides inline styles */
   .pg-bento-grid { grid-template-columns: 1fr !important; }
-  /* Reset all multi-column spans to single column on mobile */
   .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
-  /* Dashboard hero grid: stack everything single column */
+  /* Dashboard hero 3-col → 1 col */
   .pg-bento-grid[style*="1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
-  /* Quick Stats row: keep as 2x2 grid on mobile, not 4-across */
-  .pg-bento-card[style*="repeat(4,1fr)"] { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; }
-  /* Reduce oversized numbers on mobile */
-  .pg-bento-val { font-size: 24px !important; }
-  /* Compact the Health Score SVG */
-  .pg-bento-card svg[viewBox="0 0 80 80"] { width: 60px !important; height: 60px !important; }
-  /* Tighten card padding on mobile */
-  .pg-bento-card { padding: 12px !important; }
-  /* Reduce header padding on mobile */
-  .pg-header { padding: 20px 16px 16px !important; }
-  .pg-header-title { font-size: 18px !important; }
-  .pg-header-sub { font-size: 12px !important; }
-  .pg-header-stats { gap: 8px !important; }
-  .pg-header-stat { font-size: 11px !important; }
-  /* Page padding */
+  /* Dashboard insight 2-col → 1 col */
+  .pg-bento-grid[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+  /* Quick Stats row: 4-across → 2x2 */
+  .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; grid-column: 1 / -1 !important; }
+  /* Dashboard glass cards: stack vertically */
+  .dash-glass-wrap { padding: 12px 10px !important; }
+  .dash-glass { padding: 16px !important; margin-bottom: 10px !important; }
+  /* Stat grids → single column */
+  .stat-grid { grid-template-columns: 1fr !important; }
+  /* Page containers */
   .page { padding: 74px 12px 30px !important; }
-  /* Provider cards */
-  .pg-provider-card { padding: 12px !important; }
+  /* Headers */
+  .pg-header { padding: 20px 16px 16px !important; }
+  .pg-header-title { font-size: 20px !important; }
+  .pg-header-sub { font-size: 12px !important; }
+  .pg-header-stats { gap: 8px !important; flex-wrap: wrap !important; }
+  .pg-header-stat { font-size: 11px !important; }
+  /* Card padding */
+  .pg-bento-card { padding: 14px !important; }
+  .pg-provider-card { padding: 14px !important; }
   /* Buttons */
   .pg-bento-btn, .pg-glass-btn { font-size: 13px !important; padding: 10px 14px !important; }
   /* Section headers */
   .pg-bento-section { font-size: 16px !important; padding: 10px 14px !important; }
+  /* Menu */
+  .menu { width: 85vw !important; max-width: 320px !important; }
+  /* Nav bar */
+  .nav-bar { padding: 8px 10px !important; }
+  .nav-bar button, .nav-bar a { font-size: 12px !important; padding: 8px 12px !important; }
+  /* AI engine panel */
+  .ai-engine-panel { padding: 16px !important; }
+  /* Glass panels */
+  .pg-glass { padding: 14px !important; }
+  .pg-glass-wrap { padding: 12px !important; }
+  /* Bento values */
+  .pg-bento-val { font-size: 26px !important; }
   /* AI banner */
   .pg-ai-banner { padding: 10px 12px !important; font-size: 12px !important; }
-  /* Tags smaller */
   .pg-ai-tag { font-size: 9px !important; padding: 2px 6px !important; }
-  /* Menu responsive */
-  .menu { width: 280px !important; }
+  /* Auto-fill grids → 1 col on narrow screens */
+  .pg-bento-grid[style*="auto-fill"] { grid-template-columns: 1fr !important; }
+  /* Inline flex rows that overflow */
+  .bento-tag-row { gap: 4px !important; }
+  .bento-tag { font-size: 10px !important; padding: 2px 8px !important; }
+}
+
+/* ── PHONE BREAKPOINT ── */
+@media (max-width: 480px) {
+  .pg-bento-grid { grid-template-columns: 1fr !important; }
+  .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  /* Quick Stats: 2x2 still fine */
+  .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+  /* Compact values */
+  .pg-bento-val { font-size: 22px !important; }
+  /* Compact Health Score SVG */
+  .pg-bento-card svg[viewBox="0 0 80 80"] { width: 60px !important; height: 60px !important; }
+  /* Tighter card padding */
+  .pg-bento-card { padding: 12px !important; }
+  .pg-provider-card { padding: 10px !important; }
+  /* Page padding */
+  .page { padding: 68px 10px 24px !important; }
+  /* Smaller headers */
+  .pg-header { padding: 16px 12px 12px !important; }
+  .pg-header-title { font-size: 17px !important; }
+  /* Glass */
+  .dash-glass { padding: 14px !important; }
+  .pg-glass { padding: 12px !important; }
+  /* Stat grid */
+  .stat-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .stat-card { padding: 14px !important; }
+  .stat-value { font-size: 22px !important; }
+  /* Action buttons: full width on very small phones */
+  .action-btn { display: block !important; text-align: center !important; }
+  /* Menu full width on small phone */
+  .menu { width: 90vw !important; max-width: 300px !important; }
 }
 
 /* Bento Typography — light on dark */
@@ -1342,8 +1390,7 @@ body.high-contrast .pg-header { border: 2px solid #fff !important; }
 .pg-glass-wrap input::placeholder { color: rgba(255,255,255,0.5) !important; }
 /* Upload page text overflow fix */
 .pg-glass .pg-glass-body { word-break: break-word !important; overflow-wrap: break-word !important; }
-/* Forms bento grid responsive fix — single column on smaller screens */
-@media (max-width: 480px) { .pg-bento-grid { grid-template-columns: 1fr !important; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } }
+/* Forms bento grid responsive — handled by main mobile media queries above */
 .pg-bento-card { overflow: hidden; word-break: break-word; }
 
 /* === GLOBAL GLASS-PANEL READABILITY FIXES === */
