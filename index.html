@@ -4798,7 +4798,13 @@ var OuraConnector = {
         return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
     },
 
-    // Generic API call
+    // CORS proxy for browser-side API calls (Oura API doesn't send CORS headers)
+    _proxyUrl: function(url) {
+        // Use allorigins as CORS proxy — returns JSON wrapper with 'contents' field
+        return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+    },
+
+    // Generic API call (routes through CORS proxy when needed)
     _fetch: function(endpoint, params) {
         if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
         var url = this.baseUrl + endpoint;
@@ -4807,13 +4813,25 @@ var OuraConnector = {
             url += '?' + qs;
         }
         var self = this;
+        // Oura API doesn't support CORS — proxy the request
+        var fetchUrl = self._proxyUrl(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_auth=Bearer_' + self.accessToken);
+
+        // allorigins doesn't forward auth headers, so we use a direct proxy approach instead
+        // Try direct fetch first; if CORS fails, fall back to proxy
         return fetch(url, {
             headers: { 'Authorization': 'Bearer ' + this.accessToken }
         }).then(function(r) {
-            self.rateLimitRemaining = parseInt(r.headers.get('x-ratelimit-remaining') || '5000');
-            if (r.status === 429) throw new Error('Oura rate limit exceeded');
             if (!r.ok) throw new Error('Oura API error: ' + r.status);
             return r.json();
+        }).catch(function(directErr) {
+            // Direct fetch failed (CORS) — use corsproxy.io which forwards headers
+            var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+            return fetch(proxyUrl, {
+                headers: { 'Authorization': 'Bearer ' + self.accessToken }
+            }).then(function(r) {
+                if (!r.ok) throw new Error('Oura API (proxied) error: ' + r.status);
+                return r.json();
+            });
         });
     },
 
