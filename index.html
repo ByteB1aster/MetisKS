@@ -3232,6 +3232,167 @@ var MetisAPI = {
     }
 };
 
+var GovernmentForms = {
+    statePortals: {
+        'DC': { name: 'District of Columbia', medicaid: 'https://www.dchealthlink.com', snap: 'https://districtdirect.dc.gov', disability: 'https://dds.dc.gov', unemployment: 'https://does.dc.gov/service/unemployment-compensation', benefits: 'https://dhs.dc.gov/page/apply-recertify-benefits' },
+        'AL': { name: 'Alabama', medicaid: 'https://www.medicaid.alabama.gov', snap: 'https://humanresources.alabama.gov/divisions/family-childrens-services/snap/', disability: 'https://humanresources.alabama.gov/divisions/rehabilitation-services/', unemployment: 'https://www.alabamaworks.com/applicants/login' },
+        'AK': { name: 'Alaska', medicaid: 'https://dhss.alaska.gov/dpa/Pages/default.aspx', snap: 'https://dhss.alaska.gov/dpa/Pages/default.aspx', disability: 'https://dhss.alaska.gov/dvr/', unemployment: 'https://jobs.alaska.gov/seek/jobseekers/ui' },
+        'AZ': { name: 'Arizona', medicaid: 'https://des.az.gov/document/ahcccs-benefits', snap: 'https://des.az.gov/document/snap-benefits', disability: 'https://azdes.gov/rehabilitation-services/', unemployment: 'https://azui.com/applicant/AzUIHome.asp' },
+        'AR': { name: 'Arkansas', medicaid: 'https://www.dhhs.arkansas.gov/dms/', snap: 'https://www.dhhs.arkansas.gov/snap/', disability: 'https://arsers.org/', unemployment: 'https://www.askark.org/' },
+        'CA': { name: 'California', medicaid: 'https://www.dhcs.ca.gov/services/medi-cal/Pages/default.aspx', snap: 'https://www.getcalfresh.org/', disability: 'https://www.acl.gov/about-acl/contact-us/state-units-aging-and-disability-services', unemployment: 'https://www.edd.ca.gov/' },
+        'CO': { name: 'Colorado', medicaid: 'https://www.colorado.gov/pacific/healthcare/health-insurance', snap: 'https://www.colorado.gov/pacific/cdhs/snap', disability: 'https://www.colorado.gov/pacific/cdhs/dvr', unemployment: 'https://www.colorado.gov/pacific/cdle/unemployment-insurance' },
+        'CT': { name: 'Connecticut', medicaid: 'https://ct.gov/portal/ct/portal/departments/social_services/dss_divisions/division_of_health_care_access', snap: 'https://portal.ct.gov/dsS/economic-self-sufficiency/snap', disability: 'https://ct.gov/portal/ct/portal/departments/vocational_rehabilitation', unemployment: 'https://www.ct.gov/dol/site/default.asp' },
+        'DE': { name: 'Delaware', medicaid: 'https://dhss.delaware.gov/dhss/dma/', snap: 'https://dhss.delaware.gov/dss/economic/', disability: 'https://dhss.delaware.gov/dvr/', unemployment: 'https://delaware.gov/government/agencies/dhss/divisions/dui/' },
+        'FL': { name: 'Florida', medicaid: 'https://www.myflorida.com/medicaid', snap: 'https://www.myfloridadch.com/program/snapcash/', disability: 'https://www.vr.fla.gov/', unemployment: 'https://floridajobs.org/job-seekers' },
+        'GA': { name: 'Georgia', medicaid: 'https://peachcare.georgia.gov/', snap: 'https://dfcs.georgia.gov/apply-food-benefits', disability: 'https://www.vocrehabga.org/', unemployment: 'https://www.georgia.gov/ui' },
+        'HI': { name: 'Hawaii', medicaid: 'https://med.state.hi.us/', snap: 'https://med.state.hi.us/', disability: 'https://labor.hawaii.gov/vr/', unemployment: 'https://labor.hawaii.gov/ui/' },
+        'ID': { name: 'Idaho', medicaid: 'https://www.healthandwelfare.idaho.gov/facilities-and-licensing/health-maintenance-organization-hmo', snap: 'https://www.healthandwelfare.idaho.gov/services-and-assistance/nutrition-assistance-food-stamps', disability: 'https://www.vr.idaho.gov/', unemployment: 'https://idle.idaho.gov/' },
+        'IL': { name: 'Illinois', medicaid: 'https://www2.illinois.gov/hfs/SitePages/default.aspx', snap: 'https://www2.illinois.gov/hfs/Public%20Assistance/Pages/default.aspx', disability: 'https://www2.illinois.gov/ihsa/pages/default.aspx', unemployment: 'https://www2.illinois.gov/ides/' },
+        'IN': { name: 'Indiana', medicaid: 'https://www.in.gov/fssa/medicaid/', snap: 'https://www.in.gov/fssa/carefinder/', disability: 'https://www.in.gov/fssa/dvr/', unemployment: 'https://www.in.gov/dol/unemployment/' },
+        'IA': { name: 'Iowa', medicaid: 'https://hhs.iowa.gov/es/medicaid', snap: 'https://hhs.iowa.gov/es/snap', disability: 'https://www.ivrs.iowa.gov/', unemployment: 'https://www.iowaworkforcedevelopment.gov/' },
+        'KS': { name: 'Kansas', medicaid: 'https://www.kancare.ks.gov/', snap: 'https://www.dcf.ks.gov/services/snap/', disability: 'https://www.dcf.ks.gov/services/rs/', unemployment: 'https://www.dol.ks.gov/apps/qdl' },
+        'KY': { name: 'Kentucky', medicaid: 'https://chfs.ky.gov/agencies/dbhdid/Pages/default.aspx', snap: 'https://myfamilysupport.ky.gov/', disability: 'https://ors.ky.gov/', unemployment: 'https://kewis.kylabor.ky.gov/' },
+        'LA': { name: 'Louisiana', medicaid: 'https://www.dss.state.la.us/services/medicaid/', snap: 'https://www.dss.state.la.us/services/snap/', disability: 'https://www.dss.state.la.us/services/rehabilitation/', unemployment: 'https://www.laworks.net/' },
+        'ME': { name: 'Maine', medicaid: 'https://www.maine.gov/dhhs/ofi/applications-forms', snap: 'https://www.maine.gov/dhhs/ofi/snap', disability: 'https://www.maine.gov/rehab/', unemployment: 'https://www.maine.gov/labor/unemployment' },
+        'MD': { name: 'Maryland', medicaid: 'https://mmcp.health.maryland.gov/', snap: 'https://www.mdhealthconnection.org/', disability: 'https://milvrc.org/', unemployment: 'https://www.maryland.gov/pages/Agencies/MDoL/Pages/index.aspx' },
+        'MA': { name: 'Massachusetts', medicaid: 'https://www.mass.gov/lists/masshealth-members', snap: 'https://www.mass.gov/benefits/applying-for-snap', disability: 'https://www.mass.gov/organizations/massachusetts-rehabilitation-commission', unemployment: 'https://www.mass.gov/guides/information-about-unemployment' },
+        'MI': { name: 'Michigan', medicaid: 'https://www.michigan.gov/mdhhs/services/medicaid', snap: 'https://www.michigan.gov/mdhhs/services/snap', disability: 'https://www.michigan.gov/mdhhs/services/vocrehab', unemployment: 'https://www.michigan.gov/uia' },
+        'MN': { name: 'Minnesota', medicaid: 'https://www.pca.state.mn.us/vendors-partners/health-plans-mnsure', snap: 'https://www.state.mn.us/mnit/food-assistance', disability: 'https://www.vrs.state.mn.us/', unemployment: 'https://www.uimn.org/' },
+        'MS': { name: 'Mississippi', medicaid: 'https://medicaid.ms.gov/', snap: 'https://www.mdhs.ms.gov/economic-assistance-care-elderly', disability: 'https://www.mdhs.ms.gov/vocational-rehabilitation', unemployment: 'https://www.mdes.ms.gov/' },
+        'MO': { name: 'Missouri', medicaid: 'https://dss.mo.gov/infoline/', snap: 'https://dss.mo.gov/food-assistance/', disability: 'https://dss.mo.gov/dvr/', unemployment: 'https://labor.mo.gov/DES' },
+        'MT': { name: 'Montana', medicaid: 'https://dphhs.mt.gov/MontanaHealthcarePrograms', snap: 'https://dphhs.mt.gov/snap', disability: 'https://dphhs.mt.gov/vocrehab', unemployment: 'https://edr.mt.gov/unemployment/' },
+        'NE': { name: 'Nebraska', medicaid: 'https://dhhs.ne.gov/Pages/default.aspx', snap: 'https://dhhs.ne.gov/Pages/default.aspx', disability: 'https://www.vr.ne.gov/', unemployment: 'https://neo.ne.gov/' },
+        'NV': { name: 'Nevada', medicaid: 'https://dhcfp.nv.gov/', snap: 'https://dwss.nv.gov/food-assistance/', disability: 'https://vocrehab.nv.gov/', unemployment: 'https://www.nvdetr.org/page/unemployment' },
+        'NH': { name: 'New Hampshire', medicaid: 'https://www.dhhs.nh.gov/pages/default.aspx', snap: 'https://www.dhhs.nh.gov/pca/food-programs', disability: 'https://www.education.nh.gov/career/vocational-rehabilitation', unemployment: 'https://www.nh.gov/labor/' },
+        'NJ': { name: 'New Jersey', medicaid: 'https://www.state.nj.us/humanservices/dmabd/home.html', snap: 'https://www.nj.gov/humanservices/dfd/home/', disability: 'https://www.nj.gov/labor/vr-services/', unemployment: 'https://mylebenefits.nj.gov/' },
+        'NM': { name: 'New Mexico', medicaid: 'https://www.env.nm.gov/public-health/medicaid/', snap: 'https://www.env.nm.gov/public-health/food-assistance/', disability: 'https://www.vr.state.nm.us/', unemployment: 'https://www.unm.gov/' },
+        'NY': { name: 'New York', medicaid: 'https://www.health.ny.gov/health_care/medicaid/', snap: 'https://www.mybenefits.ny.gov/', disability: 'https://www.acces-vr.org/', unemployment: 'https://www.ny.gov/services/unemployment-insurance-benefits' },
+        'NC': { name: 'North Carolina', medicaid: 'https://medicaid.ncdhhs.gov/', snap: 'https://www.ncdhhs.gov/food-nutrition-services', disability: 'https://www.ncdhhs.gov/dsa/vocational-rehabilitation', unemployment: 'https://www.ncesc.com/' },
+        'ND': { name: 'North Dakota', medicaid: 'https://www.hhs.nd.gov/medical', snap: 'https://www.hhs.nd.gov/snap', disability: 'https://www.bismarckstate.edu/workforce-development/', unemployment: 'https://www.nd.gov/labor/' },
+        'OH': { name: 'Ohio', medicaid: 'https://medicaid.ohio.gov/', snap: 'https://www.jobsohio.com/', disability: 'https://www.ood.ohio.gov/', unemployment: 'https://www.ohio.gov/wps/portal/gov/site/ODJFS/pages/unemployment' },
+        'OK': { name: 'Oklahoma', medicaid: 'https://www.okhca.org/', snap: 'https://www.okdhs.org/services/tanf/pages/default.aspx', disability: 'https://www.okrehab.org/', unemployment: 'https://www.ok.gov/okdol/' },
+        'OR': { name: 'Oregon', medicaid: 'https://www.oregon.gov/ohsu/Pages/index.aspx', snap: 'https://www.oregon.gov/DHS/foodnutrition/snap/Pages/index.aspx', disability: 'https://www.oregon.gov/cdd/vrw/', unemployment: 'https://www.oregon4jobs.com/' },
+        'PA': { name: 'Pennsylvania', medicaid: 'https://www.dhs.pa.gov/Services/Pages/default.aspx', snap: 'https://www.benefits.pa.gov/', disability: 'https://www.dli.pa.gov/Pages/default.aspx', unemployment: 'https://www.unemployment.pa.gov/' },
+        'RI': { name: 'Rhode Island', medicaid: 'https://www.healthri.org/', snap: 'https://www.ri.gov/dhhs/snap/', disability: 'https://www.ri.gov/dhhs/vr/', unemployment: 'https://dem.ri.gov/unemployment' },
+        'SC': { name: 'South Carolina', medicaid: 'https://www.scdhhs.gov/health/', snap: 'https://www.scdhhs.gov/benefits/', disability: 'https://www.scvrd.net/', unemployment: 'https://www.sces.org/' },
+        'SD': { name: 'South Dakota', medicaid: 'https://dss.sd.gov/healthcare/', snap: 'https://dss.sd.gov/foodassistance/', disability: 'https://dss.sd.gov/vocrehab/', unemployment: 'https://www.sd.gov/labor/' },
+        'TN': { name: 'Tennessee', medicaid: 'https://www.tn.gov/didd/programs-and-services/other-services-and-programs/tenncare.html', snap: 'https://www.tn.gov/humanservices/article/TANF', disability: 'https://www.tn.gov/didd/vocational-rehabilitation.html', unemployment: 'https://www.tn.gov/workforce/' },
+        'TX': { name: 'Texas', medicaid: 'https://www.hhs.texas.gov/services/health/medicaid-chip', snap: 'https://www.hhs.texas.gov/services/food-nutrition-assistance/snap-food-stamps', disability: 'https://www.dars.texas.gov/division/vocational-rehabilitation-services', unemployment: 'https://www.tesc.texas.gov/wps/portal/home/anonymous/esystems' },
+        'UT': { name: 'Utah', medicaid: 'https://medicaid.utah.gov/', snap: 'https://www.jobs.utah.gov/edo/udc/services/snap.html', disability: 'https://vr.utah.gov/', unemployment: 'https://www.unemployment.utah.gov/' },
+        'VT': { name: 'Vermont', medicaid: 'https://www.vermont.gov/site/healthcareaccess', snap: 'https://www.vermont.gov/site/aafm/foodassistance', disability: 'https://www.vermont.gov/site/dvr/', unemployment: 'https://www.vermont.gov/site/labor/unemployment-insurance' },
+        'VA': { name: 'Virginia', medicaid: 'https://www.dmas.virginia.gov/', snap: 'https://www.dss.virginia.gov/benefits/', disability: 'https://www.deafblind.vcu-ntdc.org/', unemployment: 'https://www.vec.virginia.gov/' },
+        'WA': { name: 'Washington', medicaid: 'https://www.hca.wa.gov/medicaid-chip', snap: 'https://www.dshs.wa.gov/altsa/basic-food', disability: 'https://www.dshs.wa.gov/vr/', unemployment: 'https://www.wa.gov/wapworksystem' },
+        'WV': { name: 'West Virginia', medicaid: 'https://dhhr.wv.gov/healthcare/', snap: 'https://dhhr.wv.gov/food-nutrition-services/Pages/default.aspx', disability: 'https://www.wvdhhr.org/vocational-rehabilitation', unemployment: 'https://workforce.sc.gov/' },
+        'WI': { name: 'Wisconsin', medicaid: 'https://www.dhs.wisconsin.gov/forwardhealth/', snap: 'https://www.dhs.wisconsin.gov/foodshare/', disability: 'https://www.dors.wi.gov/', unemployment: 'https://www.dwd.wisconsin.gov/unemployment/' },
+        'WY': { name: 'Wyoming', medicaid: 'https://health.wyo.gov/healthcarefinder/', snap: 'https://www.wyomingworkforce.org/individuals/services/food-assistance/', disability: 'https://www.wyomingworkforce.org/individuals/rehabilitation/', unemployment: 'https://www.wyomingworkforce.org/individuals/unemployment-insurance/' }
+    },
+
+    va: [
+        { id: '21-526EZ', name: 'VA Disability Compensation Application', description: 'File or increase VA disability claim', pdf: 'https://www.vba.va.gov/pubs/forms/vba-21-526ez-are.pdf', online: 'https://www.va.gov/disability/file-disability-claim-form-21-526ez/introduction', category: 'disability', canFileOnline: true },
+        { id: '10-10EZ', name: 'VA Healthcare Enrollment', description: 'Apply for VA health care', pdf: 'https://www.va.gov/vaforms/medical/pdf/VA%20Form%2010-10EZ.pdf', online: 'https://www.va.gov/health-care/apply-for-health-care-form-10-10ez/', category: 'healthcare', canFileOnline: true },
+        { id: '20-0995', name: 'Supplemental Claim', description: 'Request review with new evidence', pdf: 'https://www.vba.va.gov/pubs/forms/vba-20-0995-are.pdf', online: 'https://www.va.gov/decision-reviews/supplemental-claim/file-supplemental-claim-form-20-0995/', category: 'appeals', canFileOnline: true },
+        { id: '20-0996', name: 'Higher-Level Review', description: 'Request senior reviewer for your claim', pdf: 'https://www.vba.va.gov/pubs/forms/vba-20-0996-are.pdf', online: 'https://www.va.gov/decision-reviews/higher-level-review/request-higher-level-review-form-20-0996/', category: 'appeals', canFileOnline: true },
+        { id: '10182', name: 'Board Appeal (NOD)', description: 'Appeal to Board of Veterans Appeals', pdf: 'https://www.va.gov/vaforms/va/pdf/VA10182.pdf', online: null, category: 'appeals', canFileOnline: false },
+        { id: '21-2680', name: 'Aid and Attendance', description: 'Apply for aid and attendance benefit', pdf: 'https://www.vba.va.gov/pubs/forms/vba-21-2680-are.pdf', online: null, category: 'disability', canFileOnline: false },
+        { id: '21P-527EZ', name: 'Veterans Pension', description: 'Apply for veterans pension', pdf: 'https://www.vba.va.gov/pubs/forms/VBA-21P-527EZ-ARE.pdf', online: null, category: 'pension', canFileOnline: false },
+        { id: '10-10CG', name: 'Caregiver Support', description: 'Apply for family caregiver program', pdf: 'https://www.va.gov/vaforms/medical/pdf/10-10CG.pdf', online: 'https://www.va.gov/family-and-caregiver-benefits/health-and-disability/comprehensive-assistance-for-family-caregivers/apply-form-10-10cg/', category: 'caregiver', canFileOnline: true },
+        { id: '10-3542', name: 'Travel Reimbursement', description: 'Claim travel pay for VA appointments', pdf: null, online: 'https://www.va.gov/health-care/file-travel-pay-reimbursement/', category: 'travel', canFileOnline: true },
+        { id: '22-1990', name: 'GI Bill Application', description: 'Apply for education benefits', pdf: 'https://www.vba.va.gov/pubs/forms/vba-22-1990-are.pdf', online: 'https://www.va.gov/education/apply-for-gi-bill-form-22-1990/', category: 'education', canFileOnline: true },
+        { id: '28-1900', name: 'Vocational Rehab (Ch 31)', description: 'Apply for veteran readiness and employment', pdf: 'https://www.vba.va.gov/pubs/forms/VBA-28-1900-ARE.pdf', online: 'https://www.va.gov/careers-employment/vocational-rehabilitation/apply-vre-form-28-1900/', category: 'employment', canFileOnline: true }
+    ],
+
+    ssdi: [
+        { id: 'SSA-16', name: 'SSDI Application', description: 'Apply for Social Security Disability Insurance', pdf: 'https://www.ssa.gov/forms/ssa-16-bk.pdf', online: 'https://www.ssa.gov/applyfordisability/', category: 'disability', canFileOnline: true },
+        { id: 'SSA-561', name: 'Request for Reconsideration', description: 'Appeal denied SSDI claim', pdf: 'https://www.ssa.gov/forms/ssa-561-u2.pdf', online: 'https://www.ssa.gov/apply/appeal-decision-we-made/request-reconsideration', category: 'appeals', canFileOnline: true },
+        { id: 'SSA-3441', name: 'Disability Report - Appeal', description: 'Medical information for SSDI appeal', pdf: 'https://www.ssa.gov/forms/ssa-3441.pdf', online: 'https://www.ssa.gov/disability/appeal', category: 'appeals', canFileOnline: true }
+    ],
+
+    opm: [
+        { id: 'SF-3112', name: 'FERS Disability Retirement Package', description: 'Federal employee disability retirement application', pdf: 'https://www.opm.gov/forms/pdf_fill/sf3112.pdf', online: null, category: 'retirement', canFileOnline: false },
+        { id: 'SF-3112A', name: 'Applicant Statement of Disability', description: 'Your personal statement for disability retirement', pdf: 'https://www.opm.gov/forms/pdf_fill/sf3112a.pdf', online: null, category: 'retirement', canFileOnline: false },
+        { id: 'SF-3112B', name: 'Supervisor Statement', description: 'Supervisor statement for your disability application', pdf: 'https://www.opm.gov/forms/pdf_fill/sf3112b.pdf', online: null, category: 'retirement', canFileOnline: false },
+        { id: 'SF-3112C', name: 'Physician Statement', description: 'Doctor statement for disability retirement', pdf: 'https://www.opm.gov/forms/pdf_fill/sf3112c.pdf', online: null, category: 'retirement', canFileOnline: false },
+        { id: 'SF-3112D', name: 'Agency Certification', description: 'Agency reassignment and accommodation efforts', pdf: 'https://www.opm.gov/forms/pdf_fill/sf3112d.pdf', online: null, category: 'retirement', canFileOnline: false },
+        { id: 'SF-2809', name: 'FEHB Health Benefits Election', description: 'Change federal health benefits', pdf: 'https://www.opm.gov/forms/pdf_fill/sf2809.pdf', online: null, category: 'health', canFileOnline: false },
+        { id: 'SF-2817', name: 'FEGLI Life Insurance Election', description: 'Federal life insurance election', pdf: 'https://www.opm.gov/forms/pdf_fill/sf2817.pdf', online: null, category: 'insurance', canFileOnline: false }
+    ],
+
+    getFormsByCategory: function(agency, category) {
+        if (!this[agency]) return [];
+        return this[agency].filter(function(form) { return form.category === category; });
+    },
+
+    getStatePortal: function(stateCode) {
+        return this.statePortals[stateCode] || null;
+    }
+};
+
+function updateStatePortal(stateCode) {
+    var portal = GovernmentForms.getStatePortal(stateCode);
+    var resultsDiv = document.getElementById('state-portal-results');
+    if (!resultsDiv || !portal) return;
+
+    resultsDiv.innerHTML = '<div style="padding:16px 0;"><div style="font-size:14px; font-weight:700; margin-bottom:12px; color:var(--text-primary);">' + portal.name + ' Benefits Portals</div>' +
+        '<div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">' +
+        '<a href="' + portal.medicaid + '" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; transition:all 0.2s;"><div style="font-weight:600; color:var(--text-primary);">Medicaid</div><div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Health insurance</div></a>' +
+        '<a href="' + portal.snap + '" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; transition:all 0.2s;"><div style="font-weight:600; color:var(--text-primary);">SNAP</div><div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Food assistance</div></a>' +
+        '<a href="' + portal.disability + '" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; transition:all 0.2s;"><div style="font-weight:600; color:var(--text-primary);">Disability Services</div><div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Vocational rehab & services</div></a>' +
+        '<a href="' + portal.unemployment + '" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; transition:all 0.2s;"><div style="font-weight:600; color:var(--text-primary);">Unemployment</div><div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Job services & benefits</div></a>' +
+        '</div></div>';
+}
+
+function renderFormCards(agency, containerId) {
+    var forms = GovernmentForms[agency];
+    var container = document.getElementById(containerId);
+    if (!forms || !container) return;
+    var html = '';
+    for (var i = 0; i < forms.length; i++) {
+        var f = forms[i];
+        var buttons = '';
+        if (f.canFileOnline && f.online) {
+            buttons += '<a href="' + f.online + '" target="_blank" rel="noopener" class="action-btn" style="font-size:11px; padding:6px 12px; margin:0; text-decoration:none; display:inline-block;">File Online</a> ';
+        }
+        if (f.pdf) {
+            buttons += '<a href="' + f.pdf + '" target="_blank" rel="noopener" class="pg-bento-btn pg-bento-btn-outline" style="font-size:11px; padding:6px 12px; margin:0; text-decoration:none; display:inline-block;">Download PDF</a>';
+        }
+        html += '<div class="pg-bento-card"><div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">';
+        html += '<div><div style="font-weight:700; color:var(--text-primary); font-size:13px;">' + f.id + ' — ' + f.name + '</div>';
+        html += '<div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">' + f.description + '</div></div>';
+        html += '<div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">' + buttons + '</div>';
+        html += '</div></div>';
+    }
+    container.innerHTML = html;
+}
+
+function initClaimsFormsPage() {
+    renderFormCards('va', 'va-forms-list');
+    renderFormCards('ssdi', 'ssdi-forms-list');
+    renderFormCards('opm', 'opm-forms-list');
+    // Populate state selector
+    var sel = document.getElementById('state-selector');
+    if (sel) {
+        var states = Object.keys(GovernmentForms.statePortals).sort();
+        var html = '';
+        for (var i = 0; i < states.length; i++) {
+            var code = states[i];
+            var name = GovernmentForms.statePortals[code].name;
+            html += '<option value="' + code + '"' + (code === 'DC' ? ' selected' : '') + '>' + code + ' — ' + name + '</option>';
+        }
+        sel.innerHTML = html;
+        updateStatePortal('DC');
+    }
+}
+
+// Hook into page navigation
+var _origShowPage = typeof showPage === 'function' ? showPage : null;
+if (_origShowPage) {
+    // We'll init claims-forms when shown — patch via DOMContentLoaded
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Init claims forms page after a short delay
+    setTimeout(function() { initClaimsFormsPage(); }, 2000);
+});
+
 function triggerAIAnalysis(filename) {
     AnalysisEngine.lastRun = new Date().toISOString();
     AnalysisEngine.correlationsFound += 1;
@@ -3808,6 +3969,7 @@ function loadDocumentsFromStorage() {
       <div style="margin-top:16px;">
         <button class="pg-bento-btn" onclick="showPage('va-disability')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE2OCIgZmlsbD0iIzA4MjYzQSIvPjxwYXRoIGQ9Ik0yNzYgMTU4Yy00Mi0xMC04NiAxMC04NiA1NCAwIDQ0IDQ0IDU0IDg2IDY0IDM0IDggMzQgMzQgMCA0NC0yMCA2LTQ0IDItNjItOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjU2IDEzNnY0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjU2IDMzMnY0NCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> View VA Disability Details</button>
         <button class="pg-bento-btn pg-bento-btn-outline" onclick="showPage('claims-history')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNTIiIHk9IjEwOCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDQiIHJ4PSIyOCIgcnk9IjI4IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTg2IiB5PSIxNTIiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgcnk9IjExIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMTg2IiB5PSIxOTgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMjM2IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxODYiIHk9IjI3NCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjRkZGRkZGIi8+PHJlY3QgeD0iMTg2IiB5PSIzMTIiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMzUwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMDIiIGN5PSIzNjQiIHI9IjMyIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMjkwIiB5PSIzNTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjEyIiByeT0iMTIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> View Claims History</button>
+        <button class="pg-bento-btn" onclick="showPage('claims-forms')" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--badge-blue-text);">Claims & Forms Hub</button>
         <button class="pg-bento-btn pg-bento-btn-outline" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
       </div>
     </div>
@@ -8820,6 +8982,94 @@ function loadDocumentsFromStorage() {
   <div style="padding:16px; text-align:center; display:flex; gap:12px; justify-content:center;">
     <button class="action-btn" onclick="showPage('insights')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNjQiIHk9IjEyNCIgd2lkdGg9IjE4NCIgaGVpZ2h0PSIxODgiIHJ4PSI1NiIgcnk9IjU2IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMjAwIiB5PSIzMjAiIHdpZHRoPSIxMTIiIGhlaWdodD0iODgiIHJ4PSI0NCIgcnk9IjQ0IiBmaWxsPSIjMDgyNjNBIi8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMTk4IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjE5OCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjEwIiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMjc0IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjI3NCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48cGF0aCBkPSJNMjMyIDE5OEwyNTYgMjM2TDI4MCAxOThNMjMyIDI3NEwyNTYgMjM2TDI4MCAyNzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" class="metis-ico" style="width:2em;height:2em;" alt=""> View AI Insights</button>
     <button class="action-btn action-btn-secondary" onclick="showPage('dashboard')">← Back to Dashboard</button>
+  </div>
+</div>
+
+<!-- CLAIMS & FORMS HUB -->
+<div class="page" id="claims-forms">
+  <div class="pg-header pg-header-blue">
+    <div class="pg-header-title">Claims & Forms Hub</div>
+    <div class="pg-header-sub">Government benefits forms, applications, and state portals</div>
+    <div class="pg-header-stats">
+      <span class="pg-header-stat">11 VA Forms</span>
+      <span class="pg-header-stat">3 SSA Forms</span>
+      <span class="pg-header-stat">7 OPM Forms</span>
+      <span class="pg-header-stat">51 State Portals</span>
+    </div>
+  </div>
+
+  <!-- Your Active Claims -->
+  <div class="pg-bento-section">Your Active Claims</div>
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
+    <div class="pg-bento-card" style="border-left:3px solid #34d399;">
+      <div style="font-weight:700; color:var(--text-primary); font-size:13px;">VA Disability</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">100% P&T + Housebound</div>
+      <span class="badge badge-green" style="margin-top:8px; display:inline-block;">Approved</span>
+    </div>
+    <div class="pg-bento-card" style="border-left:3px solid #f88a2f;">
+      <div style="font-weight:700; color:var(--text-primary); font-size:13px;">FERS Disability</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">GS-14 Step 1 base</div>
+      <span class="badge badge-orange" style="margin-top:8px; display:inline-block;">Pending OPM</span>
+    </div>
+    <div class="pg-bento-card" style="border-left:3px solid #dc3545;">
+      <div style="font-weight:700; color:var(--text-primary); font-size:13px;">SSDI</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Initial denial received</div>
+      <span class="badge badge-red" style="margin-top:8px; display:inline-block;">Appeal Pending</span>
+    </div>
+    <div class="pg-bento-card" style="border-left:3px solid #34d399;">
+      <div style="font-weight:700; color:var(--text-primary); font-size:13px;">DC Medicaid</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Full coverage active</div>
+      <span class="badge badge-green" style="margin-top:8px; display:inline-block;">Active</span>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="pg-bento-section">Quick Actions</div>
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
+    <a href="https://www.va.gov/decision-reviews/supplemental-claim/file-supplemental-claim-form-20-0995/" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; text-align:center;">
+      <div style="font-weight:700; color:#a7cf28; font-size:13px;">File VA Supplemental Claim</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Form 20-0995</div>
+    </a>
+    <a href="https://www.ssa.gov/disability/appeal" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; text-align:center;">
+      <div style="font-weight:700; color:#64b5f6; font-size:13px;">SSDI Appeal Status</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Check appeal progress</div>
+    </a>
+    <a href="https://www.opm.gov/retirement-center/" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; text-align:center;">
+      <div style="font-weight:700; color:#f88a2f; font-size:13px;">OPM Case Status</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">FERS disability retirement</div>
+    </a>
+    <a href="https://districtdirect.dc.gov" target="_blank" rel="noopener" class="pg-bento-card" style="cursor:pointer; text-decoration:none; text-align:center;">
+      <div style="font-weight:700; color:#34d399; font-size:13px;">DC Benefits Portal</div>
+      <div style="font-size:11px; color:var(--text-secondary); margin-top:4px;">Medicaid, SNAP, housing</div>
+    </a>
+  </div>
+
+  <!-- VA Forms -->
+  <div class="pg-bento-section">VA Forms</div>
+  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;" id="va-forms-list"></div>
+
+  <!-- SSDI Forms -->
+  <div class="pg-bento-section">Social Security (SSDI) Forms</div>
+  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;" id="ssdi-forms-list"></div>
+
+  <!-- OPM Forms -->
+  <div class="pg-bento-section">OPM Federal Employee Forms</div>
+  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;" id="opm-forms-list"></div>
+
+  <!-- State Benefits Portal -->
+  <div class="pg-bento-section">State Benefits Portal</div>
+  <div class="pg-bento-card">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+      <label style="font-weight:700; color:var(--text-primary); font-size:13px;">Select your state:</label>
+      <select id="state-selector" onchange="updateStatePortal(this.value)" style="background:var(--card-bg); color:var(--text-primary); border:1px solid var(--border-subtle); border-radius:8px; padding:8px 12px; font-size:13px; cursor:pointer;"></select>
+    </div>
+    <div id="state-portal-results"></div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="padding:16px; text-align:center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+    <button class="action-btn" onclick="showPage('benefits-hub')">View Benefits Hub</button>
+    <button class="action-btn action-btn-secondary" onclick="showPage('dashboard')">Back to Dashboard</button>
   </div>
 </div>
 
