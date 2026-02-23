@@ -2494,6 +2494,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    // Auto-init Oura from stored PAT (no user action needed if previously connected)
+    if (typeof OuraConnector !== 'undefined') {
+        var ouraReady = OuraConnector.init();
+        if (ouraReady) {
+            console.log('[MÉTIS] Oura auto-connected from stored credentials');
+            if (typeof DataIntegration !== 'undefined' && DataIntegration.sources['oura-ring']) {
+                DataIntegration.sources['oura-ring'].status = 'connected';
+            }
+        }
+    }
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
     // Initialize MÉTIS AI Engine (Rule Engine + Predictive Analysis)
@@ -3704,15 +3714,21 @@ var KeenanHealthData = {
         ]
     },
     wearables: {
-        source: 'Oura Ring Gen 3',
-        restingHR: 72,
-        spo2: 93,
-        hrvAvg: 28,
-        hrvTrend: -12,
-        sleepScore: 62,
-        avgSleepDuration: 5.8,
-        steps7DayAvg: 4200,
-        cpapUsageHrs: 6.1
+        source: 'Oura Ring (Live API)',
+        restingHR: null, // Populated from Oura sleep sessions
+        spo2: null,
+        hrvAvg: null,
+        hrvTrend: null,
+        sleepScore: null,
+        avgSleepDuration: null,
+        steps7DayAvg: null,
+        activityScore: null,
+        activeCalories: null,
+        breathingRate: null,
+        breathingDisturbanceIndex: null,
+        stressHighMin: null,
+        cpapUsageHrs: 6.1,
+        _raw: null // Stores raw Oura API response arrays for AI deep analysis
     }
 };
 
@@ -4623,29 +4639,110 @@ var OuraConnector = {
     baseUrl: 'https://api.ouraring.com/v2',
     authUrl: 'https://cloud.ouraring.com/oauth/authorize',
     tokenUrl: 'https://api.ouraring.com/oauth/token',
-    clientId: null, // Set via OuraConnector.configure('your-client-id')
+    clientId: null,
     accessToken: null,
     tokenExpiry: null,
+    usePAT: false, // true when using Personal Access Token (no expiry)
     rateLimitRemaining: 5000,
 
-    configure: function(clientId) {
-        this.clientId = clientId;
-        // Check for stored token
+    // Initialize — check localStorage for stored PAT or OAuth token
+    init: function() {
         try {
+            // Check for Personal Access Token (preferred for personal use)
+            var pat = localStorage.getItem('metis_oura_pat');
+            if (pat) {
+                this.accessToken = pat;
+                this.usePAT = true;
+                this.tokenExpiry = '2099-12-31T23:59:59Z'; // PATs don't expire
+                console.log('[Oura] Restored PAT from localStorage');
+                return true;
+            }
+            // Fall back to OAuth token from session
             var stored = JSON.parse(sessionStorage.getItem('oura_token') || 'null');
             if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
                 this.accessToken = stored.access_token;
                 this.tokenExpiry = stored.expires_at;
-                console.log('[Oura] Restored token from session (expires ' + this.tokenExpiry + ')');
+                console.log('[Oura] Restored OAuth token (expires ' + this.tokenExpiry + ')');
                 return true;
             }
         } catch(e) {}
         return false;
     },
 
-    // Initiate OAuth2 authorization (client-side implicit flow)
+    // Configure with a Personal Access Token (stored in localStorage, NOT in code)
+    configurePAT: function(token) {
+        if (!token || token.length < 10) { console.error('[Oura] Invalid PAT'); return false; }
+        this.accessToken = token;
+        this.usePAT = true;
+        this.tokenExpiry = '2099-12-31T23:59:59Z';
+        try { localStorage.setItem('metis_oura_pat', token); } catch(e) {}
+        console.log('[Oura] PAT configured and stored');
+        return true;
+    },
+
+    // Configure with OAuth client ID (for future use)
+    configure: function(clientId) {
+        this.clientId = clientId;
+        return this.init();
+    },
+
+    // Prompt user for PAT via modal dialog
+    promptForPAT: function() {
+        var self = this;
+        // Create modal
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:100000;display:flex;align-items:center;justify-content:center;';
+        var modal = document.createElement('div');
+        modal.style.cssText = 'background:#0a1628;border:1px solid rgba(56,189,248,0.3);border-radius:16px;padding:28px;max-width:440px;width:90%;color:white;font-family:-apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,0.5);';
+        modal.innerHTML = '<div style="font-size:18px;font-weight:700;margin-bottom:8px;">🔗 Connect Oura Ring</div>' +
+            '<div style="font-size:13px;opacity:0.7;margin-bottom:16px;">Enter your Personal Access Token from <a href="https://cloud.ouraring.com/personal-access-tokens" target="_blank" style="color:#38bdf8;">cloud.ouraring.com</a>. It will be stored securely in your browser only — never sent to any server or stored in code.</div>' +
+            '<input id="oura-pat-input" type="password" placeholder="Paste your Oura PAT here..." style="width:100%;padding:12px;background:#001830;border:1px solid rgba(56,189,248,0.3);border-radius:8px;color:white;font-size:14px;margin-bottom:16px;box-sizing:border-box;" />' +
+            '<div style="display:flex;gap:12px;">' +
+            '<button id="oura-pat-cancel" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;cursor:pointer;font-size:14px;">Cancel</button>' +
+            '<button id="oura-pat-connect" style="flex:1;padding:10px;background:linear-gradient(135deg,#38bdf8,#2196F3);border:none;border-radius:8px;color:white;cursor:pointer;font-size:14px;font-weight:700;">Connect</button>' +
+            '</div>';
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        document.getElementById('oura-pat-cancel').onclick = function() { overlay.remove(); };
+        document.getElementById('oura-pat-connect').onclick = function() {
+            var token = document.getElementById('oura-pat-input').value.trim();
+            if (self.configurePAT(token)) {
+                // Mark source as connected in DataIntegration
+                if (typeof DataIntegration !== 'undefined' && DataIntegration.sources['oura-ring']) {
+                    DataIntegration.sources['oura-ring'].status = 'connected';
+                    DataIntegration.sources['oura-ring'].lastSync = new Date().toISOString();
+                }
+                overlay.remove();
+                // Show success
+                var notif = document.createElement('div');
+                notif.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95));color:#001830;padding:16px 24px;border-radius:12px;font-size:14px;font-weight:700;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.3);text-align:center;';
+                notif.textContent = 'Oura Ring Connected! Syncing live data...';
+                document.body.appendChild(notif);
+                // Trigger immediate sync
+                if (typeof MasterSync !== 'undefined') MasterSync.syncSource('oura-ring');
+                if (typeof AutoSync !== 'undefined') AutoSync.updateSyncUI();
+                setTimeout(function() { notif.style.opacity='0'; notif.style.transition='opacity 0.5s'; setTimeout(function(){notif.remove();},500); }, 4000);
+            } else {
+                document.getElementById('oura-pat-input').style.borderColor = '#ef4444';
+            }
+        };
+    },
+
+    // Initiate connection — uses PAT prompt for personal use, OAuth for app-level
     authorize: function(redirectUri) {
-        if (!this.clientId) { console.error('[Oura] No client ID configured'); return; }
+        // If we already have a PAT stored, just init and sync
+        if (this.init()) {
+            console.log('[Oura] Already authenticated — triggering sync');
+            if (typeof MasterSync !== 'undefined') MasterSync.syncSource('oura-ring');
+            return;
+        }
+        // If no clientId configured, prompt for PAT (personal use mode)
+        if (!this.clientId) {
+            this.promptForPAT();
+            return;
+        }
+        // Otherwise use full OAuth flow
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
         var state = Math.random().toString(36).substring(2, 15);
         sessionStorage.setItem('oura_state', state);
@@ -4674,13 +4771,12 @@ var OuraConnector = {
                 return false;
             }
             this.accessToken = params.access_token;
-            var expiresIn = parseInt(params.expires_in) || 2592000; // 30 days default
+            var expiresIn = parseInt(params.expires_in) || 2592000;
             this.tokenExpiry = new Date(Date.now() + expiresIn * 1000).toISOString();
             sessionStorage.setItem('oura_token', JSON.stringify({
                 access_token: this.accessToken,
                 expires_at: this.tokenExpiry
             }));
-            // Clean URL
             history.replaceState(null, '', window.location.pathname + window.location.search);
             console.log('[Oura] Authenticated — token expires ' + this.tokenExpiry);
             return true;
@@ -4689,6 +4785,8 @@ var OuraConnector = {
     },
 
     isAuthenticated: function() {
+        // PATs don't expire; OAuth tokens do
+        if (this.usePAT && this.accessToken) return true;
         return this.accessToken && this.tokenExpiry && new Date(this.tokenExpiry) > new Date();
     },
 
@@ -4747,6 +4845,12 @@ var OuraConnector = {
         return this._fetch('/usercollection/daily_stress', { start_date: start });
     },
 
+    // Fetch detailed sleep periods (includes HRV, avg HR, breathing rate per session)
+    getSleepPeriods: function(days) {
+        var start = new Date(Date.now() - (days || 7) * 86400000).toISOString().split('T')[0];
+        return this._fetch('/usercollection/sleep', { start_date: start });
+    },
+
     // Pull all data and normalize into KeenanHealthData.wearables format
     syncAll: function() {
         if (!this.isAuthenticated()) return Promise.reject(new Error('Not authenticated'));
@@ -4755,50 +4859,69 @@ var OuraConnector = {
         return Promise.all([
             self.getSleep(7).catch(function() { return { data: [] }; }),
             self.getActivity(7).catch(function() { return { data: [] }; }),
-            self.getReadiness(7).catch(function() { return { data: [] }; }),
+            self.getSleepPeriods(7).catch(function() { return { data: [] }; }),
             self.getHeartRate(1).catch(function() { return { data: [] }; }),
-            self.getSpO2(7).catch(function() { return { data: [] }; })
+            self.getSpO2(7).catch(function() { return { data: [] }; }),
+            self.getStress(7).catch(function() { return { data: [] }; })
         ]).then(function(results) {
-            var sleep = results[0].data || [];
+            var dailySleep = results[0].data || [];
             var activity = results[1].data || [];
-            var readiness = results[2].data || [];
+            var sleepPeriods = results[2].data || [];
             var heartrate = results[3].data || [];
             var spo2 = results[4].data || [];
+            var stress = results[5].data || [];
 
-            // Compute averages from real data
             var wearableData = {
-                source: 'Oura Ring Gen 3 (Live API)',
+                source: 'Oura Ring (Live API)',
                 lastSynced: new Date().toISOString()
             };
 
-            // Sleep
-            if (sleep.length > 0) {
-                var sleepScores = sleep.map(function(s) { return s.score; }).filter(Boolean);
-                var sleepDurations = sleep.map(function(s) { return s.contributors ? s.contributors.total_sleep : null; }).filter(Boolean);
+            // Sleep scores from daily_sleep
+            if (dailySleep.length > 0) {
+                var sleepScores = dailySleep.map(function(s) { return s.score; }).filter(Boolean);
                 wearableData.sleepScore = sleepScores.length ? Math.round(sleepScores.reduce(function(a,b){return a+b;},0) / sleepScores.length) : null;
-                wearableData.avgSleepDuration = sleepDurations.length ? Math.round(sleepDurations.reduce(function(a,b){return a+b;},0) / sleepDurations.length / 3600 * 10) / 10 : null;
+            }
+
+            // Sleep duration + HRV + resting HR from detailed sleep periods
+            if (sleepPeriods.length > 0) {
+                var longSleeps = sleepPeriods.filter(function(s) { return s.type === 'long_sleep'; });
+                // Average sleep duration (hours)
+                var durations = longSleeps.map(function(s) { return s.total_sleep_duration; }).filter(Boolean);
+                wearableData.avgSleepDuration = durations.length ? Math.round(durations.reduce(function(a,b){return a+b;},0) / durations.length / 3600 * 10) / 10 : null;
+                // HRV from sleep sessions (most accurate resting HRV)
+                var hrvs = longSleeps.map(function(s) { return s.average_hrv; }).filter(Boolean);
+                wearableData.hrvAvg = hrvs.length ? Math.round(hrvs.reduce(function(a,b){return a+b;},0) / hrvs.length) : null;
+                // HRV trend: last 3 vs previous
+                if (hrvs.length >= 4) {
+                    var recent = hrvs.slice(-3).reduce(function(a,b){return a+b;},0) / 3;
+                    var earlier = hrvs.slice(0, -3).reduce(function(a,b){return a+b;},0) / (hrvs.length - 3);
+                    wearableData.hrvTrend = earlier > 0 ? Math.round((recent - earlier) / earlier * 100) : 0;
+                }
+                // Resting HR from sleep (more accurate than daytime)
+                var sleepHRs = longSleeps.map(function(s) { return s.average_heart_rate; }).filter(Boolean);
+                if (sleepHRs.length) {
+                    wearableData.restingHR = Math.round(sleepHRs.reduce(function(a,b){return a+b;},0) / sleepHRs.length);
+                }
+                // Breathing rate from sleep
+                var breathRates = longSleeps.map(function(s) { return s.average_breath; }).filter(Boolean);
+                if (breathRates.length) {
+                    wearableData.breathingRate = Math.round(breathRates.reduce(function(a,b){return a+b;},0) / breathRates.length * 10) / 10;
+                }
             }
 
             // Activity — steps
             if (activity.length > 0) {
                 var steps = activity.map(function(a) { return a.steps; }).filter(function(v) { return v != null; });
                 wearableData.steps7DayAvg = steps.length ? Math.round(steps.reduce(function(a,b){return a+b;},0) / steps.length) : null;
+                var actScores = activity.map(function(a) { return a.score; }).filter(Boolean);
+                wearableData.activityScore = actScores.length ? Math.round(actScores.reduce(function(a,b){return a+b;},0) / actScores.length) : null;
+                // Total active calories (latest day)
+                var latest = activity[activity.length - 1];
+                wearableData.activeCalories = latest ? latest.active_calories : null;
             }
 
-            // Readiness — HRV
-            if (readiness.length > 0) {
-                var hrvs = readiness.map(function(r) { return r.contributors ? r.contributors.hrv_balance : null; }).filter(Boolean);
-                wearableData.hrvAvg = hrvs.length ? Math.round(hrvs.reduce(function(a,b){return a+b;},0) / hrvs.length) : null;
-                // Trend: compare latest 3 days to previous 4
-                if (hrvs.length >= 5) {
-                    var recent = hrvs.slice(0, 3).reduce(function(a,b){return a+b;},0) / 3;
-                    var earlier = hrvs.slice(3).reduce(function(a,b){return a+b;},0) / (hrvs.length - 3);
-                    wearableData.hrvTrend = earlier > 0 ? Math.round((recent - earlier) / earlier * 100) : 0;
-                }
-            }
-
-            // Heart rate — resting
-            if (heartrate.length > 0) {
+            // Heart rate — use sleep data if available, fall back to API HR readings
+            if (!wearableData.restingHR && heartrate.length > 0) {
                 var restingHRs = heartrate.filter(function(h) { return h.source === 'rest' || h.source === 'sleep'; }).map(function(h) { return h.bpm; });
                 wearableData.restingHR = restingHRs.length ? Math.round(restingHRs.reduce(function(a,b){return a+b;},0) / restingHRs.length) : null;
             }
@@ -4807,9 +4930,27 @@ var OuraConnector = {
             if (spo2.length > 0) {
                 var spo2Vals = spo2.map(function(s) { return s.spo2_percentage ? s.spo2_percentage.average : null; }).filter(Boolean);
                 wearableData.spo2 = spo2Vals.length ? Math.round(spo2Vals.reduce(function(a,b){return a+b;},0) / spo2Vals.length * 10) / 10 : null;
+                // Breathing disturbance index (sleep apnea indicator)
+                var bdi = spo2.map(function(s) { return s.breathing_disturbance_index; }).filter(Boolean);
+                wearableData.breathingDisturbanceIndex = bdi.length ? Math.round(bdi.reduce(function(a,b){return a+b;},0) / bdi.length) : null;
             }
 
-            console.log('[Oura] Sync complete:', wearableData);
+            // Stress
+            if (stress.length > 0) {
+                var stressScores = stress.map(function(s) { return s.stress_high; }).filter(function(v) { return v != null; });
+                wearableData.stressHighMin = stressScores.length ? Math.round(stressScores.reduce(function(a,b){return a+b;},0) / stressScores.length) : null;
+            }
+
+            // Store raw data arrays for AI engine deep analysis
+            wearableData._raw = {
+                dailySleep: dailySleep,
+                sleepPeriods: sleepPeriods,
+                activity: activity,
+                spo2: spo2,
+                stress: stress
+            };
+
+            console.log('[Oura] Sync complete:', JSON.stringify(wearableData, function(k,v) { return k === '_raw' ? '[raw data]' : v; }));
             return wearableData;
         });
     }
@@ -5439,14 +5580,15 @@ var MasterSync = {
             if (sourceKey === 'oura-ring' && typeof KeenanHealthData !== 'undefined') {
                 // Update wearables with real Oura data
                 var w = KeenanHealthData.wearables;
-                if (data.sleepScore != null) w.sleepScore = data.sleepScore;
-                if (data.avgSleepDuration != null) w.avgSleepDuration = data.avgSleepDuration;
-                if (data.steps7DayAvg != null) w.steps7DayAvg = data.steps7DayAvg;
-                if (data.hrvAvg != null) w.hrvAvg = data.hrvAvg;
-                if (data.hrvTrend != null) w.hrvTrend = data.hrvTrend;
-                if (data.restingHR != null) w.restingHR = data.restingHR;
-                if (data.spo2 != null) w.spo2 = data.spo2;
+                var ouraFields = ['sleepScore','avgSleepDuration','steps7DayAvg','hrvAvg','hrvTrend',
+                    'restingHR','spo2','activityScore','activeCalories','breathingRate',
+                    'breathingDisturbanceIndex','stressHighMin'];
+                ouraFields.forEach(function(field) {
+                    if (data[field] != null) w[field] = data[field];
+                });
+                if (data._raw) w._raw = data._raw;
                 w.source = data.source;
+                w.lastSynced = data.lastSynced;
                 console.log('[MasterSync] Oura data merged into KeenanHealthData.wearables');
             }
 
