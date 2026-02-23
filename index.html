@@ -2320,8 +2320,110 @@ var DataIntegration = {
         var count = 0;
         for (var key in this.sources) { if (this.sources[key].status === 'available') count++; }
         return count;
+    },
+
+    // Auto-sync connected sources
+    syncSource: function(sourceKey) {
+        var source = this.sources[sourceKey];
+        if (!source || (source.status !== 'connected' && source.status !== 'imported' && source.status !== 'uploaded')) return;
+        source.lastSync = new Date().toISOString();
+        return source;
+    },
+
+    connectSource: function(sourceKey) {
+        var source = this.sources[sourceKey];
+        if (!source) return;
+        source.status = 'connected';
+        source.lastSync = new Date().toISOString();
+        // Trigger AI analysis on new connection
+        triggerAIAnalysis(source.name + ' (new connection)');
+        // Update UI
+        AutoSync.updateSyncUI();
+        return source;
     }
 };
+
+/* ===== AUTO-SYNC & CONTINUOUS UPDATE ENGINE ===== */
+var AutoSync = {
+    interval: null,
+    syncIntervalMs: 300000, // 5 minutes
+    isRunning: false,
+
+    start: function() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        var self = this;
+        // Run initial sync
+        this.runSync();
+        // Set up recurring sync
+        this.interval = setInterval(function() { self.runSync(); }, this.syncIntervalMs);
+        console.log('[MÉTIS AutoSync] Started — syncing every ' + (this.syncIntervalMs / 60000) + ' minutes');
+    },
+
+    stop: function() {
+        if (this.interval) clearInterval(this.interval);
+        this.isRunning = false;
+        console.log('[MÉTIS AutoSync] Stopped');
+    },
+
+    runSync: function() {
+        var synced = [];
+        var now = new Date();
+        for (var key in DataIntegration.sources) {
+            var source = DataIntegration.sources[key];
+            if (source.status === 'connected' || source.status === 'imported' || source.status === 'uploaded') {
+                // Check if source needs sync (older than 5 minutes)
+                var lastSync = source.lastSync ? new Date(source.lastSync) : new Date(0);
+                if (now - lastSync > this.syncIntervalMs) {
+                    source.lastSync = now.toISOString();
+                    synced.push(source.name);
+                }
+            }
+        }
+        if (synced.length > 0) {
+            // Update AnalysisEngine
+            AnalysisEngine.lastRun = now.toISOString();
+            AnalysisEngine.nextRun = new Date(now.getTime() + this.syncIntervalMs).toISOString();
+            // Update dashboard footer
+            var footer = document.querySelector('#dashboard [style*="opacity:0.3"]');
+            if (footer) footer.innerHTML = '<strong>MÉTIS AI</strong> — Last sync: just now · ' + AnalysisEngine.correlationsFound + ' correlations · ' + synced.length + ' sources synced';
+            // Update sync status indicators
+            this.updateSyncUI();
+            console.log('[MÉTIS AutoSync] Synced: ' + synced.join(', '));
+        }
+    },
+
+    updateSyncUI: function() {
+        // Update connected count on data-integration page
+        var connCountEl = document.getElementById('sync-connected-count');
+        if (connCountEl) connCountEl.textContent = DataIntegration.getConnectedCount();
+        // Update last sync time display
+        var lastSyncEl = document.getElementById('sync-last-time');
+        if (lastSyncEl) lastSyncEl.textContent = 'Last sync: just now';
+        // Update sync status indicator in header
+        var syncDot = document.getElementById('sync-status-dot');
+        if (syncDot) {
+            syncDot.style.background = '#34d399';
+            syncDot.style.boxShadow = '0 0 6px rgba(52,211,153,0.6)';
+        }
+    },
+
+    getTimeSinceSync: function(sourceKey) {
+        var source = DataIntegration.sources[sourceKey];
+        if (!source || !source.lastSync) return 'Never';
+        var diff = new Date() - new Date(source.lastSync);
+        if (diff < 60000) return 'Just now';
+        if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+        if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+        return Math.floor(diff / 86400000) + 'd ago';
+    }
+};
+
+// Start auto-sync when dashboard loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Delay start to not block page load
+    setTimeout(function() { AutoSync.start(); }, 3000);
+});
 
 /* ===== AI ANALYSIS ENGINE ===== */
 var AnalysisEngine = {
@@ -2821,8 +2923,9 @@ function loadDocumentsFromStorage() {
             </div>
         </div>
 
-        <div style="font-size:10px; opacity:0.3; text-align:center; margin-top:16px; padding:8px;">
-            <strong>MÉTIS AI</strong> — Last scan: 2 minutes ago · 21 correlations active across your health data
+        <div style="font-size:10px; opacity:0.4; text-align:center; margin-top:16px; padding:8px;">
+            <span id="sync-status-dot" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#34d399; box-shadow:0 0 6px rgba(52,211,153,0.6); margin-right:4px; vertical-align:middle;"></span>
+            <strong>MÉTIS AI</strong> — <span id="sync-last-time">Last sync: starting...</span> · <span id="ai-correlation-count">21</span> correlations · <span id="sync-source-count">6</span> sources connected
         </div>
 
     </div>
