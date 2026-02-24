@@ -6591,22 +6591,22 @@ function loadDocumentsFromStorage() {
             </div>
 
             <!-- Row 4: Quick Stats — full width, 4-across -->
-            <div class="pg-bento-card" style="grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:4px; padding:0;">
-                <div onclick="showPage('diagnoses')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:16px; font-weight:800; color:var(--badge-red-text);">17+</div>
-                    <div style="font-size:9px; opacity:0.5;">Conditions</div>
+            <div class="pg-bento-card" style="grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:2px; padding:6px 0;">
+                <div onclick="showPage('diagnoses')" style="text-align:center; cursor:pointer; padding:14px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:26px; font-weight:900; color:var(--badge-red-text); line-height:1;">17+</div>
+                    <div style="font-size:11px; opacity:0.5; margin-top:4px;">Conditions</div>
                 </div>
-                <div onclick="showPage('medications')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:16px; font-weight:800; color:var(--badge-blue-text);">7</div>
-                    <div style="font-size:9px; opacity:0.5;">Medications</div>
+                <div onclick="showPage('medications')" style="text-align:center; cursor:pointer; padding:14px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:26px; font-weight:900; color:var(--badge-blue-text); line-height:1;">7</div>
+                    <div style="font-size:11px; opacity:0.5; margin-top:4px;">Medications</div>
                 </div>
-                <div onclick="showPage('genetic-risks')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:16px; font-weight:800; color:#a7cf28;">12</div>
-                    <div style="font-size:9px; opacity:0.5;">Gene Links</div>
+                <div onclick="showPage('genetic-risks')" style="text-align:center; cursor:pointer; padding:14px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:26px; font-weight:900; color:#a7cf28; line-height:1;">12</div>
+                    <div style="font-size:11px; opacity:0.5; margin-top:4px;">Gene Links</div>
                 </div>
-                <div onclick="showPage('wearables')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:16px; font-weight:800; color:#ce93d8;">62</div>
-                    <div style="font-size:9px; opacity:0.5;">Sleep Score</div>
+                <div onclick="showPage('wearables')" style="text-align:center; cursor:pointer; padding:14px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:26px; font-weight:900; color:#ce93d8; line-height:1;">62</div>
+                    <div style="font-size:11px; opacity:0.5; margin-top:4px;">Sleep Score</div>
                 </div>
             </div>
         </div>
@@ -13036,26 +13036,24 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
-      <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Potential Catastrophic Costs</div>
-      <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        <div style="display:flex; gap:6px; justify-content:space-between;">
-          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
-            <div style="font-weight:700; color:#dc3545; font-size:13px;">$4,398</div>
-            <div style="font-size:10px; color:var(--text-secondary);">Hearing Aids</div>
-          </div>
-          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
-            <div style="font-weight:700; color:#dc3545; font-size:13px;">$75K–150K+</div>
-            <div style="font-size:10px; color:var(--text-secondary);">Spinal Surgery</div>
-          </div>
-          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
-            <div style="font-weight:700; color:#dc3545; font-size:13px;">$5K–50K+</div>
-            <div style="font-size:10px; color:var(--text-secondary);">ER Visit Cost</div>
-          </div>
-          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
-            <div style="font-weight:700; color:#dc3545; font-size:13px;">$13.5K</div>
-            <div style="font-size:10px; color:var(--text-secondary);">Annual Gap</div>
-          </div>
+    <div class="pg-bento-card" style="grid-column:1/-1;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">Potential Catastrophic Costs</div>
+      <div style="display:flex; gap:8px; justify-content:space-between;">
+        <div style="flex:1; padding:10px 8px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+          <div style="font-weight:800; color:#dc3545; font-size:16px;">$4,398</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Hearing Aids</div>
+        </div>
+        <div style="flex:1; padding:10px 8px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+          <div style="font-weight:800; color:#dc3545; font-size:16px;">$75K–150K+</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Spinal Surgery</div>
+        </div>
+        <div style="flex:1; padding:10px 8px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+          <div style="font-weight:800; color:#dc3545; font-size:16px;">$5K–50K+</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">ER Visit Cost</div>
+        </div>
+        <div style="flex:1; padding:10px 8px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+          <div style="font-weight:800; color:#dc3545; font-size:16px;">$13.5K</div>
+          <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Annual Gap</div>
         </div>
       </div>
     </div>
