@@ -1093,12 +1093,15 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 .bento-severity-green { background: linear-gradient(135deg, rgba(167,207,40,0.12) 0%, rgba(167,207,40,0.04) 100%) !important; border-color: rgba(167,207,40,0.25) !important; }
 .bento-severity-purple { background: linear-gradient(135deg, rgba(156,39,176,0.12) 0%, rgba(156,39,176,0.04) 100%) !important; border-color: rgba(156,39,176,0.25) !important; }
 
-/* Bento Grid */
-.pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+/* Bento Grid — ALWAYS 2-col, override any inline 1fr */
+.pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr !important; gap: 12px; margin-bottom: 16px; }
+/* Nested stat grids inside cards can use auto-fill */
+.pg-bento-card .pg-bento-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; }
 /* ── TABLET BREAKPOINT ── */
 @media (max-width: 768px) {
   /* Keep 2-col layout on mobile — bento = at a glance */
   .pg-bento-grid { grid-template-columns: 1fr 1fr !important; }
+  .pg-bento-card .pg-bento-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important; }
   .pg-bento-grid > * { min-width: 0 !important; }
   /* Section labels MUST span full width */
   .pg-bento-grid > div[style*="grid-column:1/-1"] { grid-column: 1 / -1 !important; }
@@ -2088,6 +2091,40 @@ body.light-mode .nav-bar, body.light-mode .menu {
     function toggleBentoExpand(el) {
         var detail = el.querySelector('.bento-detail');
         if (detail) { detail.classList.toggle('bento-open'); }
+    }
+
+    /* ── Smart Bento/Glass Layout Engine ──
+       Automatically determines which cards should be full-width glass panels
+       vs compact 2-col bentos based on content density and card count.
+       Rules:
+       1. Single card in a grid → full width (glass panel)
+       2. Card with >300 chars of text content → full width (glass panel)
+       3. Section labels (grid-column:1/-1) → already handled by CSS
+       4. Cards already spanning (grid-column set) → skip
+    */
+    function autoLayoutBentos() {
+        document.querySelectorAll('.pg-bento-grid').forEach(function(grid) {
+            var cards = grid.querySelectorAll(':scope > .pg-bento-card');
+            var labels = grid.querySelectorAll(':scope > div[style*="grid-column"]');
+            // Rule 1: Single card → full width glass
+            if (cards.length === 1 && !cards[0].style.gridColumn) {
+                cards[0].style.gridColumn = '1 / -1';
+            }
+            // Rule 2: Cards with dense text content → full width glass
+            cards.forEach(function(card) {
+                if (card.style.gridColumn) return; // already set
+                var text = card.textContent || '';
+                if (text.length > 400) {
+                    card.style.gridColumn = '1 / -1';
+                }
+            });
+        });
+    }
+    // Run after DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', autoLayoutBentos);
+    } else {
+        autoLayoutBentos();
     }
 
     function toggleMenu(forceClose) {
@@ -9971,7 +10008,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Critical & High Priority -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">High Priority & Critical Medications</div>
 
     <div class="pg-bento-card">
@@ -10009,7 +10046,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Psychiatric & Neurological Medications -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Psychiatric & Neurological Medications</div>
 
     <div class="pg-bento-card">
@@ -10072,8 +10109,8 @@ function loadDocumentsFromStorage() {
     </div>
   </div>
 
-  <!-- Respiratory & Other Medications -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <!-- Respiratory, Hormonal & Other Medications -->
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Respiratory, Hormonal & Other Medications</div>
 
     <div class="pg-bento-card">
@@ -10148,10 +10185,10 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- 23andMe Pharmacogenomic Findings -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">23andMe Pharmacogenomic Metabolism Findings</div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">CYP1A2 (rs762551) — AA — Slow Caffeine Metabolizer</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <strong>Genotype:</strong> Homozygous for slow caffeine metabolism allele<br><br>
@@ -10164,7 +10201,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">ADRB2 (rs1042713) — GG — Beta-2 Agonist Response</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <strong>Genotype:</strong> Homozygous for Arg16 variant (GG = Arg16Arg)<br><br>
@@ -10177,7 +10214,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">SLCO1B1 (rs4149056) — TT — Normal Statin Metabolism</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <strong>Genotype:</strong> Homozygous for normal SLCO1B1 function<br><br>
@@ -10190,7 +10227,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">DRD2 (rs1800497) — AG — Dopamine Receptor & Stimulant Response</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <strong>Genotype:</strong> Heterozygous for A1 allele (reduced dopamine D2 receptor density)<br><br>
@@ -10203,7 +10240,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">MTHFR A1298C (rs1801131) — TT (if confirmed) — Folate Metabolism Impact on Drug Response</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <strong>Genotype (23andMe):</strong> TT (homozygous for C variant) — DISCREPANCY from AncestryDNA (AC)<br><br>
@@ -10219,10 +10256,10 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Drug Metabolism Profile -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Your Drug Metabolism Profile</div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">How Enzymes Determine Your Drug Response</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         Your liver uses enzymes (called CYP enzymes) to break down medications. Your DNA determines how fast or slow each enzyme works. If you're a "slow metabolizer," drugs stay in your system longer and can build up to toxic levels. If you're a "fast metabolizer," drugs may clear too quickly and not work as well. Your personalized profile allows doctors to choose the right medications and doses for YOUR body — instead of guessing based on population averages.
@@ -10258,10 +10295,10 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Special Considerations -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg4IEw0NDggNDE2IEg2NCBMMjU2IDg4eiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjIzOCIgeT0iMjAwIiB3aWR0aD0iMzYiIGhlaWdodD0iMTMwIiByeD0iMTgiIHJ5PSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjM2OCIgcj0iMjAiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Special Medication Considerations</div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Neuropathy Drug Cascade Risk</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-top: 12px; font-size: 13px; color: var(--text-primary); line-height: 1.8;">
@@ -10290,7 +10327,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Electrolyte Management Strategy</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-top: 12px; font-size: 13px; color: var(--text-primary); line-height: 1.8;">
@@ -10313,7 +10350,7 @@ function loadDocumentsFromStorage() {
       </div>
     </div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="grid-column:1/-1;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Medications to Discuss with Doctors</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-top: 12px; font-size: 13px; color: var(--text-primary); line-height: 1.8;">
@@ -10337,12 +10374,11 @@ function loadDocumentsFromStorage() {
     </div>
   </div>
 
-  <!-- Action Buttons -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div style="grid-column:1/-1; height:1px; background:var(--border-subtle); margin:4px 0;"></div>
+  <!-- Navigation -->
+  <div style="padding:16px; text-align:center; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
     <button class="pg-glass-btn" style="background:rgba(248,138,47,0.15); border:1px solid rgba(248,138,47,0.3); color:var(--badge-orange-text);">Schedule Medication Review</button>
     <button class="pg-glass-btn" style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:var(--badge-blue-text);" onclick="showPage('genome-correlations')">View Genome Correlations</button>
-    <button class="pg-glass-btn" style="background:transparent; border:1px solid var(--border-subtle); color:var(--text-badge-default);" onclick="showPage('dashboard')" style="margin-bottom:0;">← Back to Dashboard</button>
+    <button class="pg-glass-btn" style="background:transparent; border:1px solid var(--border-subtle); color:var(--text-badge-default);" onclick="showPage('dashboard')">← Back to Dashboard</button>
   </div>
 </div>
 
