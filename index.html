@@ -1095,6 +1095,22 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 
 /* Bento Grid — ALWAYS 2-col, override any inline 1fr */
 .pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr !important; gap: 12px; margin-bottom: 16px; }
+.pg-bento-grid.pg-glass-layout { grid-template-columns: 1fr !important; }
+/* Pages that should always be single-column glass layout */
+#lab-results > .pg-bento-grid,
+#wearables > .pg-bento-grid,
+#genome-dashboard > .pg-bento-grid,
+#genetic-risks > .pg-bento-grid,
+#insights > .pg-bento-grid,
+#trends > .pg-bento-grid,
+#alerts > .pg-bento-grid,
+#comorbidity > .pg-bento-grid,
+#form-medications-summary > .pg-bento-grid,
+#form-conditions-summary > .pg-bento-grid { grid-template-columns: 1fr !important; }
+/* Nested stat grids inside single-col pages still use auto-fill */
+#lab-results .pg-bento-card .pg-bento-grid,
+#wearables .pg-bento-card .pg-bento-grid,
+#trends .pg-bento-card .pg-bento-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; }
 /* Nested stat grids inside cards can use auto-fill */
 .pg-bento-card .pg-bento-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; }
 /* ── TABLET BREAKPOINT ── */
@@ -2697,8 +2713,6 @@ var DrugInteractionDB = {
             { drug1: 'statin-class', drug2: '21212', severity: 'moderate', mechanism: 'Clarithromycin inhibits statin metabolism via CYP3A4, increasing rhabdomyolysis risk', recommendation: 'Use azithromycin instead or temporarily hold statin', citation: 'CPIC Guidelines' },
             { drug1: '6809', drug2: '29046', severity: 'moderate', mechanism: 'Metformin + Lisinopril: ACE inhibitors may modestly enhance hypoglycemic effect. More importantly, both affect renal function — monitor for lactic acidosis risk if kidney function declines', recommendation: 'Monitor blood glucose and renal function (eGFR/creatinine) regularly; hold Metformin if eGFR drops below 30 mL/min', citation: 'ADA Standards of Care / FDA Metformin Label' },
             { drug1: '6809', drug2: '29046-hypertension', severity: 'informational', mechanism: 'ACE inhibitors provide renal protection in diabetic patients on Metformin', recommendation: 'Combination is generally beneficial for diabetic nephropathy prevention — continue monitoring kidney function', citation: 'ADA Standards of Care 2026' },
-            { drug1: '25480', drug2: '29046', severity: 'moderate', mechanism: 'Gabapentin + Lisinopril: Both can cause dizziness; additive hypotensive effects possible', recommendation: 'Monitor blood pressure and assess for orthostatic hypotension', citation: 'Clinical Pharmacology Reference' },
-            { drug1: '36437', drug2: '25480', severity: 'moderate', mechanism: 'Sertraline + Gabapentin: Additive CNS depression; increased sedation and dizziness risk', recommendation: 'Use caution; monitor for excessive sedation especially during dosage changes', citation: 'DrugBank Interaction Database' },
             { drug1: '29046', drug2: '83367', severity: 'moderate', mechanism: 'Lisinopril + Atorvastatin: Generally safe combination but monitor for muscle pain (rare additive myopathy risk)', recommendation: 'Routine monitoring; report unexplained muscle pain or weakness', citation: 'ACC/AHA Guidelines' }
         ];
 
@@ -3767,7 +3781,6 @@ var KeenanHealthData = {
         { name: 'Lisinopril 20mg', code: '29046', rxNormCode: '29046', status: 'active', startDate: '2019-09-01', therapeuticClass: 'ACE Inhibitor' },
         { name: 'Atorvastatin 40mg', code: '83367', rxNormCode: '83367', status: 'active', startDate: '2020-04-01', metabolizedBy: 'CYP3A4', therapeuticClass: 'Statin' },
         { name: 'Sertraline 100mg', code: '36437', rxNormCode: '36437', status: 'active', startDate: '2018-02-15', metabolizedBy: 'CYP2C19', therapeuticClass: 'SSRI' },
-        { name: 'Gabapentin 600mg', code: '25480', rxNormCode: '25480', status: 'active', startDate: '2023-03-01', therapeuticClass: 'Anticonvulsant/Neuropathic Pain' },
         { name: 'Melatonin 5mg', code: 'OTC-mel', status: 'active', startDate: '2022-01-01', therapeuticClass: 'Sleep Aid' }
     ],
     labs: [
@@ -6562,16 +6575,16 @@ function loadDocumentsFromStorage() {
             </div>
 
             <!-- Row 3: AI Correlations + Active Alerts -->
-            <div class="pg-bento-card" onclick="showPage('genome-correlations')" style="background:linear-gradient(135deg,rgba(56,189,248,0.12),rgba(56,189,248,0.04)); border:1px solid rgba(56,189,248,0.2); cursor:pointer;">
+            <div class="pg-bento-card" onclick="showPage('genome-correlations')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(56,189,248,0.12),rgba(56,189,248,0.04)); border:1px solid rgba(56,189,248,0.2); cursor:pointer; padding:14px 10px;">
                 <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:4px;">AI Correlations</div>
                 <div style="font-size:32px; font-weight:900; line-height:1; color:var(--badge-blue-text);">21</div>
-                <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-top:8px;"><div style="height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#38bdf8,#a7cf28);"></div></div>
+                <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-top:8px;"><div style="height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#38bdf8,#a7cf28);"></div></div>
             </div>
 
-            <div class="pg-bento-card" onclick="showPage('alerts')" style="background:linear-gradient(135deg,rgba(248,138,47,0.12),rgba(248,138,47,0.04)); border:1px solid rgba(248,138,47,0.2); cursor:pointer;">
+            <div class="pg-bento-card" onclick="showPage('alerts')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(248,138,47,0.12),rgba(248,138,47,0.04)); border:1px solid rgba(248,138,47,0.2); cursor:pointer; padding:14px 10px;">
                 <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:4px;">Active Alerts</div>
                 <div style="font-size:32px; font-weight:900; line-height:1; color:#f88a2f;">8</div>
-                <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+                <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap; justify-content:center;">
                     <span style="display:inline-block;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:700;background:var(--badge-red-bg);color:var(--badge-red-text);white-space:nowrap;">3 Critical</span>
                     <span style="display:inline-block;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:700;background:var(--badge-orange-bg);color:var(--badge-orange-text);white-space:nowrap;">5 Watch</span>
                 </div>
@@ -7244,9 +7257,9 @@ function loadDocumentsFromStorage() {
         <!-- Page Header -->
         <div class="pg-header pg-header-orange">
             <div class="pg-header-title"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiMwODI2M0EiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> My Medications</div>
-            <div class="pg-header-sub">11 current medications</div>
+            <div class="pg-header-sub">12 current medications</div>
             <div class="pg-header-stats">
-                <span class="pg-header-stat">11 Active</span>
+                <span class="pg-header-stat">12 Active</span>
                 <span class="pg-header-stat">Medicaid</span>
                 <span class="pg-header-stat">8 Pharmacogenomic Flags</span>
             </div>
@@ -8891,14 +8904,10 @@ function loadDocumentsFromStorage() {
 
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:24px;">Upload Another File</div>
 
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="document.getElementById('genome-file-input') && document.getElementById('genome-file-input').click()" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Import Additional Genetic Data</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        Add another genome file for cross-referencing and comparative analysis. MÉTIS supports AncestryDNA, 23andMe, MyHeritage, and other standard genetic testing formats.
-      </div>
-      <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-        <button class="pg-glass-btn">Select Genome File</button>
-        <button class="pg-glass-btn" style="background:transparent; border:1px solid var(--border-subtle); color:var(--text-badge-default);">View Processing Guide</button>
+        Add another genome file for cross-referencing and comparative analysis. MÉTIS supports AncestryDNA, 23andMe, MyHeritage, and other standard genetic testing formats. Tap to upload.
       </div>
     </div>
 
@@ -8946,7 +8955,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Variant Cards in Glass Wrap -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Key Variants — What Your Genes Reveal</div>
 
     <div class="pg-bento-card">
@@ -9049,7 +9058,7 @@ function loadDocumentsFromStorage() {
     <div style="grid-column:1/-1; height:1px; background:var(--border-subtle); margin:4px 0;"></div>
 
     <!-- 23andMe Cross-Reference Analysis Section -->
-    <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+    <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
       <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg4IEw0NDggNDE2IEg2NCBMMjU2IDg4eiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjIzOCIgeT0iMjAwIiB3aWR0aD0iMzYiIGhlaWdodD0iMTMwIiByeD0iMTgiIHJ5PSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjM2OCIgcj0iMjAiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Cross-Platform Discrepancies Detected</div>
 
       <div class="pg-bento-card">
@@ -9116,7 +9125,7 @@ function loadDocumentsFromStorage() {
     </div>
 
     <!-- New 23andMe Genetic Findings -->
-    <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+    <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
       <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">New Genetic Findings from 23andMe</div>
 
       <div class="pg-bento-card">
@@ -9242,7 +9251,7 @@ function loadDocumentsFromStorage() {
     </div>
 
     <!-- AI Cross-Reference Insights -->
-    <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+    <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
       <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNjQiIHk9IjEyNCIgd2lkdGg9IjE4NCIgaGVpZ2h0PSIxODgiIHJ4PSI1NiIgcnk9IjU2IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMjAwIiB5PSIzMjAiIHdpZHRoPSIxMTIiIGhlaWdodD0iODgiIHJ4PSI0NCIgcnk9IjQ0IiBmaWxsPSIjMDgyNjNBIi8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMTk4IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjE5OCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjEwIiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMjc0IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjI3NCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48cGF0aCBkPSJNMjMyIDE5OEwyNTYgMjM2TDI4MCAxOThNMjMyIDI3NEwyNTYgMjM2TDI4MCAyNzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" class="metis-ico" style="width:2em;height:2em;" alt=""> AI Cross-Reference Insights</div>
       <div style="font-size: 12px; color:var(--text-secondary); margin-bottom: 16px;">Correlating combined genomic data with medical conditions, labs, and medications</div>
 
@@ -9326,7 +9335,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Critical Priority Risks -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">🔴 Critical Priority Risks</div>
 
     <div class="pg-bento-card">
@@ -9394,7 +9403,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Moderate Priority Risks -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">🟡 Moderate Priority Risks</div>
 
     <div class="pg-bento-card">
@@ -9426,7 +9435,7 @@ function loadDocumentsFromStorage() {
   </div>
 
   <!-- Protective/Low Risk -->
-  <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
+  <div class="pg-bento-grid pg-glass-layout" style="grid-template-columns:1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">🟢 Low Risk / Protective</div>
 
     <div class="pg-bento-card">
@@ -10680,7 +10689,7 @@ function loadDocumentsFromStorage() {
           <div class="list-title">🟢 Connected — Last sync: 2 minutes ago</div>
           <div class="list-subtitle">
             Tracking: Sleep Stages, HRV, Resting HR, Body Temperature, Activity, SpO2<br>
-            Account: k••••••••y@g••••.com (hidden for security)<br>
+            Account: Connected (hidden for security)<br>
             Data range: Nov 8, 2025 — Present (90+ days)
           </div>
           <span class="badge">Active</span>
@@ -10691,7 +10700,7 @@ function loadDocumentsFromStorage() {
     <div class="pg-bento-card">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">🤖 AI Integration</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        AI combines your Oura Ring data with 17+ diagnoses, 11 medications, and 650K genetic variants for insights no single device can provide.
+        AI combines your Oura Ring data with 17+ diagnoses, 12 medications, and 650K genetic variants for insights no single device can provide.
       </div>
     </div>
   </div>
@@ -10700,26 +10709,24 @@ function loadDocumentsFromStorage() {
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
     <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Sleep Metrics (Last 7 Days)</div>
 
-    <div class="pg-bento-card">
-      <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Sleep Overview</div>
-      <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        <div class="pg-bento-grid" style="grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px;">
-          <div class="pg-bento-card" style="text-align:center; padding:12px 8px;">
-            <div style="font-size:22px; font-weight:900; line-height:1.2; color:var(--text-primary);">7h 8m</div>
-            <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:4px;">Total Sleep</div>
-          </div>
-          <div class="pg-bento-card" style="text-align:center; padding:12px 8px;">
-            <div style="font-size:22px; font-weight:900; line-height:1.2; color:var(--text-primary);">10%</div>
-            <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:4px;">REM Sleep</div>
-          </div>
-          <div class="pg-bento-card" style="text-align:center; padding:12px 8px;">
-            <div style="font-size:22px; font-weight:900; line-height:1.2; color:var(--text-primary);">12:34a</div>
-            <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:4px;">Avg Bedtime</div>
-          </div>
-          <div class="pg-bento-card" style="text-align:center; padding:12px 8px;">
-            <div style="font-size:22px; font-weight:900; line-height:1.2; color:var(--text-primary);">11:47a</div>
-            <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:4px;">Avg Wake</div>
-          </div>
+    <div class="pg-bento-card" style="grid-column:1/-1;">
+      <div style="font-size:14px; font-weight:700; margin-bottom:8px; color:var(--text-primary);">Sleep Overview</div>
+      <div style="display:flex; justify-content:space-around; text-align:center; gap:8px;">
+        <div>
+          <div style="font-size:20px; font-weight:900; color:var(--text-primary);">7h 8m</div>
+          <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:2px;">Total Sleep</div>
+        </div>
+        <div>
+          <div style="font-size:20px; font-weight:900; color:var(--text-primary);">10%</div>
+          <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:2px;">REM Sleep</div>
+        </div>
+        <div>
+          <div style="font-size:20px; font-weight:900; color:var(--text-primary);">12:34a</div>
+          <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:2px;">Avg Bedtime</div>
+        </div>
+        <div>
+          <div style="font-size:20px; font-weight:900; color:var(--text-primary);">11:47a</div>
+          <div style="font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; opacity:0.5; margin-top:2px;">Avg Wake</div>
         </div>
       </div>
     </div>
@@ -10806,8 +10813,8 @@ function loadDocumentsFromStorage() {
           <div class="legend-item"><div class="legend-dot" style="background:#2196f3;"></div> REM 38m avg</div>
           <div class="legend-item"><div class="legend-dot" style="background:#f88a2f;"></div> Awake 2h 28m avg</div>
         </div>
-        <div style="margin-top:12px; padding:12px; background:rgba(220,53,69,0.08); border-radius:8px; font-size:12px; color:#721c24;">
-          <strong>Key finding:</strong> REM (blue) is barely visible in each bar — this confirms the 10% REM reading. Your brain is spending the vast majority of sleep in Light phase with very little restorative REM or Deep sleep time.
+        <div style="margin-top:12px; padding:12px; background:rgba(220,53,69,0.06); border:1px solid rgba(220,53,69,0.4); border-radius:8px; font-size:12px; color:var(--text-secondary);">
+          <strong style="color:var(--text-primary);">Key finding:</strong> REM (blue) is barely visible in each bar — this confirms the 10% REM reading. Your brain is spending the vast majority of sleep in Light phase with very little restorative REM or Deep sleep time.
         </div>
       </div>
     </div>
@@ -13032,22 +13039,22 @@ function loadDocumentsFromStorage() {
     <div class="pg-bento-card">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Potential Catastrophic Costs</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-          <div style="padding:8px; background:rgba(220,53,69,0.1); border-radius:6px;">
-            <div style="font-weight:700; color:#dc3545; font-size:14px;">$4,398</div>
-            <div style="font-size:11px; color:var(--text-secondary);">Hearing Aids</div>
+        <div style="display:flex; gap:6px; justify-content:space-between;">
+          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+            <div style="font-weight:700; color:#dc3545; font-size:13px;">$4,398</div>
+            <div style="font-size:10px; color:var(--text-secondary);">Hearing Aids</div>
           </div>
-          <div style="padding:8px; background:rgba(220,53,69,0.1); border-radius:6px;">
-            <div style="font-weight:700; color:#dc3545; font-size:14px;">$75K–$150K+</div>
-            <div style="font-size:11px; color:var(--text-secondary);">Spinal Surgery</div>
+          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+            <div style="font-weight:700; color:#dc3545; font-size:13px;">$75K–150K+</div>
+            <div style="font-size:10px; color:var(--text-secondary);">Spinal Surgery</div>
           </div>
-          <div style="padding:8px; background:rgba(220,53,69,0.1); border-radius:6px;">
-            <div style="font-weight:700; color:#dc3545; font-size:14px;">$5K–$50K+</div>
-            <div style="font-size:11px; color:var(--text-secondary);">ER Visit Cost</div>
+          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+            <div style="font-weight:700; color:#dc3545; font-size:13px;">$5K–50K+</div>
+            <div style="font-size:10px; color:var(--text-secondary);">ER Visit Cost</div>
           </div>
-          <div style="padding:8px; background:rgba(220,53,69,0.1); border-radius:6px;">
-            <div style="font-weight:700; color:#dc3545; font-size:14px;">$13.5K</div>
-            <div style="font-size:11px; color:var(--text-secondary);">Annual Gap</div>
+          <div style="flex:1; padding:8px 6px; background:rgba(220,53,69,0.1); border-radius:6px; text-align:center;">
+            <div style="font-weight:700; color:#dc3545; font-size:13px;">$13.5K</div>
+            <div style="font-size:10px; color:var(--text-secondary);">Annual Gap</div>
           </div>
         </div>
       </div>
@@ -13095,7 +13102,7 @@ function loadDocumentsFromStorage() {
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">SCN5A Anesthesia Risk</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <p style="margin:0; font-size:13px; color: var(--text-secondary); line-height:1.6;">
-          <strong style="color:#dc3545;">Critical Finding:</strong> SCN5A cardiac sensitivity. Future surgery requires pre-authorization, specialist anesthesia. Without insurance = catastrophic cost. With coverage = risk-shared.
+          <strong style="color:var(--text-primary);">Critical Finding:</strong> SCN5A cardiac sensitivity. Future surgery requires pre-authorization, specialist anesthesia. Without insurance = catastrophic cost. With coverage = risk-shared.
         </p>
       </div>
     </div>
@@ -13121,24 +13128,6 @@ function loadDocumentsFromStorage() {
     </div>
 
     <div class="pg-bento-card">
-      <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Gabapentin 300mg (90-count)</div>
-      <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="color:var(--text-secondary);">VA Copay:</span>
-          <span style="color:var(--text-primary); font-weight:700;">$0</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="color:var(--text-secondary);">GoodRx Best Price:</span>
-          <span style="color:var(--text-secondary);">$8.42 (Costco)</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
-          <span style="color:var(--text-secondary);"><strong>Best Option:</strong></span>
-          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="pg-bento-card">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Fluoxetine 40mg (30-count)</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
@@ -13148,24 +13137,6 @@ function loadDocumentsFromStorage() {
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
           <span style="color:var(--text-secondary);">GoodRx Best Price:</span>
           <span style="color:var(--text-secondary);">$4.00 (Walmart)</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
-          <span style="color:var(--text-secondary);"><strong>Best Option:</strong></span>
-          <span style="color:#c5e864; font-weight:700;">VA is Best</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="pg-bento-card">
-      <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Omeprazole 40mg (30-count)</div>
-      <div style="font-size:12px; line-height:1.6; opacity:0.8;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="color:var(--text-secondary);">VA Copay:</span>
-          <span style="color:var(--text-primary); font-weight:700;">$0</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-          <span style="color:var(--text-secondary);">GoodRx Best Price:</span>
-          <span style="color:var(--text-secondary);">$7.99 (Kroger)</span>
         </div>
         <div style="display:flex; justify-content:space-between; padding-top:8px; border-top:1px solid rgba(0,0,0,0.1);">
           <span style="color:var(--text-secondary);"><strong>Best Option:</strong></span>
@@ -13831,7 +13802,7 @@ function loadDocumentsFromStorage() {
         </div>
     </div>
     <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-        <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Current Medications (14 Active)</div>
+        <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Current Medications (12 Active)</div>
         <div class="pg-bento-card">
             <div style="overflow-x:auto; color:#fff; font-size:12px;">
                 <table style="width:100%; border-collapse:collapse;">
@@ -13846,8 +13817,6 @@ function loadDocumentsFromStorage() {
                     </thead>
                     <tbody>
                         <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Fluoxetine</td><td style="padding:10px;">40mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">Depression (MDD)</td><td style="padding:10px;">Dr. Azim</td></tr>
-                        <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Gabapentin</td><td style="padding:10px;">300mg</td><td style="padding:10px;">3x daily</td><td style="padding:10px;">Neuropathic pain</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
-                        <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Omeprazole</td><td style="padding:10px;">40mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">GERD</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
                         <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Trazodone</td><td style="padding:10px;">100mg</td><td style="padding:10px;">Nightly</td><td style="padding:10px;">Insomnia</td><td style="padding:10px;">Dr. Azim</td></tr>
                         <tr style="border-bottom:1px solid #444;"><td style="padding:10px;">Clonazepam</td><td style="padding:10px;">0.5mg</td><td style="padding:10px;">As needed</td><td style="padding:10px;">Panic disorder</td><td style="padding:10px;">Dr. Azim</td></tr>
                         <tr style="border-bottom:1px solid #444; background:#333;"><td style="padding:10px;">Montelukast</td><td style="padding:10px;">10mg</td><td style="padding:10px;">Daily</td><td style="padding:10px;">Asthma/Allergies</td><td style="padding:10px;">Christina S Michael, DO</td></tr>
@@ -13912,8 +13881,8 @@ function loadDocumentsFromStorage() {
         <div class="pg-bento-card">
             <div style="font-size:12px; line-height:1.6; opacity:0.8;" style="font-size:12px; line-height:1.8;">
                 <div>1. <strong style="color:#a7cf28;">Essential Tremor</strong> [G25.0] — Managed | Primidone | Dr. Goldsmith</div>
-                <div>2. <strong style="color:#a7cf28;">Neuropathic Pain Syndrome</strong> [G89.29] — Gabapentin 300mg TID | Christina S Michael, DO</div>
-                <div>3. <strong style="color:#a7cf28;">History of Seizures</strong> [G40.919] — Prophylaxis | Gabapentin/Primidone | Dr. Goldsmith</div>
+                <div>2. <strong style="color:#a7cf28;">Neuropathic Pain Syndrome</strong> [G89.29] — Managed | Christina S Michael, DO</div>
+                <div>3. <strong style="color:#a7cf28;">History of Seizures</strong> [G40.919] — Prophylaxis | Primidone | Dr. Goldsmith</div>
                 <div>4. <strong style="color:#a7cf28;">Migraine Disorder</strong> [G43.909] — Intermittent | Christina S Michael, DO</div>
             </div>
         </div>
@@ -13947,7 +13916,7 @@ function loadDocumentsFromStorage() {
         <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Gastrointestinal & Endocrine (3)</div>
         <div class="pg-bento-card">
             <div style="font-size:12px; line-height:1.6; opacity:0.8;" style="font-size:12px; line-height:1.8;">
-                <div>1. <strong style="color:#a7cf28;">Gastroesophageal Reflux Disease (GERD)</strong> [K21.9] — Omeprazole 40mg | Christina S Michael, DO</div>
+                <div>1. <strong style="color:#a7cf28;">Gastroesophageal Reflux Disease (GERD)</strong> [K21.9] — Managed | Christina S Michael, DO</div>
                 <div>2. <strong style="color:#a7cf28;">Hypertension</strong> [I10] — Managed | Christina S Michael, DO</div>
                 <div>3. <strong style="color:#a7cf28;">Hyperlipidemia</strong> [E78.5] — Monitored | Christina S Michael, DO</div>
             </div>
