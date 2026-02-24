@@ -6476,77 +6476,87 @@ function loadDocumentsFromStorage() {
     <!-- DASHBOARD v2 — Patient-First AI-Powered Overview -->
     <div class="page" id="dashboard">
 
-        <!-- ── BENTO HERO GRID ── -->
-        <div class="pg-bento-grid dash-hero-grid" style="grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <!-- ── BENTO HERO GRID — always 2-col, no orphans ── -->
+        <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
 
-            <!-- Health Score — spans 2 rows -->
-            <div class="pg-bento-card" onclick="showPage('comorbidity')" style="grid-row:span 2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(167,207,40,0.12),rgba(167,207,40,0.04)); border:1px solid rgba(167,207,40,0.2); cursor:pointer;">
-                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:8px;">Health Score</div>
-                <svg viewBox="0 0 80 80" style="width:80px;height:80px;">
+            <!-- Row 1: Health Score + Vitals -->
+            <div class="pg-bento-card" onclick="showPage('comorbidity')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(167,207,40,0.12),rgba(167,207,40,0.04)); border:1px solid rgba(167,207,40,0.2); cursor:pointer; padding:14px 10px;">
+                <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:6px;">Health Score</div>
+                <svg viewBox="0 0 80 80" style="width:64px;height:64px;">
                     <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(167,207,40,0.15)" stroke-width="6"/>
                     <circle cx="40" cy="40" r="34" fill="none" stroke="#a7cf28" stroke-width="6" stroke-dasharray="149 214" stroke-linecap="round" transform="rotate(-90 40 40)"/>
                 </svg>
-                <div style="font-size:32px; font-weight:900; color:#a7cf28; margin-top:-54px; margin-bottom:30px;">70</div>
-                <div style="font-size:12px; color:#a7cf28; font-weight:600;">+5 this week</div>
-                <div style="display:flex; align-items:flex-end; gap:2px; height:30px; margin-top:10px;">
-                    <div style="width:4px;height:40%;border-radius:2px;background:rgba(167,207,40,0.3);"></div>
-                    <div style="width:4px;height:50%;border-radius:2px;background:rgba(167,207,40,0.4);"></div>
-                    <div style="width:4px;height:45%;border-radius:2px;background:rgba(167,207,40,0.4);"></div>
-                    <div style="width:4px;height:55%;border-radius:2px;background:rgba(167,207,40,0.5);"></div>
-                    <div style="width:4px;height:60%;border-radius:2px;background:rgba(167,207,40,0.5);"></div>
-                    <div style="width:4px;height:65%;border-radius:2px;background:rgba(167,207,40,0.6);"></div>
-                    <div style="width:4px;height:70%;border-radius:2px;background:#a7cf28;"></div>
+                <div style="font-size:28px; font-weight:900; color:#a7cf28; margin-top:-46px; margin-bottom:24px;">70</div>
+                <div style="font-size:11px; color:#a7cf28; font-weight:600;">+5 this week</div>
+            </div>
+
+            <div class="pg-bento-card" onclick="showPage('wearables')" style="display:flex; flex-direction:column; justify-content:center; background:linear-gradient(135deg,rgba(156,39,176,0.12),rgba(156,39,176,0.04)); border:1px solid rgba(156,39,176,0.2); cursor:pointer; padding:14px 12px;">
+                <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:8px;">Today's Vitals</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="font-size:11px; opacity:0.6;">HR</span>
+                    <span style="font-size:13px; font-weight:800; color:#ce93d8;">83 bpm</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="font-size:11px; opacity:0.6;">SpO2</span>
+                    <span style="font-size:13px; font-weight:800; color:#a7cf28;">95.4%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="font-size:11px; opacity:0.6;">HRV</span>
+                    <span style="font-size:13px; font-weight:800; color:#f88a2f;">23 ms</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="font-size:11px; opacity:0.6;">Sleep</span>
+                    <span style="font-size:13px; font-weight:800; color:#ce93d8;">53</span>
                 </div>
             </div>
 
-            <!-- Critical Alert — spans 2 cols -->
-            <div class="pg-bento-card" onclick="showPage('alerts')" style="grid-column:span 2; background:linear-gradient(135deg,rgba(220,53,69,0.12),rgba(220,53,69,0.04)); border:1px solid rgba(220,53,69,0.2); cursor:pointer;">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <!-- Row 2: Critical Alert — full width -->
+            <div class="pg-bento-card" onclick="showPage('alerts')" style="grid-column:1/-1; background:linear-gradient(135deg,rgba(220,53,69,0.12),rgba(220,53,69,0.04)); border:1px solid rgba(220,53,69,0.2); cursor:pointer;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
                     <div style="width:8px;height:8px;border-radius:50%;background:#dc3545;box-shadow:0 0 6px rgba(220,53,69,0.6);"></div>
                     <div style="font-size:11px; font-weight:700; color:var(--badge-red-text); text-transform:uppercase;">Critical Alert</div>
                 </div>
-                <div style="font-size:15px; font-weight:700;">Recurring Falls + Drug Interaction</div>
-                <div style="font-size:12px; opacity:0.6; margin-top:4px;">3 falls in 30 days — neuropathy + electrolyte crisis flagged</div>
-                <div style="display:flex; gap:8px; margin-top:10px;">
-                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--badge-red-bg);color:var(--badge-red-text);">Action Required</span>
-                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--border-subtle);color:var(--text-badge-default);">Phosphorus 0.97 · Na 134</span>
+                <div style="font-size:14px; font-weight:700;">Recurring Falls + Drug Interaction</div>
+                <div style="font-size:12px; opacity:0.6; margin-top:3px;">3 falls in 30 days — neuropathy + electrolyte crisis</div>
+                <div style="display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--badge-red-bg);color:var(--badge-red-text);white-space:nowrap;">Action Required</span>
+                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--border-subtle);color:var(--text-badge-default);white-space:nowrap;">P 0.97 · Na 134</span>
                 </div>
             </div>
 
-            <!-- AI Correlations -->
+            <!-- Row 3: AI Correlations + Active Alerts -->
             <div class="pg-bento-card" onclick="showPage('genome-correlations')" style="background:linear-gradient(135deg,rgba(56,189,248,0.12),rgba(56,189,248,0.04)); border:1px solid rgba(56,189,248,0.2); cursor:pointer;">
-                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:4px;">AI Correlations</div>
-                <div style="font-size:36px; font-weight:900; line-height:1; color:var(--badge-blue-text);">21</div>
+                <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:4px;">AI Correlations</div>
+                <div style="font-size:32px; font-weight:900; line-height:1; color:var(--badge-blue-text);">21</div>
                 <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; margin-top:8px;"><div style="height:100%;width:85%;border-radius:4px;background:linear-gradient(90deg,#38bdf8,#a7cf28);"></div></div>
             </div>
 
-            <!-- Active Alerts -->
             <div class="pg-bento-card" onclick="showPage('alerts')" style="background:linear-gradient(135deg,rgba(248,138,47,0.12),rgba(248,138,47,0.04)); border:1px solid rgba(248,138,47,0.2); cursor:pointer;">
-                <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; opacity:0.6; margin-bottom:4px;">Active Alerts</div>
-                <div style="font-size:36px; font-weight:900; line-height:1; color:#f88a2f;">8</div>
-                <div style="display:flex;gap:4px;margin-top:6px;">
-                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--badge-red-bg);color:var(--badge-red-text);">3 Critical</span>
-                    <span style="display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:var(--badge-orange-bg);color:var(--badge-orange-text);">5 Watch</span>
+                <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; opacity:0.6; margin-bottom:4px;">Active Alerts</div>
+                <div style="font-size:32px; font-weight:900; line-height:1; color:#f88a2f;">8</div>
+                <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;">
+                    <span style="display:inline-block;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:700;background:var(--badge-red-bg);color:var(--badge-red-text);white-space:nowrap;">3 Critical</span>
+                    <span style="display:inline-block;padding:3px 6px;border-radius:6px;font-size:9px;font-weight:700;background:var(--badge-orange-bg);color:var(--badge-orange-text);white-space:nowrap;">5 Watch</span>
                 </div>
             </div>
 
-            <!-- Quick Stats Row — spans full width -->
-            <div class="pg-bento-card" style="grid-column:span 3; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:0;">
-                <div onclick="showPage('diagnoses')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:18px; font-weight:800; color:var(--badge-red-text);">17+</div>
-                    <div style="font-size:10px; opacity:0.5;">Conditions</div>
+            <!-- Row 4: Quick Stats — full width, 4-across -->
+            <div class="pg-bento-card" style="grid-column:1/-1; display:grid; grid-template-columns:repeat(4,1fr); gap:4px; padding:0;">
+                <div onclick="showPage('diagnoses')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:16px; font-weight:800; color:var(--badge-red-text);">17+</div>
+                    <div style="font-size:9px; opacity:0.5;">Conditions</div>
                 </div>
-                <div onclick="showPage('medications')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:18px; font-weight:800; color:var(--badge-blue-text);">7</div>
-                    <div style="font-size:10px; opacity:0.5;">Medications</div>
+                <div onclick="showPage('medications')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:16px; font-weight:800; color:var(--badge-blue-text);">7</div>
+                    <div style="font-size:9px; opacity:0.5;">Medications</div>
                 </div>
-                <div onclick="showPage('genetic-risks')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:18px; font-weight:800; color:#a7cf28;">12</div>
-                    <div style="font-size:10px; opacity:0.5;">Gene Links</div>
+                <div onclick="showPage('genetic-risks')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:16px; font-weight:800; color:#a7cf28;">12</div>
+                    <div style="font-size:9px; opacity:0.5;">Gene Links</div>
                 </div>
-                <div onclick="showPage('wearables')" style="text-align:center; cursor:pointer; padding:12px 8px; border-radius:12px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
-                    <div style="font-size:18px; font-weight:800; color:#ce93d8;">62</div>
-                    <div style="font-size:10px; opacity:0.5;">Sleep Score</div>
+                <div onclick="showPage('wearables')" style="text-align:center; cursor:pointer; padding:10px 4px; border-radius:10px; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='transparent'">
+                    <div style="font-size:16px; font-weight:800; color:#ce93d8;">62</div>
+                    <div style="font-size:9px; opacity:0.5;">Sleep Score</div>
                 </div>
             </div>
         </div>
@@ -7315,7 +7325,7 @@ function loadDocumentsFromStorage() {
         <!-- AI Cross-Reference: Medications + Genome -->
         <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
             <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">MÉTIS AI Cross-Reference: Medications + Genome</div>
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('pharmacogenomics')" style="cursor:pointer;">
                 <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">8 Pharmacogenomic Flags Across 11 Medications</div>
                 <div style="font-size:12px; line-height:1.6; opacity:0.8;">
                     MÉTIS analyzed each of your 11 medications against your genome and found 8 actionable pharmacogenomic interactions:<br><br>
@@ -7332,19 +7342,16 @@ function loadDocumentsFromStorage() {
                     <span class="pg-ai-tag pg-ai-tag-blue">HTR2A Variant</span>
                 </div>
             </div>
-            <button class="pg-glass-btn" onclick="showPage('pharmacogenomics')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg0IEMyMDAgMTE2IDE1MCAxMjAgMTUwIDEyMCB2MTUyIGMwIDExMCAxMDYgMTYwIDEwNiAxNjAgczEwNi01MCAxMDYtMTYwIFYxMjAgcy01MC00LTEwNi0zNnoiIGZpbGw9IiMwODI2M0EiLz48cmVjdCB4PSIyMzIiIHk9IjE5MCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjEzMiIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48cmVjdCB4PSIxOTAiIHk9IjIzMiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSI0OCIgcng9IjE4IiByeT0iMTgiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> View Pharmacogenomics Detail</button>
-            <button class="pg-glass-btn" style="background:transparent; border:1px solid var(--border-subtle); color:var(--text-badge-default);" onclick="showPage('insights')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNjQiIHk9IjEyNCIgd2lkdGg9IjE4NCIgaGVpZ2h0PSIxODgiIHJ4PSI1NiIgcnk9IjU2IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMjAwIiB5PSIzMjAiIHdpZHRoPSIxMTIiIGhlaWdodD0iODgiIHJ4PSI0NCIgcnk9IjQ0IiBmaWxsPSIjMDgyNjNBIi8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMTk4IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjE5OCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzYiIHI9IjEwIiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjMyIiBjeT0iMjc0IiByPSIxMCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI4MCIgY3k9IjI3NCIgcj0iMTAiIGZpbGw9IiM3RUQ5NTciLz48cGF0aCBkPSJNMjMyIDE5OEwyNTYgMjM2TDI4MCAxOThNMjMyIDI3NEwyNTYgMjM2TDI4MCAyNzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" class="metis-ico" style="width:2em;height:2em;" alt=""> View Full AI Insights</button>
         </div>
 
     <!-- LAB RESULTS SUMMARY -->
     <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
         <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Recent Lab Results</div>
-        <div class="pg-bento-card">
+        <div class="pg-bento-card" onclick="showPage('lab-results')" style="cursor:pointer;">
             <div style="font-size:12px; line-height:1.6; opacity:0.8;">INOVA (08/2024) | GWU ER (02/2025) | Fort Belvoir ER (12/2025)</div>
             <div style="margin-top:12px; padding:10px; background:rgba(220,53,69,0.15); border-radius:10px;">
                 <div style="color:var(--badge-red-text); font-size:13px; font-weight:700;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDg4IEw0NDggNDE2IEg2NCBMMjU2IDg4eiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjIzOCIgeT0iMjAwIiB3aWR0aD0iMzYiIGhlaWdodD0iMTMwIiByeD0iMTgiIHJ5PSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjM2OCIgcj0iMjAiIGZpbGw9IiM3RUQ5NTciLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Multiple out-of-range values identified — correlating with genetic risk factors</div>
             </div>
-            <div style="margin-top:12px;"><button class="pg-glass-btn" style="background:rgba(220,53,69,0.15); border:1px solid rgba(220,53,69,0.3); color:var(--badge-red-text);" onclick="showPage('lab-results')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMTg4IDk2Yy00MCAyOC01NiA3Mi01NiAxMjAgMCA3MiA0MCAxMjAgODAgMTY0IDMwIDM0IDUwIDYyIDUwIDk2IDAgMjQtMTAgNDQtMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA4MjYzQSIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTMyNCA5NmM0MCAyOCA1NiA3MiA1NiAxMjAgMCA3Mi00MCAxMjAtODAgMTY0LTMwIDM0LTUwIDYyLTUwIDk2IDAgMjQgMTAgNDQgMjggNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA4MjYzQSIgc3Ryb2tlLXdpZHRoPSIzNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAxNTYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDIwNiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yMDYgMjU2IEgzMDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdFRDk1NyIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIwNiAzMDYgSDMwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN0VEOTU3IiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMjA2IDM1NiBIMzA2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> View Full Lab Results Page</button></div>
         </div>
         <div style="grid-column:1/-1; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-secondary); padding:4px 0; margin-top:4px;">Lipid Panel</div>
         <div class="pg-bento-card">
@@ -11590,7 +11597,7 @@ function loadDocumentsFromStorage() {
 
   <!-- Trial 1: PTSD + MDMA -->
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="window.open('https://clinicaltrials.gov/search?cond=PTSD&intr=MDMA&recrs=ab','_blank')" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">MDMA-Assisted Therapy for Treatment-Resistant PTSD</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-bottom:12px;">
@@ -11612,14 +11619,13 @@ function loadDocumentsFromStorage() {
       </div>
       <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <span class="badge badge-blue" style="margin:0;">Recruiting — High Match</span>
-        <a href="https://clinicaltrials.gov/search?cond=PTSD&intr=MDMA&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
 
   <!-- Trial 2: SPINAL DDD -->
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="window.open('https://clinicaltrials.gov/search?cond=Degenerative+Disc+Disease&intr=PRP&recrs=ab','_blank')" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Intradiscal Platelet-Rich Plasma for Lumbar DDD</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-bottom:12px;">
@@ -11641,14 +11647,13 @@ function loadDocumentsFromStorage() {
       </div>
       <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <span class="badge badge-blue" style="margin:0;">Recruiting — High Match</span>
-        <a href="https://clinicaltrials.gov/search?cond=Degenerative+Disc+Disease&intr=PRP&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
 
   <!-- Trial 3: DEPRESSION + GENETICS -->
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="window.open('https://clinicaltrials.gov/search?cond=Depression&intr=Pharmacogenomic&recrs=ab','_blank')" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Pharmacogenomic-Guided Antidepressant Therapy</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-bottom:12px;">
@@ -11670,14 +11675,13 @@ function loadDocumentsFromStorage() {
       </div>
       <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <span class="badge badge-blue" style="margin:0;">Recruiting — Genetic Match</span>
-        <a href="https://clinicaltrials.gov/search?cond=Depression&intr=Pharmacogenomic&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
 
   <!-- Trial 4: CHRONIC PAIN + OPIOID RECEPTOR -->
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="window.open('https://clinicaltrials.gov/search?cond=Chronic+Radiculopathy&intr=Non-Opioid&recrs=ab','_blank')" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Non-Opioid Pain Management for Chronic Radiculopathy</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-bottom:12px;">
@@ -11699,14 +11703,13 @@ function loadDocumentsFromStorage() {
       </div>
       <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <span class="badge badge-blue" style="margin:0;">Recruiting — VA Study</span>
-        <a href="https://clinicaltrials.gov/search?cond=Chronic+Radiculopathy&intr=Non-Opioid&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
 
   <!-- Trial 5: SLEEP + CHRONOTHERAPY -->
   <div class="pg-bento-grid" style="grid-template-columns:1fr; gap:10px;">
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" onclick="window.open('https://clinicaltrials.gov/search?cond=Circadian+Rhythm+Sleep+Disorder&intr=Chronotherapy&recrs=ab','_blank')" style="cursor:pointer;">
       <div style="font-size:14px; font-weight:700; margin-bottom:4px; color:var(--text-primary);">Chronotherapy + Light Therapy for Circadian Rhythm Sleep Disorder</div>
       <div style="font-size:12px; line-height:1.6; opacity:0.8;">
         <div style="margin-bottom:12px;">
@@ -11728,7 +11731,6 @@ function loadDocumentsFromStorage() {
       </div>
       <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <span class="badge badge-blue" style="margin:0;">Recruiting — Genetic + Wearable Match</span>
-        <a href="https://clinicaltrials.gov/search?cond=Circadian+Rhythm+Sleep+Disorder&intr=Chronotherapy&recrs=ab" target="_blank" rel="noopener" class="action-btn" style="margin-top:0; text-decoration:none; display:inline-block; text-align:center;">Learn More ↗</a>
       </div>
     </div>
   </div>
@@ -11839,38 +11841,33 @@ function loadDocumentsFromStorage() {
   <!-- Bento Grid -->
   <div class="pg-bento-grid">
     <!-- Chronic Pain Syndrome -->
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="cursor:pointer;">
       <div style="font-weight:600; margin-bottom:8px;">Chronic Pain Syndrome</div>
-      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Understanding your diagnosis and management strategies</div>
-      <button class="action-btn" style="width:100%;">View Resource</button>
+      <div style="font-size:13px; color:var(--text-secondary);">Understanding your diagnosis and management strategies</div>
     </div>
 
     <!-- PTSD Management -->
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="cursor:pointer;">
       <div style="font-weight:600; margin-bottom:8px;">PTSD Management</div>
-      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Treatment approaches and coping mechanisms</div>
-      <button class="action-btn" style="width:100%;">View Resource</button>
+      <div style="font-size:13px; color:var(--text-secondary);">Treatment approaches and coping mechanisms</div>
     </div>
 
     <!-- Understanding Your Genome -->
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="cursor:pointer;">
       <div style="font-weight:600; margin-bottom:8px;">Understanding Your Genome</div>
-      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">How genetic variants influence health outcomes</div>
-      <button class="action-btn" style="width:100%;">View Resource</button>
+      <div style="font-size:13px; color:var(--text-secondary);">How genetic variants influence health outcomes</div>
     </div>
 
     <!-- VA Benefits -->
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="cursor:pointer;">
       <div style="font-weight:600; margin-bottom:8px;">VA Benefits for P&T Veterans</div>
-      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Maximizing benefits and entitlements</div>
-      <button class="action-btn" style="width:100%;">View Resource</button>
+      <div style="font-size:13px; color:var(--text-secondary);">Maximizing benefits and entitlements</div>
     </div>
 
     <!-- FERS Disability -->
-    <div class="pg-bento-card">
+    <div class="pg-bento-card" style="cursor:pointer;">
       <div style="font-weight:600; margin-bottom:8px;">FERS Disability Process</div>
-      <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Federal employee retirement and disability information</div>
-      <button class="action-btn" style="width:100%;">View Resource</button>
+      <div style="font-size:13px; color:var(--text-secondary);">Federal employee retirement and disability information</div>
     </div>
   </div>
 
@@ -12000,25 +11997,22 @@ function loadDocumentsFromStorage() {
     <div style="margin:20px 0;">
         <div style="font-weight:600; font-size:14px; margin-bottom:12px; padding:0 16px;">VA Forms</div>
         <div class="pg-bento-grid">
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-va-21-526')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">VA 21-526EZ</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Disability Rating</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-blue">Completed — 100% Approved</span></div>
-                <button class="action-btn" onclick="showPage('form-va-21-526')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Disability Rating</div>
+                <div><span class="badge badge-blue">Completed — 100% Approved</span></div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-va-21-4142')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">VA 21-4142</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Authorization to Release Records</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-green">Ready to Submit</span></div>
-                <button class="action-btn" onclick="showPage('form-va-21-4142')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Authorization to Release Records</div>
+                <div><span class="badge badge-green">Ready to Submit</span></div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-va-21-0781')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">VA 21-0781</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">PTSD Statement</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-green">Ready to Submit</span></div>
-                <button class="action-btn" onclick="showPage('form-va-21-0781')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">PTSD Statement</div>
+                <div><span class="badge badge-green">Ready to Submit</span></div>
             </div>
         </div>
     </div>
@@ -12027,18 +12021,16 @@ function loadDocumentsFromStorage() {
     <div style="margin:20px 0;">
         <div style="font-weight:600; font-size:14px; margin-bottom:12px; padding:0 16px;">Social Security Disability Insurance</div>
         <div class="pg-bento-grid">
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-ssdi-application')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">SSDI Application</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Appeal & Disability Claim</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-orange">Status Pending</span></div>
-                <button class="action-btn" onclick="showPage('form-ssdi-application')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Appeal & Disability Claim</div>
+                <div><span class="badge badge-orange">Status Pending</span></div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-ssdi-3368')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">SSA-3368</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Disability Report</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-green">Ready to Submit</span></div>
-                <button class="action-btn" onclick="showPage('form-ssdi-3368')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Disability Report</div>
+                <div><span class="badge badge-green">Ready to Submit</span></div>
             </div>
         </div>
     </div>
@@ -12059,34 +12051,29 @@ function loadDocumentsFromStorage() {
     <div style="margin:20px 0;">
         <div style="font-weight:600; font-size:14px; margin-bottom:12px; padding:0 16px;">Medical Records & Forms</div>
         <div class="pg-bento-grid">
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-medical-history')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">Complete Medical History</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">All diagnoses, surgeries, medications documented</div>
-                <button class="action-btn" onclick="showPage('form-medical-history')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary);">All diagnoses, surgeries, medications documented</div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-medication-list')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">Current Medications</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">All 11 medications with dosages and refills</div>
-                <button class="action-btn" onclick="showPage('form-medication-list')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary);">All 11 medications with dosages and refills</div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-med-list')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNTIiIHk9IjEwOCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDQiIHJ4PSIyOCIgcnk9IjI4IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTg2IiB5PSIxNTIiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgcnk9IjExIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMTg2IiB5PSIxOTgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMjM2IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxODYiIHk9IjI3NCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjRkZGRkZGIi8+PHJlY3QgeD0iMTg2IiB5PSIzMTIiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMzUwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMDIiIGN5PSIzNjQiIHI9IjMyIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMjkwIiB5PSIzNTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjEyIiByeT0iMTIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Medication List for Doctors</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Print-ready medication summary with prescriber info</div>
-                <button class="action-btn" onclick="showPage('form-med-list')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary);">Print-ready medication summary with prescriber info</div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-conditions-summary')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNTIiIHk9IjEwOCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDQiIHJ4PSIyOCIgcnk9IjI4IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTg2IiB5PSIxNTIiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgcnk9IjExIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMTg2IiB5PSIxOTgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMjM2IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxODYiIHk9IjI3NCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjRkZGRkZGIi8+PHJlY3QgeD0iMTg2IiB5PSIzMTIiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMzUwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMDIiIGN5PSIzNjQiIHI9IjMyIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMjkwIiB5PSIzNTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjEyIiByeT0iMTIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Conditions Summary</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">All 28+ conditions organized by system with ICD-10</div>
-                <button class="action-btn" onclick="showPage('form-conditions-summary')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary);">All 28+ conditions organized by system with ICD-10</div>
             </div>
 
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-privacy-auth')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB4PSIxNTIiIHk9IjEwOCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDQiIHJ4PSIyOCIgcnk9IjI4IiBmaWxsPSIjMDgyNjNBIi8+PHJlY3QgeD0iMTg2IiB5PSIxNTIiIHdpZHRoPSIxNDAiIGhlaWdodD0iMjIiIHJ4PSIxMSIgcnk9IjExIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMTg2IiB5PSIxOTgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMjM2IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxODYiIHk9IjI3NCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSIxNiIgcng9IjgiIHJ5PSI4IiBmaWxsPSIjRkZGRkZGIi8+PHJlY3QgeD0iMTg2IiB5PSIzMTIiIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYiIHJ4PSI4IiByeT0iOCIgZmlsbD0iI0ZGRkZGRiIvPjxyZWN0IHg9IjE4NiIgeT0iMzUwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2IiByeD0iOCIgcnk9IjgiIGZpbGw9IiNGRkZGRkYiLz48Y2lyY2xlIGN4PSIzMDIiIGN5PSIzNjQiIHI9IjMyIiBmaWxsPSIjN0VEOTU3Ii8+PHJlY3QgeD0iMjkwIiB5PSIzNTIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgcng9IjEyIiByeT0iMTIiIGZpbGw9IiNGRkZGRkYiLz48L3N2Zz4=" class="metis-ico" style="width:2em;height:2em;" alt=""> Privacy Authorization</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">HIPAA-compliant records release authorization</div>
-                <button class="action-btn" onclick="showPage('form-privacy-auth')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary);">HIPAA-compliant records release authorization</div>
             </div>
         </div>
     </div>
@@ -12095,11 +12082,10 @@ function loadDocumentsFromStorage() {
     <div style="margin:20px 0;">
         <div style="font-weight:600; font-size:14px; margin-bottom:12px; padding:0 16px;">New & Pending</div>
         <div class="pg-bento-grid">
-            <div class="pg-bento-card">
+            <div class="pg-bento-card" onclick="showPage('form-mspb-appeal')" style="cursor:pointer;">
                 <div style="font-weight:600; margin-bottom:8px;">MSPB Appeal Form</div>
-                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">Merit Systems Protection Board</div>
-                <div style="margin-bottom:12px;"><span class="badge badge-blue">Ready to Submit</span></div>
-                <button class="action-btn" onclick="showPage('form-mspb-appeal')" style="width:100%;">View Form</button>
+                <div style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">Merit Systems Protection Board</div>
+                <div><span class="badge badge-blue">Ready to Submit</span></div>
             </div>
 
             <div class="pg-bento-card">
