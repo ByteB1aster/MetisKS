@@ -4967,20 +4967,21 @@ var OuraConnector = {
 
 // ── VA Lighthouse FHIR R4 API ──
 var VALighthouseConnector = {
-    // Registered sandbox Client ID (public client — safe to embed)
+    // Registered Client ID (public client — safe to embed)
     registeredClientId: '0oa19p40w552dZAU32p8',
-    baseUrl: 'https://sandbox-api.va.gov/services/fhir/v0/r4',
-    authUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/authorization',
-    tokenUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/token',
-    // Production endpoints (switch when app is approved)
-    productionBaseUrl: 'https://api.va.gov/services/fhir/v0/r4',
-    productionAuthUrl: 'https://api.va.gov/oauth2/health/v1/authorization',
-    productionTokenUrl: 'https://api.va.gov/oauth2/health/v1/token',
+    // Production endpoints (real VA.gov login via ID.me)
+    baseUrl: 'https://api.va.gov/services/fhir/v0/r4',
+    authUrl: 'https://api.va.gov/oauth2/health/v1/authorization',
+    tokenUrl: 'https://api.va.gov/oauth2/health/v1/token',
+    // Sandbox endpoints (test accounts only)
+    sandboxBaseUrl: 'https://sandbox-api.va.gov/services/fhir/v0/r4',
+    sandboxAuthUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/authorization',
+    sandboxTokenUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/token',
     clientId: null,
     accessToken: null,
     patientId: null,
     tokenExpiry: null,
-    useSandbox: true,
+    useSandbox: false,
 
     // Initialize from localStorage (falls back to registered sandbox client ID)
     init: function() {
@@ -4988,16 +4989,16 @@ var VALighthouseConnector = {
             var config = JSON.parse(localStorage.getItem('metis_va_config') || 'null');
             if (config && config.clientId) {
                 this.clientId = config.clientId;
-                this.useSandbox = config.useSandbox !== false;
-                if (!this.useSandbox) {
-                    this.baseUrl = this.productionBaseUrl;
-                    this.authUrl = this.productionAuthUrl;
-                    this.tokenUrl = this.productionTokenUrl;
+                this.useSandbox = !!config.useSandbox;
+                if (this.useSandbox) {
+                    this.baseUrl = this.sandboxBaseUrl;
+                    this.authUrl = this.sandboxAuthUrl;
+                    this.tokenUrl = this.sandboxTokenUrl;
                 }
             } else if (this.registeredClientId) {
-                // Use pre-registered sandbox client ID by default
+                // Use pre-registered client ID — default to production (real ID.me login)
                 this.clientId = this.registeredClientId;
-                this.useSandbox = true;
+                this.useSandbox = false;
             }
             var stored = JSON.parse(sessionStorage.getItem('va_token') || 'null');
             if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
@@ -5012,11 +5013,15 @@ var VALighthouseConnector = {
 
     configure: function(clientId, useSandbox) {
         this.clientId = clientId;
-        this.useSandbox = useSandbox !== false;
-        if (!this.useSandbox) {
-            this.baseUrl = this.productionBaseUrl;
-            this.authUrl = this.productionAuthUrl;
-            this.tokenUrl = this.productionTokenUrl;
+        this.useSandbox = !!useSandbox;
+        if (this.useSandbox) {
+            this.baseUrl = this.sandboxBaseUrl;
+            this.authUrl = this.sandboxAuthUrl;
+            this.tokenUrl = this.sandboxTokenUrl;
+        } else {
+            this.baseUrl = 'https://api.va.gov/services/fhir/v0/r4';
+            this.authUrl = 'https://api.va.gov/oauth2/health/v1/authorization';
+            this.tokenUrl = 'https://api.va.gov/oauth2/health/v1/token';
         }
         try { localStorage.setItem('metis_va_config', JSON.stringify({ clientId: clientId, useSandbox: this.useSandbox })); } catch(e) {}
         try {
@@ -5043,10 +5048,10 @@ var VALighthouseConnector = {
             '<div style="font-size:13px;opacity:0.7;margin-bottom:16px;">Sign in with your VA.gov credentials to securely access your VA medical records. Your data stays in your browser.</div>' +
             '<details style="margin-bottom:12px;"><summary style="font-size:12px;opacity:0.5;cursor:pointer;">Advanced: Custom Client ID</summary>' +
             '<input id="va-cid" type="text" value="' + defaultCid + '" style="width:100%;padding:10px;background:#001830;border:1px solid rgba(52,211,153,0.2);border-radius:8px;color:white;font-size:12px;margin-top:8px;box-sizing:border-box;font-family:monospace;" />' +
-            '<label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-top:8px;cursor:pointer;"><input id="va-sandbox" type="checkbox" checked style="accent-color:#34d399;"> Use Sandbox</label></details>' +
+            '<label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-top:8px;cursor:pointer;"><input id="va-sandbox" type="checkbox" style="accent-color:#34d399;"> Use Sandbox (test accounts only)</label></details>' +
             '<div style="display:flex;gap:12px;">' +
             '<button id="va-x" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:white;cursor:pointer;">Cancel</button>' +
-            '<button id="va-go" style="flex:1;padding:10px;background:linear-gradient(135deg,#34d399,#059669);border:none;border-radius:8px;color:#001830;cursor:pointer;font-weight:700;">Sign in with VA.gov</button></div>';
+            '<button id="va-go" style="flex:1;padding:10px;background:linear-gradient(135deg,#34d399,#059669);border:none;border-radius:8px;color:#001830;cursor:pointer;font-weight:700;">Sign in with ID.me</button></div>';
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
         document.getElementById('va-x').onclick = function() { overlay.remove(); };
