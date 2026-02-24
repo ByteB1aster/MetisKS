@@ -1034,7 +1034,7 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     display: grid; grid-template-columns: repeat(2, 1fr);
     gap: 12px; margin-bottom: 16px;
 }
-@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr !important; } .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; } .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; } }
+@media (max-width: 360px) { .pg-bento-grid { grid-template-columns: 1fr 1fr !important; } .pg-bento-grid > * { grid-column: auto !important; grid-row: auto !important; min-width: 0 !important; } .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; } }
 .pg-bento-card {
     background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
     border: 1px solid rgba(255,255,255,0.08);
@@ -1085,13 +1085,11 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 .pg-bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 /* ── TABLET BREAKPOINT ── */
 @media (max-width: 768px) {
-  /* Force ALL bento grids to 1 column — overrides inline styles */
-  .pg-bento-grid { grid-template-columns: 1fr !important; }
-  .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
-  /* Dashboard hero 3-col → 1 col */
-  .pg-bento-grid[style*="1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
-  /* Dashboard insight 2-col → 1 col */
-  .pg-bento-grid[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+  /* Keep 2-col layout on mobile to avoid endless scrolling */
+  .pg-bento-grid { grid-template-columns: 1fr 1fr !important; }
+  .pg-bento-grid > * { grid-column: auto !important; grid-row: auto !important; min-width: 0 !important; }
+  /* 3-col grids → 2-col */
+  .pg-bento-grid[style*="1fr 1fr 1fr"] { grid-template-columns: 1fr 1fr !important; }
   /* Quick Stats row: 4-across → 2x2 */
   .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; grid-column: 1 / -1 !important; }
   /* Dashboard glass cards: stack vertically */
@@ -1138,8 +1136,9 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 
 /* ── PHONE BREAKPOINT ── */
 @media (max-width: 480px) {
-  .pg-bento-grid { grid-template-columns: 1fr !important; }
-  .pg-bento-grid > * { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  /* Still 2-col to avoid endless scrolling */
+  .pg-bento-grid { grid-template-columns: 1fr 1fr !important; }
+  .pg-bento-grid > * { grid-column: auto !important; grid-row: auto !important; min-width: 0 !important; }
   /* Quick Stats: 2x2 still fine */
   .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
   /* Compact values */
@@ -1166,6 +1165,34 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
   /* Menu full width on small phone */
   .menu { width: 90vw !important; max-width: 300px !important; }
 }
+
+/* ── MOBILE: keep 2-col bentos, just scale content ── */
+@media (max-width: 768px) {
+  /* Override: 2-col not 1-col on mobile (avoid endless scrolling) */
+  .pg-bento-grid { grid-template-columns: 1fr 1fr !important; }
+  .pg-bento-grid > * { grid-column: auto !important; grid-row: auto !important; min-width: 0 !important; }
+  /* Dashboard hero: 2-col, critical alert full-width */
+  .dash-hero-grid { grid-template-columns: 1fr 1fr !important; }
+  .dash-hero-grid > *:nth-child(2) { grid-column: 1 / -1 !important; }
+  /* Quick stats row: always full width, 2x2 inside */
+  .pg-bento-card[style*="repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; grid-column: 1 / -1 !important; }
+  /* Full-width special cards */
+  .pg-bento-card[style*="grid-column:span 3"],
+  .pg-bento-card[style*="grid-column: span 3"] { grid-column: 1 / -1 !important; }
+  /* Scale down text in small cards */
+  .pg-bento-card div[style*="font-size:36px"] { font-size: 28px !important; }
+  .pg-bento-card div[style*="font-size:32px"] { font-size: 26px !important; }
+  .pg-bento-card div[style*="font-size:11px"][style*="uppercase"] { font-size: 10px !important; letter-spacing: 0.3px !important; }
+}
+@media (max-width: 380px) {
+  /* Very narrow phones: still 2-col but tighter */
+  .pg-bento-grid { gap: 8px !important; }
+  .pg-bento-card { padding: 10px !important; }
+  .pg-bento-card div[style*="font-size:36px"] { font-size: 24px !important; }
+}
+/* Badge/pill nowrap + flex-wrap fix for all screen sizes */
+.pg-bento-card span[style*="inline-block"][style*="border-radius"] { white-space: nowrap !important; }
+.pg-bento-card div[style*="display:flex"][style*="gap"] { flex-wrap: wrap !important; }
 
 /* Bento Typography — light on dark */
 .bento-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -6432,7 +6459,7 @@ function loadDocumentsFromStorage() {
     <div class="page" id="dashboard">
 
         <!-- ── BENTO HERO GRID ── -->
-        <div class="pg-bento-grid" style="grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div class="pg-bento-grid dash-hero-grid" style="grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
 
             <!-- Health Score — spans 2 rows -->
             <div class="pg-bento-card" onclick="showPage('comorbidity')" style="grid-row:span 2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(135deg,rgba(167,207,40,0.12),rgba(167,207,40,0.04)); border:1px solid rgba(167,207,40,0.2); cursor:pointer;">
@@ -13685,7 +13712,7 @@ function loadDocumentsFromStorage() {
                 </div>
                 <div style="margin-bottom:16px;">
                     <div style="font-weight:600; margin-bottom:4px;">Contact Email:</div>
-                    <input type="email" value="k••••••••y@g••••.com" readonly style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
+                    <input type="email" value="" placeholder="Your contact email" style="width:100%; padding:8px; background:#333; border:1px solid #555; color:#fff; border-radius:4px; font-size:13px;">
                 </div>
             </div>
         </div>
