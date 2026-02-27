@@ -3047,6 +3047,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof MetisDataModel !== 'undefined') {
         setTimeout(function() { MetisDataModel.init(); }, 500);
     }
+    // Populate dashboard vitals from any existing wearables data
+    setTimeout(function() {
+        if (typeof KeenanHealthData !== 'undefined' && KeenanHealthData.wearables) {
+            updateDashboardVitals(KeenanHealthData.wearables);
+        }
+    }, 500);
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
     // Initialize MÉTIS AI Engine (Rule Engine + Predictive Analysis)
@@ -5934,19 +5940,23 @@ var OuraConnector = {
                 lastSynced: new Date().toISOString()
             };
 
-            // Sleep scores from daily_sleep
+            // Sleep scores from daily_sleep — last night + 7-day average
             if (dailySleep.length > 0) {
                 var sleepScores = dailySleep.map(function(s) { return s.score; }).filter(Boolean);
-                wearableData.sleepScore = sleepScores.length ? Math.round(sleepScores.reduce(function(a,b){return a+b;},0) / sleepScores.length) : null;
+                wearableData.sleepScore7DayAvg = sleepScores.length ? Math.round(sleepScores.reduce(function(a,b){return a+b;},0) / sleepScores.length) : null;
+                // Last night's score is the most recent entry
+                var lastNight = dailySleep[dailySleep.length - 1];
+                wearableData.sleepScore = lastNight && lastNight.score ? lastNight.score : wearableData.sleepScore7DayAvg;
+                wearableData.sleepDay = lastNight ? lastNight.day : null;
             }
 
             // Sleep duration + HRV + resting HR from detailed sleep periods
             if (sleepPeriods.length > 0) {
                 var longSleeps = sleepPeriods.filter(function(s) { return s.type === 'long_sleep'; });
-                // Average sleep duration (hours)
+                // Average sleep duration (hours) — 7-day
                 var durations = longSleeps.map(function(s) { return s.total_sleep_duration; }).filter(Boolean);
                 wearableData.avgSleepDuration = durations.length ? Math.round(durations.reduce(function(a,b){return a+b;},0) / durations.length / 3600 * 10) / 10 : null;
-                // HRV from sleep sessions (most accurate resting HRV)
+                // HRV from sleep sessions (most accurate resting HRV) — 7-day avg
                 var hrvs = longSleeps.map(function(s) { return s.average_hrv; }).filter(Boolean);
                 wearableData.hrvAvg = hrvs.length ? Math.round(hrvs.reduce(function(a,b){return a+b;},0) / hrvs.length) : null;
                 // HRV trend: last 3 vs previous
@@ -5955,15 +5965,23 @@ var OuraConnector = {
                     var earlier = hrvs.slice(0, -3).reduce(function(a,b){return a+b;},0) / (hrvs.length - 3);
                     wearableData.hrvTrend = earlier > 0 ? Math.round((recent - earlier) / earlier * 100) : 0;
                 }
-                // Resting HR from sleep (more accurate than daytime)
+                // Resting HR from sleep (more accurate than daytime) — 7-day avg
                 var sleepHRs = longSleeps.map(function(s) { return s.average_heart_rate; }).filter(Boolean);
                 if (sleepHRs.length) {
                     wearableData.restingHR = Math.round(sleepHRs.reduce(function(a,b){return a+b;},0) / sleepHRs.length);
                 }
-                // Breathing rate from sleep
+                // Breathing rate from sleep — 7-day avg
                 var breathRates = longSleeps.map(function(s) { return s.average_breath; }).filter(Boolean);
                 if (breathRates.length) {
                     wearableData.breathingRate = Math.round(breathRates.reduce(function(a,b){return a+b;},0) / breathRates.length * 10) / 10;
+                }
+                // ── LAST NIGHT's values (most recent long_sleep) ──
+                var lastSleep = longSleeps[longSleeps.length - 1];
+                if (lastSleep) {
+                    wearableData.lastNightHR = lastSleep.average_heart_rate ? Math.round(lastSleep.average_heart_rate) : null;
+                    wearableData.lastNightHRV = lastSleep.average_hrv ? Math.round(lastSleep.average_hrv) : null;
+                    wearableData.lastNightBreathRate = lastSleep.average_breath ? Math.round(lastSleep.average_breath * 10) / 10 : null;
+                    wearableData.lastNightDuration = lastSleep.total_sleep_duration ? Math.round(lastSleep.total_sleep_duration / 3600 * 10) / 10 : null;
                 }
             }
 
@@ -5984,10 +6002,13 @@ var OuraConnector = {
                 wearableData.restingHR = restingHRs.length ? Math.round(restingHRs.reduce(function(a,b){return a+b;},0) / restingHRs.length) : null;
             }
 
-            // SpO2
+            // SpO2 — 7-day average + last night
             if (spo2.length > 0) {
                 var spo2Vals = spo2.map(function(s) { return s.spo2_percentage ? s.spo2_percentage.average : null; }).filter(Boolean);
                 wearableData.spo2 = spo2Vals.length ? Math.round(spo2Vals.reduce(function(a,b){return a+b;},0) / spo2Vals.length * 10) / 10 : null;
+                // Last night's SpO2
+                var lastSpo2 = spo2[spo2.length - 1];
+                wearableData.lastNightSpo2 = lastSpo2 && lastSpo2.spo2_percentage ? Math.round(lastSpo2.spo2_percentage.average * 10) / 10 : wearableData.spo2;
                 // Breathing disturbance index (sleep apnea indicator)
                 var bdi = spo2.map(function(s) { return s.breathing_disturbance_index; }).filter(Boolean);
                 wearableData.breathingDisturbanceIndex = bdi.length ? Math.round(bdi.reduce(function(a,b){return a+b;},0) / bdi.length) : null;
@@ -6881,6 +6902,40 @@ var EpicFHIRConnector = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
+// DASHBOARD LIVE VITALS UPDATER
+// Populates dashboard cards with real Oura data (last night's values)
+// ═══════════════════════════════════════════════════════════════════
+function updateDashboardVitals(w) {
+    if (!w) return;
+    // Prefer last night's values, fall back to 7-day average
+    var hr = w.lastNightHR || w.restingHR;
+    var hrv = w.lastNightHRV || w.hrvAvg;
+    var spo2 = w.lastNightSpo2 || w.spo2;
+    var sleep = w.sleepScore; // Already set to last night by syncAll
+
+    // Color-code sleep score: green ≥70, yellow 50-69, red <50
+    var sleepColor = '#34d399'; // green
+    if (sleep && sleep < 70) sleepColor = '#f88a2f'; // orange
+    if (sleep && sleep < 50) sleepColor = '#ef4444'; // red
+
+    // Update Today's Vitals card
+    var elHR = document.getElementById('dash-vital-hr');
+    var elSpo2 = document.getElementById('dash-vital-spo2');
+    var elHRV = document.getElementById('dash-vital-hrv');
+    var elSleep = document.getElementById('dash-vital-sleep');
+    if (elHR) elHR.textContent = hr ? hr + ' bpm' : '-- bpm';
+    if (elSpo2) elSpo2.textContent = spo2 ? spo2 + '%' : '--%';
+    if (elHRV) elHRV.textContent = hrv ? hrv + ' ms' : '-- ms';
+    if (elSleep) { elSleep.textContent = sleep || '--'; elSleep.style.color = sleepColor; }
+
+    // Update Sleep Score stat card
+    var elStatSleep = document.getElementById('dash-stat-sleep');
+    if (elStatSleep) { elStatSleep.textContent = sleep || '--'; elStatSleep.style.color = sleepColor; }
+
+    console.log('[Dashboard] Vitals updated — Sleep: ' + sleep + ', HR: ' + hr + ', HRV: ' + hrv + ', SpO2: ' + spo2);
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // MASTER SYNC ORCHESTRATOR
 // Bridges real API connectors → KeenanHealthData → AI Engine
 // ═══════════════════════════════════════════════════════════════════
@@ -6962,9 +7017,10 @@ var MasterSync = {
             if (sourceKey === 'oura-ring' && typeof KeenanHealthData !== 'undefined') {
                 // Update wearables with real Oura data
                 var w = KeenanHealthData.wearables;
-                var ouraFields = ['sleepScore','avgSleepDuration','steps7DayAvg','hrvAvg','hrvTrend',
-                    'restingHR','spo2','activityScore','activeCalories','breathingRate',
-                    'breathingDisturbanceIndex','stressHighMin'];
+                var ouraFields = ['sleepScore','sleepScore7DayAvg','sleepDay','avgSleepDuration',
+                    'steps7DayAvg','hrvAvg','hrvTrend','restingHR','spo2','activityScore',
+                    'activeCalories','breathingRate','breathingDisturbanceIndex','stressHighMin',
+                    'lastNightHR','lastNightHRV','lastNightBreathRate','lastNightDuration','lastNightSpo2'];
                 ouraFields.forEach(function(field) {
                     if (data[field] != null) w[field] = data[field];
                 });
@@ -6972,6 +7028,8 @@ var MasterSync = {
                 w.source = data.source;
                 w.lastSynced = data.lastSynced;
                 console.log('[MasterSync] Oura data merged into KeenanHealthData.wearables');
+                // ── Update dashboard vitals with LAST NIGHT's data ──
+                updateDashboardVitals(w);
             }
 
             if ((sourceKey === 'va-lighthouse' || sourceKey === 'epic-mychart') && typeof KeenanHealthData !== 'undefined') {
@@ -7784,19 +7842,19 @@ function loadDocumentsFromStorage() {
                 <div class="dash-hero-label" style="margin-bottom:8px;">Today's Vitals</div>
                 <div class="dash-hero-metric">
                     <span class="dash-hero-metric-label">HR</span>
-                    <span class="dash-hero-metric-val" style="color:#ce93d8;">83 bpm</span>
+                    <span id="dash-vital-hr" class="dash-hero-metric-val" style="color:#ce93d8;">-- bpm</span>
                 </div>
                 <div class="dash-hero-metric">
                     <span class="dash-hero-metric-label">SpO2</span>
-                    <span class="dash-hero-metric-val" style="color:#a7cf28;">95.4%</span>
+                    <span id="dash-vital-spo2" class="dash-hero-metric-val" style="color:#a7cf28;">--%</span>
                 </div>
                 <div class="dash-hero-metric">
                     <span class="dash-hero-metric-label">HRV</span>
-                    <span class="dash-hero-metric-val" style="color:#f88a2f;">23 ms</span>
+                    <span id="dash-vital-hrv" class="dash-hero-metric-val" style="color:#f88a2f;">-- ms</span>
                 </div>
                 <div class="dash-hero-metric">
                     <span class="dash-hero-metric-label">Sleep</span>
-                    <span class="dash-hero-metric-val" style="color:#ce93d8;">53</span>
+                    <span id="dash-vital-sleep" class="dash-hero-metric-val" style="color:#ce93d8;">--</span>
                 </div>
             </div>
 
@@ -7845,7 +7903,7 @@ function loadDocumentsFromStorage() {
                     <div class="dash-quickstat-label">Gene Links</div>
                 </div>
                 <div onclick="showPage('wearables')">
-                    <div class="dash-quickstat-val" style="color:#ce93d8;">62</div>
+                    <div id="dash-stat-sleep" class="dash-quickstat-val" style="color:#ce93d8;">--</div>
                     <div class="dash-quickstat-label">Sleep Score</div>
                 </div>
             </div>
