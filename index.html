@@ -1355,25 +1355,31 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     }
 
     /* ── ASSIGN CARDS TO GRID AREAS ── */
-    .dash-hero > .dash-hero-stat:first-child {
-        grid-area: score;
-    }
-    .dash-hero > .dash-hero-vitals {
-        grid-area: vitals;
-    }
-    .dash-hero > .dash-hero-stat:nth-child(4) {
-        grid-area: ai;
-    }
-    .dash-hero > .dash-hero-stat:nth-child(5) {
-        grid-area: alerts;
-    }
-    .dash-hero > .dash-hero-alert {
-        grid-area: banner;
+    .pg-bento-grid.dash-hero > .dash-hero-stat:first-child {
+        grid-area: score !important;
         grid-column: auto !important;
     }
-    .dash-hero > .dash-hero-quickstats {
-        grid-area: stats;
+    .pg-bento-grid.dash-hero > .dash-hero-vitals {
+        grid-area: vitals !important;
         grid-column: auto !important;
+    }
+    .pg-bento-grid.dash-hero > .dash-hero-stat:nth-child(4) {
+        grid-area: ai !important;
+        grid-column: auto !important;
+    }
+    .pg-bento-grid.dash-hero > .dash-hero-stat:nth-child(5) {
+        grid-area: alerts !important;
+        grid-column: auto !important;
+    }
+    .pg-bento-grid.dash-hero > .dash-hero-alert {
+        grid-area: banner !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
+    }
+    .pg-bento-grid.dash-hero > .dash-hero-quickstats {
+        grid-area: stats !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
     }
 
     /* ── CARD PADDING — tight, purposeful ── */
