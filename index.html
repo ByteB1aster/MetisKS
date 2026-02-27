@@ -1341,7 +1341,8 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     }
 
     /* ── THE GRID: 4 columns, named areas ── */
-    .dash-hero {
+    /* Double-class selector beats .pg-bento-grid { 1fr 1fr !important } */
+    .pg-bento-grid.dash-hero {
         display: grid !important;
         grid-template-columns: 1.1fr 1.6fr 0.9fr 0.9fr !important;
         grid-template-rows: auto auto auto !important;
