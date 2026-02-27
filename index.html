@@ -1327,52 +1327,82 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 }
 
 /* ── DESKTOP: intentional dashboard proportions ── */
+/* Fonts MUST be larger on desktop — user is 2-3ft from screen vs 12in on mobile */
 @media (min-width: 769px) {
+    /* Grid spacing */
     .dash-hero {
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: 14px;
+        margin-bottom: 18px;
     }
+    /* Card padding */
     .dash-hero-stat {
-        padding: 20px 14px !important;
+        padding: 24px 18px !important;
     }
     .dash-hero-vitals {
-        padding: 22px 32px !important;
-    }
-    .dash-hero-vitals .dash-hero-metric {
-        padding: 2px 4px;
-        margin-bottom: 6px;
+        padding: 24px 32px !important;
     }
     .dash-hero-alert {
-        padding: 16px 20px !important;
+        padding: 18px 22px !important;
     }
     .dash-hero-quickstats {
-        gap: 10px !important;
-        padding: 10px 6px !important;
+        gap: 12px !important;
+        padding: 12px 8px !important;
     }
     .dash-hero-quickstats > div {
-        padding: 14px 6px;
+        padding: 16px 8px;
     }
-    .dash-hero-metric-label {
-        font-size: 14px;
+    /* Vitals metric rows — wider spacing on desktop */
+    .dash-hero-vitals .dash-hero-metric {
+        padding: 3px 4px;
+        margin-bottom: 8px;
     }
-    .dash-hero-metric-val {
-        font-size: 16px;
-    }
+    /* === TYPOGRAPHY: desktop scale-up === */
+    /* Section labels (HEALTH SCORE, TODAY'S VITALS, AI CORRELATIONS, etc.) */
     .dash-hero-label {
-        font-size: 11px;
-        letter-spacing: 0.8px;
+        font-size: 12px !important;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
     }
+    /* Big numbers (70, 21, 8) */
     .dash-hero-bignum {
-        font-size: 34px;
+        font-size: 38px;
     }
+    /* Vitals metric labels (HR, SpO2, HRV, Sleep) */
     .dash-hero-metric-label {
-        font-size: 12px;
+        font-size: 15px !important;
     }
+    /* Vitals metric values (83 bpm, 95.4%, 23 ms, 53) */
     .dash-hero-metric-val {
-        font-size: 14px;
+        font-size: 17px !important;
     }
+    /* Quick stats numbers (17+, 7, 12, 62) */
     .dash-quickstat-val {
-        font-size: 26px;
+        font-size: 30px;
+    }
+    /* Quick stats labels (Conditions, Medications, Gene Links, Sleep Score) */
+    .dash-quickstat-label {
+        font-size: 13px;
+        margin-top: 6px;
+    }
+    /* Alert text */
+    .dash-hero-alert div[style*="font-size:14px"] {
+        font-size: 16px !important;
+    }
+    .dash-hero-alert div[style*="font-size:12px"] {
+        font-size: 14px !important;
+    }
+    .dash-hero-alert div[style*="font-size:11px"] {
+        font-size: 12px !important;
+    }
+    /* Insight cards below hero (HEALTH DATA, GENOMICS, etc.) */
+    .pg-bento-card.bento-clickable div[style*="font-size:11px"] {
+        font-size: 12px !important;
+    }
+    .pg-bento-card.bento-clickable div[style*="font-size:14px"] {
+        font-size: 16px !important;
+    }
+    .pg-bento-card.bento-clickable div[style*="font-size:12px"][style*="opacity"] {
+        font-size: 14px !important;
     }
 }
 
