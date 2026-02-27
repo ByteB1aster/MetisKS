@@ -2610,19 +2610,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    // ── Initialize Data Verification System ──
+    if (typeof MetisDataModel !== 'undefined') {
+        setTimeout(function() { MetisDataModel.init(); }, 500);
+    }
     // Delay start to not block page load
     setTimeout(function() { AutoSync.start(); }, 3000);
     // Initialize MÉTIS AI Engine (Rule Engine + Predictive Analysis)
     setTimeout(function() { AnalysisEngine.init(); }, 2000);
     // Initialize MÉTIS API layer
     setTimeout(function() { MetisAPI.init(); }, 4000);
-    // Update sync time displays every 30 seconds
+    // ── Check verification queue and update badge ──
+    setTimeout(function() {
+        if (typeof VerificationQueue !== 'undefined') VerificationQueue.updateBadge();
+    }, 3500);
+    // Update sync time displays every 30 seconds + verification badge
     setInterval(function() {
         var sources = ['oura-ring', 'ancestry-dna', 'fort-belvoir', 'gwu-er', 'inova', 'clinical-trials'];
         sources.forEach(function(key) {
             var el = document.getElementById('sync-time-' + key);
             if (el) el.textContent = AutoSync.getTimeSinceSync(key);
         });
+        if (typeof VerificationQueue !== 'undefined') VerificationQueue.updateBadge();
     }, 30000);
 });
 
@@ -3764,6 +3773,464 @@ function formatFindingType(type) {
     };
     return labels[type] || type;
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// ── DATA VERIFICATION SYSTEM ──
+// Purpose: Detect conflicting health data from multiple sources and
+// present targeted verification questions to the user before AI analysis.
+// Architecture: VerifiedDataStore → ConflictDetector → MetisDataModel
+// ══════════════════════════════════════════════════════════════════════
+
+// ── VerifiedDataStore: Persist user verification decisions ──
+var VerifiedDataStore = {
+    STORAGE_KEY: 'metis_verified_data',
+    AUDIT_KEY: 'metis_verification_audit',
+
+    load: function() {
+        try {
+            return JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '{}');
+        } catch(e) {
+            console.error('[VerifiedDataStore] Failed to load:', e);
+            return {};
+        }
+    },
+
+    saveVerification: function(itemId, item, resolution) {
+        var verifications = this.load();
+        verifications[itemId] = {
+            itemId: itemId,
+            itemName: item.name || item.icd10 || 'Unknown',
+            itemType: item.rxNormCode ? 'medication' : 'condition',
+            userDecision: resolution.status,
+            userNote: resolution.note || '',
+            verifiedAt: new Date().toISOString(),
+            source: item._meta ? item._meta.source : 'unknown',
+            sourceTimestamp: item._meta ? item._meta.sourceTimestamp : null
+        };
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(verifications));
+            this.addAuditEntry(itemId, item, resolution);
+            console.log('[VerifiedDataStore] Saved verification for ' + (item.name || itemId));
+        } catch(e) {
+            console.error('[VerifiedDataStore] Failed to save:', e);
+        }
+    },
+
+    addAuditEntry: function(itemId, item, resolution) {
+        try {
+            var audit = JSON.parse(localStorage.getItem(this.AUDIT_KEY) || '[]');
+            audit.push({
+                timestamp: new Date().toISOString(),
+                action: 'verification',
+                itemId: itemId,
+                itemName: item.name || item.icd10 || 'Unknown',
+                decision: resolution.status,
+                userNote: resolution.note || ''
+            });
+            localStorage.setItem(this.AUDIT_KEY, JSON.stringify(audit.slice(-1000)));
+        } catch(e) {}
+    },
+
+    wasVerifiedByUser: function(itemId) {
+        var verifications = this.load();
+        return verifications.hasOwnProperty(itemId);
+    },
+
+    getUserDecision: function(itemId) {
+        var verifications = this.load();
+        return verifications[itemId] || null;
+    },
+
+    applyStoredDecisions: function(items) {
+        var self = this;
+        items.forEach(function(item) {
+            if (!item.id) return;
+            var decision = self.getUserDecision(item.id);
+            if (decision) {
+                if (decision.userDecision === 'discontinued' || decision.userDecision === 'never-mine') {
+                    item.status = 'inactive';
+                    if (item._meta) item._meta.verificationStatus = 'user-rejected';
+                } else if (decision.userDecision === 'current') {
+                    item.status = 'active';
+                    if (item._meta) item._meta.verificationStatus = 'user-verified';
+                } else if (decision.userDecision === 'not-sure') {
+                    if (item._meta) item._meta.verificationStatus = 'user-uncertain';
+                }
+                if (item._meta) {
+                    item._meta.verifiedAt = decision.verifiedAt;
+                    item._meta.verifiedBy = 'user';
+                    item._meta.verificationNote = decision.userNote;
+                }
+            }
+        });
+    },
+
+    getAuditLog: function() {
+        try {
+            return JSON.parse(localStorage.getItem(this.AUDIT_KEY) || '[]');
+        } catch(e) { return []; }
+    }
+};
+
+// ── ConflictDetector: Identifies data discrepancies between sources ──
+var ConflictDetector = {
+    conflicts: [],
+
+    compareIncoming: function(sourceKey, newData, existingData) {
+        var detected = [];
+        if (!existingData) existingData = MetisDataModel.data;
+
+        if (newData.medications && newData.medications.length) {
+            detected = detected.concat(this.compareMedications(sourceKey, newData.medications, existingData.medications));
+        }
+        if (newData.conditions && newData.conditions.length) {
+            detected = detected.concat(this.compareConditions(sourceKey, newData.conditions, existingData.conditions));
+        }
+        return detected;
+    },
+
+    compareMedications: function(sourceKey, newMeds, existingMeds) {
+        var self = this;
+        var found = [];
+
+        newMeds.forEach(function(newMed) {
+            var match = self.findMedicationMatch(newMed, existingMeds);
+
+            if (!match) {
+                // Check if user previously rejected this med
+                var medId = self.generateMedId(newMed);
+                var priorDecision = VerifiedDataStore.getUserDecision(medId);
+                if (priorDecision && priorDecision.userDecision === 'never-mine') return;
+
+                found.push({
+                    id: self.generateConflictId(),
+                    type: 'new_unknown_med',
+                    severity: 'moderate',
+                    source: sourceKey,
+                    items: [newMed],
+                    description: sourceKey.replace(/-/g,' ') + ' records show "' + newMed.name + '" — this is not in your verified medications.',
+                    suggestedResolution: 'ask_user'
+                });
+            } else {
+                // Check dose mismatch
+                var existingDose = self.extractDose(match.item.name);
+                var newDose = self.extractDose(newMed.name);
+                if (existingDose && newDose && existingDose !== newDose) {
+                    found.push({
+                        id: self.generateConflictId(),
+                        type: 'dosage_mismatch',
+                        severity: 'critical',
+                        source: sourceKey,
+                        items: [match.item, newMed],
+                        existingDose: existingDose,
+                        newDose: newDose,
+                        description: 'Dose mismatch: Your verified record shows "' + match.item.name + '" but ' + sourceKey.replace(/-/g,' ') + ' shows "' + newMed.name + '".',
+                        suggestedResolution: 'ask_user'
+                    });
+                }
+
+                // Check brand/generic name variation
+                if (match.item.name.toLowerCase() !== newMed.name.toLowerCase() && existingDose === newDose) {
+                    found.push({
+                        id: self.generateConflictId(),
+                        type: 'brand_generic_duplicate',
+                        severity: 'informational',
+                        source: sourceKey,
+                        items: [match.item, newMed],
+                        description: 'Same medication, different names: "' + match.item.name + '" vs "' + newMed.name + '" from ' + sourceKey.replace(/-/g,' ') + '.',
+                        suggestedResolution: 'auto_merge'
+                    });
+                }
+            }
+        });
+
+        // Check for meds in verified list but NOT in authoritative source
+        if (sourceKey === 'va-lighthouse' || sourceKey === 'epic-mychart') {
+            existingMeds.forEach(function(verifiedMed) {
+                if (!verifiedMed._meta || verifiedMed._meta.source === 'demo-data') return;
+                if (verifiedMed._meta.verificationStatus === 'user-rejected') return;
+                var stillPresent = newMeds.some(function(nm) {
+                    return self.findMedicationMatch(nm, [verifiedMed]);
+                });
+                if (!stillPresent && verifiedMed._meta.source === sourceKey) {
+                    found.push({
+                        id: self.generateConflictId(),
+                        type: 'source_disagreement',
+                        severity: 'moderate',
+                        source: sourceKey,
+                        items: [verifiedMed],
+                        description: '"' + verifiedMed.name + '" is in your verified list but missing from latest ' + sourceKey.replace(/-/g,' ') + ' records — may be discontinued.',
+                        suggestedResolution: 'ask_user'
+                    });
+                }
+            });
+        }
+
+        return found;
+    },
+
+    compareConditions: function(sourceKey, newConds, existingConds) {
+        var self = this;
+        var found = [];
+        newConds.forEach(function(newCond) {
+            var match = existingConds.find(function(ec) {
+                return ec.name.toLowerCase() === newCond.name.toLowerCase() || ec.icd10 === newCond.icd10;
+            });
+            if (!match) {
+                found.push({
+                    id: self.generateConflictId(),
+                    type: 'new_condition',
+                    severity: 'informational',
+                    source: sourceKey,
+                    items: [newCond],
+                    description: sourceKey.replace(/-/g,' ') + ' shows diagnosis "' + newCond.name + '" not in your verified conditions.',
+                    suggestedResolution: 'ask_user'
+                });
+            }
+        });
+        return found;
+    },
+
+    findMedicationMatch: function(med, candidates) {
+        var self = this;
+        // First try exact RxNorm code match
+        if (med.rxNormCode) {
+            var codeMatch = candidates.find(function(c) { return c.rxNormCode === med.rxNormCode; });
+            if (codeMatch) return { item: codeMatch, score: 1.0 };
+        }
+        // Then try fuzzy name match
+        var scored = candidates.map(function(c) {
+            return { item: c, score: self.stringSimilarity(
+                self.normalizeMedName(med.name),
+                self.normalizeMedName(c.name)
+            )};
+        }).filter(function(m) { return m.score > 0.6; })
+          .sort(function(a,b) { return b.score - a.score; });
+        return scored.length ? scored[0] : null;
+    },
+
+    normalizeMedName: function(name) {
+        // Remove dose info for comparison: "Metformin 1500mg" -> "metformin"
+        return name.toLowerCase().replace(/\s*\d+\s*(mg|g|mcg|iu|units?|ml)\s*/gi, '').trim();
+    },
+
+    extractDose: function(medName) {
+        var match = medName.match(/(\d+(?:\.\d+)?)\s*(mg|g|mcg|iu|units?|ml)/i);
+        return match ? match[1] + match[2].toLowerCase() : null;
+    },
+
+    stringSimilarity: function(a, b) {
+        if (a === b) return 1.0;
+        var longer = a.length > b.length ? a : b;
+        var shorter = a.length > b.length ? b : a;
+        if (longer.length === 0) return 1.0;
+        var dist = this.levenshteinDistance(longer, shorter);
+        return (longer.length - dist) / longer.length;
+    },
+
+    levenshteinDistance: function(a, b) {
+        var matrix = [];
+        for (var i = 0; i <= a.length; i++) { matrix[i] = [i]; }
+        for (var j = 0; j <= b.length; j++) { matrix[0][j] = j; }
+        for (var i = 1; i <= a.length; i++) {
+            for (var j = 1; j <= b.length; j++) {
+                if (a[i-1] === b[j-1]) {
+                    matrix[i][j] = matrix[i-1][j-1];
+                } else {
+                    matrix[i][j] = Math.min(matrix[i-1][j-1]+1, matrix[i][j-1]+1, matrix[i-1][j]+1);
+                }
+            }
+        }
+        return matrix[a.length][b.length];
+    },
+
+    generateConflictId: function() {
+        return 'conflict-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    },
+
+    generateMedId: function(med) {
+        return 'med-' + (med.rxNormCode || med.code || med.name.toLowerCase().replace(/\s+/g, '-'));
+    }
+};
+
+// ── MetisDataModel: Enhanced health data with provenance tracking ──
+var MetisDataModel = {
+    data: {
+        patient: null,
+        conditions: [],
+        medications: [],
+        labs: [],
+        genomics: null,
+        wearables: null,
+        medicare: null
+    },
+    initialized: false,
+
+    init: function() {
+        if (this.initialized) return;
+        if (typeof KeenanHealthData === 'undefined') {
+            console.warn('[MetisDataModel] KeenanHealthData not ready — deferring init');
+            return;
+        }
+
+        this.data.patient = KeenanHealthData.patient;
+        this.data.wearables = KeenanHealthData.wearables;
+        this.data.genomics = KeenanHealthData.genomics;
+
+        // Bootstrap demo medications as verified
+        var self = this;
+        KeenanHealthData.medications.forEach(function(med) {
+            var id = 'med-' + (med.rxNormCode || med.code || med.name.toLowerCase().replace(/\s+/g,'-'));
+            self.addMedication(Object.assign({}, med, { id: id }), {
+                source: 'demo-data',
+                sourceTimestamp: med.startDate || new Date().toISOString(),
+                confidence: 'high',
+                verificationStatus: 'verified',
+                verifiedAt: new Date().toISOString(),
+                verifiedBy: 'system-bootstrap'
+            });
+        });
+
+        // Bootstrap demo conditions as verified
+        KeenanHealthData.conditions.forEach(function(cond) {
+            var id = 'cond-' + (cond.icd10 || cond.name.toLowerCase().replace(/\s+/g,'-'));
+            self.addCondition(Object.assign({}, cond, { id: id }), {
+                source: 'demo-data',
+                sourceTimestamp: cond.diagnosedDate || new Date().toISOString(),
+                confidence: 'high',
+                verificationStatus: 'verified'
+            });
+        });
+
+        // Bootstrap labs as verified (time-series, always trusted)
+        KeenanHealthData.labs.forEach(function(lab) {
+            self.addLab(lab, {
+                source: lab.source || 'demo-data',
+                sourceTimestamp: lab.date,
+                confidence: 'high',
+                verificationStatus: 'verified'
+            });
+        });
+
+        // Apply any persisted user decisions from localStorage
+        VerifiedDataStore.applyStoredDecisions(this.data.medications);
+        VerifiedDataStore.applyStoredDecisions(this.data.conditions);
+
+        this.initialized = true;
+        console.log('[MetisDataModel] Initialized — ' + this.data.medications.length + ' meds, ' +
+            this.data.conditions.length + ' conditions, ' + this.data.labs.length + ' labs');
+    },
+
+    createMeta: function(overrides) {
+        var meta = {
+            source: 'unknown',
+            sourceTimestamp: new Date().toISOString(),
+            confidence: 'medium',
+            verificationStatus: 'unverified',
+            verifiedAt: null,
+            verifiedBy: null,
+            verificationNote: null,
+            conflictIds: []
+        };
+        if (overrides) Object.assign(meta, overrides);
+        return meta;
+    },
+
+    addMedication: function(med, metaOverrides) {
+        var item = Object.assign({}, med, { _meta: this.createMeta(metaOverrides) });
+        if (!item.id) item.id = 'med-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+        this.data.medications.push(item);
+        return item;
+    },
+
+    addCondition: function(cond, metaOverrides) {
+        var item = Object.assign({}, cond, { _meta: this.createMeta(metaOverrides) });
+        if (!item.id) item.id = 'cond-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+        this.data.conditions.push(item);
+        return item;
+    },
+
+    addLab: function(lab, metaOverrides) {
+        var item = Object.assign({}, lab, { _meta: this.createMeta(metaOverrides) });
+        this.data.labs.push(item);
+        return item;
+    },
+
+    getVerifiedData: function() {
+        return {
+            patient: this.data.patient,
+            conditions: this.data.conditions.filter(function(c) {
+                if (!c._meta) return true;
+                return c._meta.verificationStatus === 'verified' ||
+                       c._meta.verificationStatus === 'user-verified';
+            }),
+            medications: this.data.medications.filter(function(m) {
+                if (!m._meta) return true;
+                return m._meta.verificationStatus === 'verified' ||
+                       m._meta.verificationStatus === 'user-verified';
+            }),
+            labs: this.data.labs,
+            genomics: this.data.genomics,
+            wearables: this.data.wearables,
+            medicare: this.data.medicare
+        };
+    },
+
+    getPendingVerifications: function() {
+        return {
+            medications: this.data.medications.filter(function(m) {
+                return m._meta && (m._meta.verificationStatus === 'unverified' || m._meta.verificationStatus === 'conflicted');
+            }),
+            conditions: this.data.conditions.filter(function(c) {
+                return c._meta && (c._meta.verificationStatus === 'unverified' || c._meta.verificationStatus === 'conflicted');
+            })
+        };
+    },
+
+    resolveItem: function(itemId, resolution) {
+        var item = this.data.medications.find(function(m) { return m.id === itemId; }) ||
+                   this.data.conditions.find(function(c) { return c.id === itemId; });
+        if (!item) return false;
+
+        if (resolution.status === 'current') {
+            item._meta.verificationStatus = 'user-verified';
+            item.status = 'active';
+        } else if (resolution.status === 'discontinued' || resolution.status === 'never-mine') {
+            item._meta.verificationStatus = 'user-rejected';
+            item.status = 'inactive';
+        } else if (resolution.status === 'not-sure') {
+            item._meta.verificationStatus = 'user-uncertain';
+        } else if (resolution.status === 'update-dose') {
+            item._meta.verificationStatus = 'user-verified';
+            item.status = 'active';
+            if (resolution.newName) item.name = resolution.newName;
+        }
+        item._meta.verifiedAt = new Date().toISOString();
+        item._meta.verifiedBy = 'user';
+        item._meta.verificationNote = resolution.note || '';
+
+        VerifiedDataStore.saveVerification(itemId, item, resolution);
+        this.syncToKeenanHealthData();
+        return true;
+    },
+
+    syncToKeenanHealthData: function() {
+        // Keep KeenanHealthData in sync for backward compatibility with existing UI rendering
+        if (typeof KeenanHealthData === 'undefined') return;
+        var verified = this.getVerifiedData();
+        KeenanHealthData.conditions = verified.conditions.map(function(c) {
+            return { name: c.name, icd10: c.icd10, status: c.status, diagnosedDate: c.diagnosedDate };
+        });
+        KeenanHealthData.medications = verified.medications.map(function(m) {
+            return { name: m.name, code: m.code, rxNormCode: m.rxNormCode, status: m.status, startDate: m.startDate, metabolizedBy: m.metabolizedBy, therapeuticClass: m.therapeuticClass };
+        });
+        KeenanHealthData.labs = verified.labs;
+    }
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// ── END DATA VERIFICATION SYSTEM (Core Modules) ──
+// ══════════════════════════════════════════════════════════════════════
 
 // ── Demo Health Data (Veteran Patient Profile) ──
 var KeenanHealthData = {
@@ -5979,31 +6446,84 @@ var MasterSync = {
             }
 
             if ((sourceKey === 'va-lighthouse' || sourceKey === 'epic-mychart') && typeof KeenanHealthData !== 'undefined') {
-                // Merge conditions (avoid duplicates by name)
-                if (data.conditions && data.conditions.length) {
-                    var existingNames = KeenanHealthData.conditions.map(function(c) { return c.name.toLowerCase(); });
-                    data.conditions.forEach(function(c) {
-                        if (existingNames.indexOf(c.name.toLowerCase()) === -1) {
-                            KeenanHealthData.conditions.push(c);
-                            existingNames.push(c.name.toLowerCase());
-                        }
-                    });
+                // ── DATA VERIFICATION: Detect conflicts before merging ──
+                var conflicts = [];
+                if (typeof ConflictDetector !== 'undefined' && typeof MetisDataModel !== 'undefined' && MetisDataModel.initialized) {
+                    conflicts = ConflictDetector.compareIncoming(sourceKey, data, MetisDataModel.data);
+                    if (conflicts.length > 0) {
+                        console.log('[MasterSync] Detected ' + conflicts.length + ' conflict(s) from ' + sourceKey);
+                        VerificationQueue.addConflicts(conflicts);
+                    }
+
+                    // Add to MetisDataModel with source tracking
+                    if (data.conditions && data.conditions.length) {
+                        data.conditions.forEach(function(c) {
+                            var existing = MetisDataModel.data.conditions.find(function(ec) {
+                                return ec.name.toLowerCase() === c.name.toLowerCase() || ec.icd10 === c.icd10;
+                            });
+                            if (!existing) {
+                                c.id = 'cond-' + (c.icd10 || Date.now() + '-' + Math.random().toString(36).substr(2,5));
+                                MetisDataModel.addCondition(c, {
+                                    source: sourceKey,
+                                    sourceTimestamp: new Date().toISOString(),
+                                    confidence: 'high',
+                                    verificationStatus: conflicts.length > 0 ? 'unverified' : 'verified'
+                                });
+                            }
+                        });
+                    }
+                    if (data.medications && data.medications.length) {
+                        data.medications.forEach(function(m) {
+                            var existing = MetisDataModel.data.medications.find(function(em) {
+                                return em.name.toLowerCase() === m.name.toLowerCase() || (em.rxNormCode && em.rxNormCode === m.rxNormCode);
+                            });
+                            if (!existing) {
+                                m.id = 'med-' + (m.rxNormCode || Date.now() + '-' + Math.random().toString(36).substr(2,5));
+                                MetisDataModel.addMedication(m, {
+                                    source: sourceKey,
+                                    sourceTimestamp: new Date().toISOString(),
+                                    confidence: 'high',
+                                    verificationStatus: conflicts.length > 0 ? 'unverified' : 'verified'
+                                });
+                            }
+                        });
+                    }
+                    if (data.labs && data.labs.length) {
+                        data.labs.forEach(function(lab) {
+                            MetisDataModel.addLab(lab, {
+                                source: lab.source || sourceKey,
+                                sourceTimestamp: lab.date || new Date().toISOString(),
+                                confidence: 'high',
+                                verificationStatus: 'verified'
+                            });
+                        });
+                    }
+                    MetisDataModel.syncToKeenanHealthData();
+                } else {
+                    // Fallback: legacy merge (no MetisDataModel available yet)
+                    if (data.conditions && data.conditions.length) {
+                        var existingNames = KeenanHealthData.conditions.map(function(c) { return c.name.toLowerCase(); });
+                        data.conditions.forEach(function(c) {
+                            if (existingNames.indexOf(c.name.toLowerCase()) === -1) {
+                                KeenanHealthData.conditions.push(c);
+                                existingNames.push(c.name.toLowerCase());
+                            }
+                        });
+                    }
+                    if (data.medications && data.medications.length) {
+                        var existingMeds = KeenanHealthData.medications.map(function(m) { return m.name.toLowerCase(); });
+                        data.medications.forEach(function(m) {
+                            if (existingMeds.indexOf(m.name.toLowerCase()) === -1) {
+                                KeenanHealthData.medications.push(m);
+                                existingMeds.push(m.name.toLowerCase());
+                            }
+                        });
+                    }
+                    if (data.labs && data.labs.length) {
+                        KeenanHealthData.labs = KeenanHealthData.labs.concat(data.labs);
+                    }
                 }
-                // Merge medications (avoid duplicates by name)
-                if (data.medications && data.medications.length) {
-                    var existingMeds = KeenanHealthData.medications.map(function(m) { return m.name.toLowerCase(); });
-                    data.medications.forEach(function(m) {
-                        if (existingMeds.indexOf(m.name.toLowerCase()) === -1) {
-                            KeenanHealthData.medications.push(m);
-                            existingMeds.push(m.name.toLowerCase());
-                        }
-                    });
-                }
-                // Merge labs (always add — labs are time-series)
-                if (data.labs && data.labs.length) {
-                    KeenanHealthData.labs = KeenanHealthData.labs.concat(data.labs);
-                }
-                console.log('[MasterSync] ' + sourceKey + ' FHIR data merged into KeenanHealthData');
+                console.log('[MasterSync] ' + sourceKey + ' FHIR data merged (conflicts: ' + conflicts.length + ')');
             }
 
             if (sourceKey === 'cms-blue-button') {
@@ -6210,8 +6730,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function triggerAIAnalysis(filename) {
-    // Re-run the REAL AI engine analysis
-    var results = MetisAIEngine.analyze(KeenanHealthData);
+    // Re-run the REAL AI engine analysis using VERIFIED data when available
+    var healthData = (typeof MetisDataModel !== 'undefined' && MetisDataModel.initialized)
+        ? MetisDataModel.getVerifiedData()
+        : KeenanHealthData;
+    var results = MetisAIEngine.analyze(healthData);
     AnalysisEngine.findings = results.findings;
     AnalysisEngine.insights = results.insights;
     AnalysisEngine.correlationsFound = results.findings.length;
@@ -6244,6 +6767,149 @@ function triggerAIAnalysis(filename) {
         setTimeout(function() { notif.remove(); }, 500);
     }, 7000);
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// ── VerificationQueue: UI component for conflict resolution ──
+// ══════════════════════════════════════════════════════════════════════
+var VerificationQueue = {
+    currentQueue: [],
+
+    addConflicts: function(conflicts) {
+        var self = this;
+        conflicts.forEach(function(c) {
+            // Don't add duplicates
+            var exists = self.currentQueue.some(function(q) { return q.id === c.id; });
+            if (!exists && c.suggestedResolution === 'ask_user') {
+                self.currentQueue.push(c);
+            }
+        });
+        this.updateBadge();
+    },
+
+    show: function() {
+        this.render();
+    },
+
+    render: function() {
+        var container = document.getElementById('verification-queue-container');
+        var emptyState = document.getElementById('verification-empty-state');
+        var progressContainer = document.getElementById('verification-progress-container');
+        if (!container) return;
+
+        if (this.currentQueue.length === 0) {
+            container.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'block';
+            if (progressContainer) progressContainer.style.display = 'none';
+            return;
+        }
+        if (emptyState) emptyState.style.display = 'none';
+        if (progressContainer) progressContainer.style.display = 'block';
+
+        var totalConflicts = this.currentQueue.length;
+        var html = '';
+        var self = this;
+
+        this.currentQueue.forEach(function(conflict, idx) {
+            var sevClass = conflict.severity === 'critical' ? 'critical' : (conflict.severity === 'moderate' ? 'moderate' : 'info');
+            var itemName = conflict.items[0] ? conflict.items[0].name : 'Unknown item';
+            var sourceLabel = (conflict.source || 'unknown').replace(/-/g, ' ');
+
+            html += '<div class="vq-card vq-' + sevClass + '" id="vq-card-' + idx + '">';
+            html += '<div class="vq-card-header">';
+            html += '<span class="vq-card-type">' + conflict.type.replace(/_/g, ' ') + '</span>';
+            html += '<span class="vq-card-source">from ' + sourceLabel + '</span>';
+            html += '<span class="vq-sev vq-sev-' + sevClass + '">' + conflict.severity.toUpperCase() + '</span>';
+            html += '</div>';
+            html += '<div class="vq-card-title">' + itemName + '</div>';
+            html += '<div class="vq-card-desc">' + conflict.description + '</div>';
+            html += '<div class="vq-actions">';
+
+            if (conflict.type === 'dosage_mismatch' && conflict.items.length > 1) {
+                html += '<button class="vq-btn vq-btn-current" onclick="VerificationQueue.resolve(' + idx + ',\'current\')">Keep: ' + conflict.items[0].name + '</button>';
+                html += '<button class="vq-btn vq-btn-update" onclick="VerificationQueue.resolve(' + idx + ',\'update-dose\',\'' + conflict.items[1].name.replace(/'/g,"\\'") + '\')">Update to: ' + conflict.items[1].name + '</button>';
+                html += '<button class="vq-btn vq-btn-unsure" onclick="VerificationQueue.resolve(' + idx + ',\'not-sure\')">Not Sure</button>';
+            } else {
+                html += '<button class="vq-btn vq-btn-current" onclick="VerificationQueue.resolve(' + idx + ',\'current\')">Yes, It\'s Current</button>';
+                html += '<button class="vq-btn vq-btn-disc" onclick="VerificationQueue.resolve(' + idx + ',\'discontinued\')">Discontinued</button>';
+                html += '<button class="vq-btn vq-btn-never" onclick="VerificationQueue.resolve(' + idx + ',\'never-mine\')">Never Mine</button>';
+                html += '<button class="vq-btn vq-btn-unsure" onclick="VerificationQueue.resolve(' + idx + ',\'not-sure\')">Not Sure</button>';
+            }
+            html += '</div></div>';
+        });
+
+        container.innerHTML = html;
+        this.updateProgress();
+    },
+
+    resolve: function(index, decision, newName) {
+        var conflict = this.currentQueue[index];
+        if (!conflict) return;
+
+        var resolution = { status: decision, note: 'Resolved conflict: ' + conflict.type };
+        if (decision === 'update-dose' && newName) resolution.newName = newName;
+
+        // Resolve the item in MetisDataModel
+        var itemId = conflict.items[0].id || ConflictDetector.generateMedId(conflict.items[0]);
+        MetisDataModel.resolveItem(itemId, resolution);
+
+        // Remove from queue
+        this.currentQueue.splice(index, 1);
+
+        // Toast confirmation
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:rgba(52,211,153,0.95);color:#001830;padding:12px 24px;border-radius:10px;font-size:13px;font-weight:700;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+        toast.textContent = 'Verified — ' + (conflict.items[0].name || 'item') + ' → ' + decision;
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity='0'; toast.style.transition='opacity 0.4s'; }, 2000);
+        setTimeout(function() { toast.remove(); }, 2500);
+
+        this.render();
+        this.updateBadge();
+
+        // If queue empty, re-run AI analysis with clean verified data
+        if (this.currentQueue.length === 0) {
+            var self = this;
+            setTimeout(function() {
+                if (typeof triggerAIAnalysis === 'function') triggerAIAnalysis('verification-complete');
+            }, 500);
+        }
+    },
+
+    updateProgress: function() {
+        var totalEl = document.getElementById('vq-total-count');
+        var remainEl = document.getElementById('vq-remaining-count');
+        var fillEl = document.getElementById('vq-progress-fill');
+        var remaining = this.currentQueue.length;
+        if (totalEl) totalEl.textContent = remaining;
+        if (remainEl) remainEl.textContent = remaining;
+        if (fillEl) {
+            var pct = remaining === 0 ? 100 : 0;
+            fillEl.style.width = pct + '%';
+        }
+    },
+
+    updateBadge: function() {
+        var badge = document.getElementById('vq-nav-badge');
+        var pending = this.currentQueue.length;
+        // Also count unverified items in MetisDataModel
+        if (typeof MetisDataModel !== 'undefined' && MetisDataModel.initialized) {
+            var p = MetisDataModel.getPendingVerifications();
+            pending = Math.max(pending, p.medications.length + p.conditions.length);
+        }
+        if (badge) {
+            if (pending > 0) {
+                badge.style.display = 'inline-block';
+                badge.textContent = pending;
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    },
+
+    getCount: function() {
+        return this.currentQueue.length;
+    }
+};
 
 // === DOCUMENT UPLOAD SYSTEM ===
 var uploadedDocuments = [];
@@ -6513,6 +7179,7 @@ function loadDocumentsFromStorage() {
         <div class="menu-section">
             <div class="menu-section-title"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE3MiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjE3NiIgeT0iMjQ0IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjEzNiIgcng9IjI4IiByeT0iMjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxOTIiIHk9IjI2MCIgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMDQiIHJ4PSIyMiIgcnk9IjIyIiBmaWxsPSIjMDgyNjNBIi8+PHBhdGggZD0iTTIwNCAyNDR2LTI2YzAtMzAgMjItNTQgNTItNTRzNTIgMjQgNTIgNTR2MjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMzEyIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> Account</div>
             <a class="menu-item" href="#" onclick="showPage('data-integration'); return false;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE1MCIgZmlsbD0iIzA4MjYzQSIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwxNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0yNTYgMTQwIEwzNTYgMjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xNTYgMjEwIEwxODAgMzMwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zNTYgMjEwIEwzMzIgMzQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xODAgMzMwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0zMzIgMzQwIEwyNTYgMzgwIiBmaWxsPSJub25lIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjE0MCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIxNTYiIGN5PSIyMTAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMzU2IiBjeT0iMjEwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjMzMCIgcj0iMTgiIGZpbGw9IiM3RUQ5NTciLz48Y2lyY2xlIGN4PSIzMzIiIGN5PSIzNDAiIHI9IjE4IiBmaWxsPSIjN0VEOTU3Ii8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMzgwIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjxwYXRoIGQ9Ik0yMjAgMjU2aDcyIiBmaWxsPSJub25lIiBzdHJva2U9IiM3RUQ5NTciIHN0cm9rZS13aWR0aD0iMTgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> Data Integration Hub</a>
+            <a class="menu-item" href="#" onclick="showPage('data-verification'); VerificationQueue.show(); return false;" style="position:relative;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="metis-ico" style="width:2em;height:2em;"><circle cx="256" cy="256" r="172" fill="#08263A"/><path d="M200 260l40 40 80-80" fill="none" stroke="#7ED957" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/><circle cx="256" cy="256" r="100" fill="none" stroke="#FFF" stroke-width="14"/></svg> Data Verify <span id="vq-nav-badge" style="display:none;position:absolute;top:8px;right:12px;background:#f87171;color:white;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:800;min-width:16px;text-align:center;">0</span></a>
             <a class="menu-item" href="#" onclick="showPage('security-privacy'); return false;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjE3MiIgZmlsbD0iIzA4MjYzQSIvPjxyZWN0IHg9IjE3NiIgeT0iMjQ0IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjEzNiIgcng9IjI4IiByeT0iMjgiIGZpbGw9IiNGRkZGRkYiLz48cmVjdCB4PSIxOTIiIHk9IjI2MCIgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMDQiIHJ4PSIyMiIgcnk9IjIyIiBmaWxsPSIjMDgyNjNBIi8+PHBhdGggZD0iTTIwNCAyNDR2LTI2YzAtMzAgMjItNTQgNTItNTRzNTIgMjQgNTIgNTR2MjYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMzEyIiByPSIxOCIgZmlsbD0iIzdFRDk1NyIvPjwvc3ZnPg==" class="metis-ico" style="width:2em;height:2em;" alt=""> Security &amp; Privacy</a>
             <a class="menu-item" href="#" onclick="showPage('profile'); return false;"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMTAiIHI9Ijc0IiBmaWxsPSIjMDgyNjNBIi8+PHBhdGggZD0iTTExNiA0NDBjMTgtODAgODAtMTI4IDE0MC0xMjhzMTIyIDQ4IDE0MCAxMjgiIGZpbGw9IiMwODI2M0EiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMTAiIHI9IjI0IiBmaWxsPSIjN0VEOTU3Ii8+PC9zdmc+" class="metis-ico" style="width:2em;height:2em;" alt=""> Profile</a>
         </div>
@@ -14437,6 +15104,68 @@ function loadDocumentsFromStorage() {
   </div>
 </div>
 
+
+<!-- ══ DATA VERIFICATION PAGE ══ -->
+<div class="page" id="data-verification">
+<style>
+.vq-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;margin-bottom:16px;border-left:4px solid #38bdf8;transition:all 0.3s}
+.vq-critical{border-left-color:#f87171;background:rgba(248,113,113,0.06)}
+.vq-moderate{border-left-color:#fbbf24;background:rgba(251,191,36,0.06)}
+.vq-info{border-left-color:#38bdf8;background:rgba(56,189,248,0.04)}
+.vq-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.vq-card-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.08);padding:3px 8px;border-radius:4px}
+.vq-card-source{font-size:11px;color:rgba(255,255,255,0.4);flex:1}
+.vq-sev{font-size:10px;font-weight:800;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.vq-sev-critical{background:rgba(248,113,113,0.2);color:#f87171}
+.vq-sev-moderate{background:rgba(251,191,36,0.2);color:#fbbf24}
+.vq-sev-info{background:rgba(56,189,248,0.2);color:#38bdf8}
+.vq-card-title{font-size:18px;font-weight:800;color:#e0e8f0;margin-bottom:8px}
+.vq-card-desc{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:16px}
+.vq-actions{display:flex;gap:8px;flex-wrap:wrap}
+.vq-btn{padding:10px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.vq-btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.vq-btn-current{background:rgba(167,207,40,0.2);color:#c5e864;border:1px solid rgba(167,207,40,0.3)}
+.vq-btn-update{background:rgba(33,150,243,0.2);color:#82c4f8;border:1px solid rgba(33,150,243,0.3)}
+.vq-btn-disc{background:rgba(220,53,69,0.15);color:#ff8a95;border:1px solid rgba(220,53,69,0.25)}
+.vq-btn-never{background:rgba(156,39,176,0.15);color:#ce93d8;border:1px solid rgba(156,39,176,0.25)}
+.vq-btn-unsure{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15)}
+.vq-progress{background:rgba(255,255,255,0.05);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.08)}
+.vq-progress-bar{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;margin:10px 0}
+.vq-progress-fill{height:100%;background:linear-gradient(90deg,#34d399,#a7cf28);width:0%;transition:width 0.4s}
+.vq-empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
+.vq-empty svg{width:80px;height:80px;opacity:0.25;margin-bottom:16px}
+</style>
+
+<div style="padding:20px;max-width:800px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:36px;height:36px;"><circle cx="256" cy="256" r="172" fill="#08263A"/><path d="M200 260l40 40 80-80" fill="none" stroke="#7ED957" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/><circle cx="256" cy="256" r="100" fill="none" stroke="#FFF" stroke-width="14"/></svg>
+        <h2 style="font-size:28px;font-weight:800;margin:0;">Data Verification</h2>
+    </div>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:24px;font-size:14px;line-height:1.6;">
+        When data from your connected sources conflicts with your verified records, those items appear here for your review. Your decisions become the authoritative truth that the AI engine uses for analysis.
+    </p>
+
+    <div class="vq-progress" id="verification-progress-container" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-weight:700;color:#e0e8f0;font-size:14px;">Items Needing Review</span>
+            <span style="font-size:13px;color:rgba(255,255,255,0.5);"><span id="vq-total-count">0</span> remaining</span>
+        </div>
+        <div class="vq-progress-bar"><div class="vq-progress-fill" id="vq-progress-fill"></div></div>
+    </div>
+
+    <div id="verification-queue-container"></div>
+
+    <div class="vq-empty" id="verification-empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="172" fill="currentColor"/><path d="M200 260l40 40 80-80" fill="none" stroke="#7ED957" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p style="font-size:18px;font-weight:800;margin-bottom:8px;color:rgba(255,255,255,0.6);">All Data Verified</p>
+        <p style="font-size:13px;line-height:1.6;">Your health records are consistent across all connected sources. New discrepancies will appear here when data is synced from VA, Epic, CMS, or uploaded documents.</p>
+    </div>
+
+    <div style="margin-top:24px;text-align:center;">
+        <button style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);padding:10px 20px;border-radius:8px;font-size:13px;cursor:pointer;" onclick="showPage('dashboard')">← Back to Dashboard</button>
+    </div>
+</div>
+</div>
 
 <script>
     // Don't show dashboard until unlocked
