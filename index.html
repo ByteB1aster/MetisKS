@@ -1336,20 +1336,20 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     }
     /* Card padding */
     .dash-hero-stat {
-        padding: 24px 18px !important;
+        padding: 28px 22px !important;
     }
     .dash-hero-vitals {
-        padding: 24px 32px !important;
+        padding: 28px 36px !important;
     }
     .dash-hero-alert {
-        padding: 18px 22px !important;
+        padding: 22px 26px !important;
     }
     .dash-hero-quickstats {
-        gap: 12px !important;
-        padding: 12px 8px !important;
+        gap: 14px !important;
+        padding: 16px 12px !important;
     }
     .dash-hero-quickstats > div {
-        padding: 16px 8px;
+        padding: 18px 10px;
     }
     /* Vitals metric rows — wider spacing on desktop */
     .dash-hero-vitals .dash-hero-metric {
@@ -1359,50 +1359,60 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     /* === TYPOGRAPHY: desktop scale-up === */
     /* Section labels (HEALTH SCORE, TODAY'S VITALS, AI CORRELATIONS, etc.) */
     .dash-hero-label {
-        font-size: 12px !important;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
+        font-size: 15px !important;
+        letter-spacing: 1.2px;
+        margin-bottom: 10px;
     }
     /* Big numbers (70, 21, 8) */
     .dash-hero-bignum {
-        font-size: 38px;
+        font-size: 52px;
     }
     /* Vitals metric labels (HR, SpO2, HRV, Sleep) */
     .dash-hero-metric-label {
-        font-size: 15px !important;
+        font-size: 18px !important;
     }
     /* Vitals metric values (83 bpm, 95.4%, 23 ms, 53) */
     .dash-hero-metric-val {
-        font-size: 17px !important;
+        font-size: 20px !important;
     }
     /* Quick stats numbers (17+, 7, 12, 62) */
     .dash-quickstat-val {
-        font-size: 30px;
+        font-size: 38px;
     }
     /* Quick stats labels (Conditions, Medications, Gene Links, Sleep Score) */
     .dash-quickstat-label {
-        font-size: 13px;
+        font-size: 15px;
         margin-top: 6px;
+    }
+    /* +5 this week subtitle */
+    .dash-hero-stat div[style*="font-size:11px"],
+    .dash-hero-stat div[style*="font-size:12px"] {
+        font-size: 14px !important;
     }
     /* Alert text */
     .dash-hero-alert div[style*="font-size:14px"] {
-        font-size: 16px !important;
+        font-size: 19px !important;
     }
     .dash-hero-alert div[style*="font-size:12px"] {
-        font-size: 14px !important;
+        font-size: 16px !important;
     }
     .dash-hero-alert div[style*="font-size:11px"] {
-        font-size: 12px !important;
+        font-size: 14px !important;
+    }
+    /* Alert badge pills */
+    .dash-hero-alert span[style*="font-size:10px"],
+    .dash-hero-alert span[style*="font-size:11px"] {
+        font-size: 13px !important;
     }
     /* Insight cards below hero (HEALTH DATA, GENOMICS, etc.) */
     .pg-bento-card.bento-clickable div[style*="font-size:11px"] {
-        font-size: 12px !important;
+        font-size: 14px !important;
     }
     .pg-bento-card.bento-clickable div[style*="font-size:14px"] {
-        font-size: 16px !important;
+        font-size: 18px !important;
     }
     .pg-bento-card.bento-clickable div[style*="font-size:12px"][style*="opacity"] {
-        font-size: 14px !important;
+        font-size: 16px !important;
     }
 }
 
