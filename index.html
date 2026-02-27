@@ -1326,100 +1326,219 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
     margin-top: 4px;
 }
 
-/* ── DESKTOP: intentional dashboard proportions ── */
-/* Fonts MUST be larger on desktop — user is 2-3ft from screen vs 12in on mobile */
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── DESKTOP: COMMAND CENTER ──                                            */
+/* The dashboard is not a grid of cards. It's a cockpit.                    */
+/* Everything above the fold. 4 columns. Dense. Alive. No dead space.       */
+/* ══════════════════════════════════════════════════════════════════════════ */
 @media (min-width: 769px) {
-    /* Grid spacing — tight but not cramped */
-    .dash-hero {
-        gap: 12px;
-        margin-bottom: 14px;
-    }
-    /* Card padding — generous horizontal, compact vertical */
-    .dash-hero-stat {
-        padding: 20px 24px !important;
-    }
-    .dash-hero-vitals {
-        padding: 16px 36px !important;
-    }
-    .dash-hero-alert {
-        padding: 16px 24px !important;
-    }
-    .dash-hero-quickstats {
-        gap: 12px !important;
-        padding: 14px 12px !important;
-    }
-    .dash-hero-quickstats > div {
-        padding: 14px 10px;
-    }
-    /* Vitals metric rows — compact vertical, wide horizontal */
-    .dash-hero-vitals .dash-hero-metric {
-        padding: 2px 4px;
-        margin-bottom: 4px;
-    }
-    /* Vitals label gets less bottom margin */
-    .dash-hero-vitals .dash-hero-label {
-        margin-bottom: 6px !important;
+
+    /* Break out of the 960px cage — dashboard gets room to breathe */
+    #dashboard {
+        max-width: 1200px !important;
+        padding-left: 32px !important;
+        padding-right: 32px !important;
     }
 
-    /* === TYPOGRAPHY: desktop scale-up === */
-    /* Section labels (HEALTH SCORE, TODAY'S VITALS, AI CORRELATIONS, etc.) */
+    /* ── THE GRID: 4 columns, named areas ── */
+    .dash-hero {
+        display: grid !important;
+        grid-template-columns: 1.1fr 1.6fr 0.9fr 0.9fr !important;
+        grid-template-rows: auto auto auto !important;
+        grid-template-areas:
+            "score  vitals  ai     alerts"
+            "banner banner  banner banner"
+            "stats  stats   stats  stats" !important;
+        gap: 10px !important;
+        margin-bottom: 14px;
+    }
+
+    /* ── ASSIGN CARDS TO GRID AREAS ── */
+    .dash-hero > .dash-hero-stat:first-child {
+        grid-area: score;
+    }
+    .dash-hero > .dash-hero-vitals {
+        grid-area: vitals;
+    }
+    .dash-hero > .dash-hero-stat:nth-child(4) {
+        grid-area: ai;
+    }
+    .dash-hero > .dash-hero-stat:nth-child(5) {
+        grid-area: alerts;
+    }
+    .dash-hero > .dash-hero-alert {
+        grid-area: banner;
+        grid-column: auto !important;
+    }
+    .dash-hero > .dash-hero-quickstats {
+        grid-area: stats;
+        grid-column: auto !important;
+    }
+
+    /* ── CARD PADDING — tight, purposeful ── */
+    .dash-hero-stat {
+        padding: 16px 14px !important;
+        min-height: 0 !important;
+    }
+    .dash-hero-vitals {
+        padding: 12px 22px !important;
+        min-height: 0 !important;
+    }
+
+    /* ── ALERT BANNER: slim horizontal strip ── */
+    .dash-hero-alert {
+        padding: 10px 20px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-wrap: wrap !important;
+        position: relative;
+        overflow: hidden;
+    }
+    .dash-hero-alert > div:first-child {
+        margin-bottom: 0 !important;
+        flex-shrink: 0;
+    }
+    .dash-hero-alert > div[style*="font-size:14px"] {
+        flex-shrink: 0;
+    }
+    .dash-hero-alert > div[style*="font-size:12px"][style*="opacity"] {
+        margin-top: 0 !important;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+    .dash-hero-alert > div[style*="display:flex"][style*="gap:6px"] {
+        margin-top: 0 !important;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    /* ── QUICK STATS — compact strip ── */
+    .dash-hero-quickstats {
+        gap: 6px !important;
+        padding: 8px 6px !important;
+    }
+    .dash-hero-quickstats > div {
+        padding: 8px 6px;
+    }
+
+    /* ── VITALS: tight rows ── */
+    .dash-hero-vitals .dash-hero-metric {
+        padding: 1px 2px;
+        margin-bottom: 2px;
+    }
+    .dash-hero-vitals .dash-hero-label {
+        margin-bottom: 4px !important;
+    }
+
+    /* ═══ TYPOGRAPHY: fluid clamp() — scales with viewport, never breaks ═══ */
     .dash-hero-label {
-        font-size: 15px !important;
+        font-size: clamp(11px, 1.1vw, 14px) !important;
         letter-spacing: 1.2px;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
+        opacity: 0.7;
     }
-    /* Big numbers (70, 21, 8) */
     .dash-hero-bignum {
-        font-size: 52px;
+        font-size: clamp(30px, 3.2vw, 48px);
     }
-    /* Vitals metric labels (HR, SpO2, HRV, Sleep) */
     .dash-hero-metric-label {
-        font-size: 18px !important;
+        font-size: clamp(13px, 1.2vw, 17px) !important;
+        opacity: 0.7;
     }
-    /* Vitals metric values (83 bpm, 95.4%, 23 ms, 53) */
     .dash-hero-metric-val {
-        font-size: 20px !important;
+        font-size: clamp(14px, 1.4vw, 19px) !important;
         font-weight: 900;
     }
-    /* Quick stats numbers (17+, 7, 12, 62) */
     .dash-quickstat-val {
-        font-size: 36px;
+        font-size: clamp(20px, 2.2vw, 32px);
     }
-    /* Quick stats labels (Conditions, Medications, Gene Links, Sleep Score) */
     .dash-quickstat-label {
-        font-size: 14px;
-        margin-top: 4px;
+        font-size: clamp(10px, 0.9vw, 13px);
+        margin-top: 2px;
     }
-    /* +5 this week subtitle */
-    .dash-hero-stat div[style*="font-size:11px"],
-    .dash-hero-stat div[style*="font-size:12px"] {
-        font-size: 14px !important;
+    /* Health Score "70" inline style override */
+    .dash-hero-stat:first-child div[style*="font-size:28px"] {
+        font-size: clamp(24px, 2.8vw, 40px) !important;
     }
-    /* Alert text */
+    /* "+5 this week" */
+    .dash-hero-stat div[style*="font-size:11px"] {
+        font-size: clamp(10px, 1vw, 13px) !important;
+    }
+    /* SVG ring */
+    .dash-hero-stat:first-child svg {
+        width: clamp(50px, 5.5vw, 76px) !important;
+        height: clamp(50px, 5.5vw, 76px) !important;
+    }
+
+    /* Alert text scaling */
     .dash-hero-alert div[style*="font-size:14px"] {
-        font-size: 18px !important;
+        font-size: clamp(13px, 1.3vw, 17px) !important;
     }
     .dash-hero-alert div[style*="font-size:12px"] {
-        font-size: 15px !important;
+        font-size: clamp(11px, 1vw, 14px) !important;
     }
     .dash-hero-alert div[style*="font-size:11px"] {
-        font-size: 13px !important;
+        font-size: clamp(10px, 0.9vw, 13px) !important;
     }
-    /* Alert badge pills */
     .dash-hero-alert span[style*="font-size:10px"],
-    .dash-hero-alert span[style*="font-size:11px"] {
-        font-size: 13px !important;
+    .dash-hero-alert span[style*="font-size:9px"] {
+        font-size: clamp(9px, 0.85vw, 12px) !important;
     }
-    /* Insight cards below hero (HEALTH DATA, GENOMICS, etc.) */
+
+    /* ── INSIGHT CARDS: 3-across on desktop, not 2 ── */
+    #dashboard > .pg-bento-grid[style*="1fr 1fr"] {
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 10px !important;
+    }
     .pg-bento-card.bento-clickable div[style*="font-size:11px"] {
-        font-size: 14px !important;
+        font-size: clamp(11px, 1vw, 14px) !important;
     }
     .pg-bento-card.bento-clickable div[style*="font-size:14px"] {
-        font-size: 18px !important;
+        font-size: clamp(13px, 1.2vw, 17px) !important;
     }
     .pg-bento-card.bento-clickable div[style*="font-size:12px"][style*="opacity"] {
-        font-size: 15px !important;
+        font-size: clamp(11px, 1vw, 14px) !important;
     }
+
+    /* ── AMBIENT: Health Score glow pulse ── */
+    .dash-hero-stat:first-child {
+        position: relative;
+        overflow: hidden;
+    }
+    .dash-hero-stat:first-child::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(167,207,40,0.1) 0%, transparent 70%);
+        animation: cockpit-pulse 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    /* ── AMBIENT: Alert card sweep ── */
+    .dash-hero-alert::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(220,53,69,0.05) 0%, transparent 40%, transparent 60%, rgba(220,53,69,0.05) 100%);
+        animation: alert-sweep 4s ease-in-out infinite;
+        pointer-events: none;
+    }
+}
+
+@keyframes cockpit-pulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.85); }
+    50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+}
+@keyframes alert-sweep {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
 }
 
 /* ── TABLET: dashboard hero tightens ── */
@@ -2474,7 +2593,11 @@ function toggleA11yPanel() {
 
 function setFontSize(val) {
     const scale = val / 100;
-    document.getElementById('app-wrap').style.zoom = scale;
+    // Use CSS custom property scaling — NOT browser zoom.
+    // This scales text and padding within cards without zooming the page layout.
+    document.documentElement.style.setProperty('--a11y-scale', scale);
+    // Fallback: also set font-size on html for rem-based scaling
+    document.documentElement.style.fontSize = (scale * 100) + '%';
     document.getElementById('a11yFontSizeVal').textContent = val + '%';
     saveA11ySettings();
 }
