@@ -2751,12 +2751,23 @@ var MetisEncryption = {
         var iv = crypto.getRandomValues(new Uint8Array(12));
         var enc = new TextEncoder();
         var ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, enc.encode(plaintext));
-        return { iv: btoa(String.fromCharCode.apply(null, iv)), ct: btoa(String.fromCharCode.apply(null, new Uint8Array(ciphertext))), ts: Date.now() };
+        // Chunk-based conversion to avoid stack overflow on large data
+        var bytes = new Uint8Array(ciphertext);
+        var ctStr = '';
+        for (var i = 0; i < bytes.length; i += 8192) {
+            ctStr += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + 8192, bytes.length)));
+        }
+        return { iv: btoa(String.fromCharCode.apply(null, iv)), ct: btoa(ctStr), ts: Date.now() };
     },
 
     decrypt: async function(encrypted, key) {
-        var iv = Uint8Array.from(atob(encrypted.iv), function(c) { return c.charCodeAt(0); });
-        var ct = Uint8Array.from(atob(encrypted.ct), function(c) { return c.charCodeAt(0); });
+        try {
+            var iv = Uint8Array.from(atob(encrypted.iv), function(c) { return c.charCodeAt(0); });
+            var ct = Uint8Array.from(atob(encrypted.ct), function(c) { return c.charCodeAt(0); });
+        } catch(e) {
+            console.error('[MetisEncryption] Malformed Base64 in encrypted data:', e.message);
+            throw new Error('Decryption failed: corrupted Base64 data');
+        }
         var plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
         return new TextDecoder().decode(plaintext);
     },
@@ -2810,8 +2821,13 @@ var SecureStorage = {
             var req = tx.objectStore(storeName).get(id);
             req.onsuccess = async function() {
                 if (req.result) {
-                    var decrypted = await MetisEncryption.decrypt(req.result.data, SecureStorage.key);
-                    resolve(JSON.parse(decrypted));
+                    try {
+                        var decrypted = await MetisEncryption.decrypt(req.result.data, SecureStorage.key);
+                        resolve(JSON.parse(decrypted));
+                    } catch(e) {
+                        console.error('[SecureStorage] Failed to decrypt/parse record:', id, e.message);
+                        resolve(null);
+                    }
                 } else { resolve(null); }
             };
             req.onerror = function() { reject(req.error); };
@@ -3041,7 +3057,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof VerificationQueue !== 'undefined') VerificationQueue.updateBadge();
     }, 3500);
     // Update sync time displays every 30 seconds + verification badge
-    setInterval(function() {
+    var syncDisplayInterval = setInterval(function() {
         var sources = ['oura-ring', 'ancestry-dna', 'fort-belvoir', 'gwu-er', 'inova', 'clinical-trials'];
         sources.forEach(function(key) {
             var el = document.getElementById('sync-time-' + key);
@@ -3049,7 +3065,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         if (typeof VerificationQueue !== 'undefined') VerificationQueue.updateBadge();
     }, 30000);
+
+    // Clean up intervals on page unload to prevent memory leaks
+    window.addEventListener('beforeunload', function() {
+        clearInterval(syncDisplayInterval);
+        AutoSync.stop();
+    });
 });
+
+// Sanitize text to prevent XSS when inserting into HTML strings
+function sanitizeHTML(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
 
 function connectNewSource(sourceKey) {
     var source = DataIntegration.sources[sourceKey];
@@ -3058,10 +3087,11 @@ function connectNewSource(sourceKey) {
         alert(source.name + ' is already connected.');
         return;
     }
+    var safeName = sanitizeHTML(source.name);
     // Show connection notification
     var notif = document.createElement('div');
     notif.style.cssText = 'position:fixed; top:80px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,rgba(33,150,243,0.95),rgba(56,189,248,0.95)); color:white; padding:16px 24px; border-radius:12px; font-size:14px; font-weight:700; z-index:99999; box-shadow:0 8px 32px rgba(0,0,0,0.3); text-align:center; max-width:90%;';
-    notif.innerHTML = 'Connecting ' + source.name + '...<br><span style="font-size:12px; font-weight:500;">Initiating ' + (source.endpoint ? 'FHIR/OAuth' : 'API') + ' handshake...</span>';
+    notif.innerHTML = 'Connecting ' + safeName + '...<br><span style="font-size:12px; font-weight:500;">Initiating ' + (source.endpoint ? 'FHIR/OAuth' : 'API') + ' handshake...</span>';
     document.body.appendChild(notif);
 
     // Route through MasterSync for real OAuth connectors; fall back to legacy for others
@@ -3069,7 +3099,7 @@ function connectNewSource(sourceKey) {
     if (hasMasterSync) {
         // Real OAuth flow — MasterSync will redirect to provider's auth page
         setTimeout(function() {
-            notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Redirecting to secure ' + source.name + ' login...</span>';
+            notif.innerHTML = 'Connecting ' + safeName + '<br><span style="font-size:12px; font-weight:500;">Redirecting to secure ' + safeName + ' login...</span>';
         }, 800);
         setTimeout(function() {
             MasterSync.connect(sourceKey);
@@ -3085,12 +3115,12 @@ function connectNewSource(sourceKey) {
     } else {
         // Legacy flow for sources without real connectors (Ancestry, etc.)
         setTimeout(function() {
-            notif.innerHTML = 'Connecting ' + source.name + '<br><span style="font-size:12px; font-weight:500;">Authenticating with ' + (source.endpoint || 'API endpoint') + '...</span>';
+            notif.innerHTML = 'Connecting ' + safeName + '<br><span style="font-size:12px; font-weight:500;">Authenticating with ' + sanitizeHTML(source.endpoint || 'API endpoint') + '...</span>';
         }, 1500);
 
         setTimeout(function() {
             DataIntegration.connectSource(sourceKey);
-            notif.innerHTML = source.name + ' Connected!<br><span style="font-size:12px; font-weight:500;">Syncing ' + source.dataTypes.join(', ') + '...</span>';
+            notif.innerHTML = safeName + ' Connected!<br><span style="font-size:12px; font-weight:500;">Syncing ' + sanitizeHTML(source.dataTypes.join(', ')) + '...</span>';
             notif.style.background = 'linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95))';
             notif.style.color = '#001830';
         }, 3000);
@@ -3212,9 +3242,13 @@ var LabReferenceDB = {
         var range = this.ranges[loincCode];
         if (!range) return null;
         if (context && context.sex && range.sexSpecific && range.sexSpecific[context.sex]) {
-            return Object.assign({}, range, range.sexSpecific[context.sex]);
+            // Deep clone to prevent mutation of original range object
+            var merged = Object.assign({}, range);
+            delete merged.sexSpecific;
+            Object.assign(merged, range.sexSpecific[context.sex]);
+            return merged;
         }
-        return range;
+        return Object.assign({}, range);
     },
 
     calculateDeviation: function(value, range) {
@@ -7161,18 +7195,19 @@ function triggerAIAnalysis(filename) {
     // Show AI analysis notification
     var notif = document.createElement('div');
     notif.style.cssText = 'position:fixed; top:80px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,rgba(56,189,248,0.95),rgba(167,207,40,0.95)); color:#001830; padding:16px 24px; border-radius:12px; font-size:14px; font-weight:700; z-index:99999; box-shadow:0 8px 32px rgba(0,0,0,0.3); text-align:center; max-width:90%; animation:slideDown 0.3s ease;';
-    notif.innerHTML = '🧠 AI Engine Processing<br><span style="font-size:12px; font-weight:500;">Scanning ' + filename + ' — running Rule Engine + Predictive Analysis...</span>';
+    var safeFilename = sanitizeHTML(filename);
+    notif.innerHTML = '🧠 AI Engine Processing<br><span style="font-size:12px; font-weight:500;">Scanning ' + safeFilename + ' — running Rule Engine + Predictive Analysis...</span>';
     document.body.appendChild(notif);
 
     // AI engine processing stages
     setTimeout(function() {
-        notif.innerHTML = '🧠 AI Engine Running<br><span style="font-size:12px; font-weight:500;">Extracting data from ' + filename + '...</span>';
+        notif.innerHTML = '🧠 AI Engine Running<br><span style="font-size:12px; font-weight:500;">Extracting data from ' + safeFilename + '...</span>';
     }, 1500);
     setTimeout(function() {
         notif.innerHTML = '🧠 AI Engine Running<br><span style="font-size:12px; font-weight:500;">Cross-referencing with ' + AnalysisEngine.correlationsFound + ' correlations across drugs, labs, genomics, wearables...</span>';
     }, 3000);
     setTimeout(function() {
-        notif.innerHTML = '✅ AI Engine Complete<br><span style="font-size:12px; font-weight:500;">' + filename + ' processed — ' + AnalysisEngine.correlationsFound + ' correlations, ' + AnalysisEngine.alertsGenerated + ' alerts</span>';
+        notif.innerHTML = '✅ AI Engine Complete<br><span style="font-size:12px; font-weight:500;">' + safeFilename + ' processed — ' + AnalysisEngine.correlationsFound + ' correlations, ' + AnalysisEngine.alertsGenerated + ' alerts</span>';
         notif.style.background = 'linear-gradient(135deg,rgba(167,207,40,0.95),rgba(52,211,153,0.95))';
         // Re-render the full dashboard with real findings
         AnalysisEngine.updateDashboard();
