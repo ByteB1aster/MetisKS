@@ -1231,6 +1231,26 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
 .pg-bento-card span[style*="inline-block"][style*="border-radius"] { white-space: nowrap !important; }
 .pg-bento-card div[style*="display:flex"][style*="gap"] { flex-wrap: wrap !important; }
 
+/* ── HEALTH SCORE RING — proper overlay, no negative margins ── */
+.health-score-ring {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+.health-score-ring svg {
+    width: 64px;
+    height: 64px;
+}
+.health-score-num {
+    position: absolute;
+    font-size: 28px;
+    font-weight: 900;
+    color: #a7cf28;
+    line-height: 1;
+}
+
 /* ── DASHBOARD HERO — Intentional spacing at every breakpoint ── */
 /* The hero grid on the dashboard (Health Score, Vitals, Alert, AI, Stats) */
 .dash-hero {
@@ -1462,18 +1482,18 @@ body.dark-mode .dash-divider-line { background: #444 !important; }
         font-size: clamp(10px, 0.9vw, 13px);
         margin-top: 2px;
     }
-    /* Health Score "70" inline style override */
-    .dash-hero-stat:first-child div[style*="font-size:28px"] {
-        font-size: clamp(24px, 2.8vw, 40px) !important;
-    }
+    /* (Health Score "70" now uses .health-score-num class — no inline override needed) */
     /* "+5 this week" */
     .dash-hero-stat div[style*="font-size:11px"] {
         font-size: clamp(10px, 1vw, 13px) !important;
     }
-    /* SVG ring */
-    .dash-hero-stat:first-child svg {
-        width: clamp(50px, 5.5vw, 76px) !important;
-        height: clamp(50px, 5.5vw, 76px) !important;
+    /* Health Score ring + number */
+    .health-score-ring svg {
+        width: clamp(56px, 6vw, 80px) !important;
+        height: clamp(56px, 6vw, 80px) !important;
+    }
+    .health-score-num {
+        font-size: clamp(24px, 2.6vw, 38px) !important;
     }
 
     /* Alert text scaling */
@@ -2600,9 +2620,10 @@ function setFontSize(val) {
     const scale = val / 100;
     // Use CSS custom property scaling — NOT browser zoom.
     // This scales text and padding within cards without zooming the page layout.
-    document.documentElement.style.setProperty('--a11y-scale', scale);
-    // Fallback: also set font-size on html for rem-based scaling
-    document.documentElement.style.fontSize = (scale * 100) + '%';
+    // Apply zoom to page content only — nav bar stays fixed size
+    document.querySelectorAll('.page').forEach(function(p) {
+        p.style.zoom = scale;
+    });
     document.getElementById('a11yFontSizeVal').textContent = val + '%';
     saveA11ySettings();
 }
@@ -7594,11 +7615,13 @@ function loadDocumentsFromStorage() {
             <!-- Row 1: Health Score + Vitals -->
             <div class="pg-bento-card dash-hero-stat" onclick="showPage('comorbidity')" style="background:linear-gradient(135deg,rgba(167,207,40,0.12),rgba(167,207,40,0.04)); border:1px solid rgba(167,207,40,0.2);">
                 <div class="dash-hero-label">Health Score</div>
-                <svg viewBox="0 0 80 80" style="width:64px;height:64px;">
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(167,207,40,0.15)" stroke-width="6"/>
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="#a7cf28" stroke-width="6" stroke-dasharray="149 214" stroke-linecap="round" transform="rotate(-90 40 40)"/>
-                </svg>
-                <div style="font-size:28px; font-weight:900; color:#a7cf28; margin-top:-46px; margin-bottom:24px;">70</div>
+                <div class="health-score-ring">
+                    <svg viewBox="0 0 80 80">
+                        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(167,207,40,0.15)" stroke-width="6"/>
+                        <circle cx="40" cy="40" r="34" fill="none" stroke="#a7cf28" stroke-width="6" stroke-dasharray="149 214" stroke-linecap="round" transform="rotate(-90 40 40)"/>
+                    </svg>
+                    <span class="health-score-num">70</span>
+                </div>
                 <div style="font-size:11px; color:#a7cf28; font-weight:600;">+5 this week</div>
             </div>
 
