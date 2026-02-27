@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.ouraring.com https://api.nal.usda.gov https://sandbox.bluebutton.cms.gov https://api.bluebutton.cms.gov https://sandbox-api.va.gov https://api.va.gov https://fhir.epic.com https://open-ic.epic.com https://api.anthropic.com; frame-src 'self' data: blob:; object-src 'none'; base-uri 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://metis-proxy.keenanrskelly.workers.dev https://api.ouraring.com https://cloud.ouraring.com https://api.nal.usda.gov https://sandbox.bluebutton.cms.gov https://api.bluebutton.cms.gov https://sandbox-api.va.gov https://api.va.gov https://fhir.epic.com https://open-ic.epic.com https://api.anthropic.com; frame-src 'self' data: blob:; object-src 'none'; base-uri 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#001830">
@@ -5851,10 +5851,15 @@ var OuraConnector = {
             url += '?' + qs;
         }
         var self = this;
-        // Oura API blocks browser CORS — use corsproxy.io which forwards Authorization headers
-        var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-        return fetch(proxyUrl, {
-            headers: { 'Authorization': 'Bearer ' + self.accessToken }
+        // Oura API blocks browser CORS — route through our Cloudflare Worker proxy
+        return fetch('https://metis-proxy.keenanrskelly.workers.dev/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                targetUrl: url,
+                authorization: 'Bearer ' + self.accessToken,
+                accept: 'application/json'
+            })
         }).then(function(r) {
             if (r.status === 429) throw new Error('Oura rate limit exceeded');
             if (!r.ok) throw new Error('Oura API error: ' + r.status);
@@ -6174,11 +6179,15 @@ var VALighthouseConnector = {
                     body: tokenBody
                 });
             } catch(corsErr) {
-                console.warn('[VA] Token exchange CORS blocked, using proxy...', corsErr);
-                response = await fetch('https://corsproxy.io/?' + encodeURIComponent(this.tokenUrl), {
+                console.warn('[VA] Token exchange CORS blocked, using Worker proxy...', corsErr);
+                response = await fetch('https://metis-proxy.keenanrskelly.workers.dev/token', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: tokenBody
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tokenUrl: this.tokenUrl,
+                        contentType: 'application/x-www-form-urlencoded',
+                        body: tokenBody
+                    })
                 });
             }
             var token = await response.json();
@@ -6214,8 +6223,16 @@ var VALighthouseConnector = {
             if (!r.ok) throw new Error('VA FHIR error: ' + r.status);
             return r.json();
         }).catch(function(err) {
-            console.warn('[VA] Direct FHIR fetch failed, trying CORS proxy...', err.message);
-            return fetch('https://corsproxy.io/?' + encodeURIComponent(url), { headers: headers }).then(function(r) {
+            console.warn('[VA] Direct FHIR fetch failed, trying Worker proxy...', err.message);
+            return fetch('https://metis-proxy.keenanrskelly.workers.dev/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: url,
+                    authorization: headers['Authorization'],
+                    accept: headers['Accept']
+                })
+            }).then(function(r) {
                 if (!r.ok) throw new Error('VA FHIR proxy error: ' + r.status);
                 return r.json();
             });
@@ -6746,11 +6763,15 @@ var EpicFHIRConnector = {
                     body: tokenBody
                 });
             } catch(corsErr) {
-                console.warn('[Epic] Token exchange CORS blocked, using proxy...', corsErr);
-                response = await fetch('https://corsproxy.io/?' + encodeURIComponent(this.tokenUrl), {
+                console.warn('[Epic] Token exchange CORS blocked, using Worker proxy...', corsErr);
+                response = await fetch('https://metis-proxy.keenanrskelly.workers.dev/token', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: tokenBody
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tokenUrl: this.tokenUrl,
+                        contentType: 'application/x-www-form-urlencoded',
+                        body: tokenBody
+                    })
                 });
             }
             var token = await response.json();
@@ -6786,8 +6807,16 @@ var EpicFHIRConnector = {
             if (!r.ok) throw new Error('Epic FHIR error: ' + r.status);
             return r.json();
         }).catch(function(err) {
-            console.warn('[Epic] Direct FHIR fetch failed, trying CORS proxy...', err.message);
-            return fetch('https://corsproxy.io/?' + encodeURIComponent(url), { headers: headers }).then(function(r) {
+            console.warn('[Epic] Direct FHIR fetch failed, trying Worker proxy...', err.message);
+            return fetch('https://metis-proxy.keenanrskelly.workers.dev/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    targetUrl: url,
+                    authorization: headers['Authorization'],
+                    accept: headers['Accept']
+                })
+            }).then(function(r) {
                 if (!r.ok) throw new Error('Epic FHIR proxy error: ' + r.status);
                 return r.json();
             });
