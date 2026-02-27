@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://api.ouraring.com https://api.nal.usda.gov https://sandbox.bluebutton.cms.gov https://api.bluebutton.cms.gov https://sandbox-api.va.gov https://api.va.gov https://fhir.epic.com https://open-ic.epic.com https://api.anthropic.com; frame-src 'self' data: blob:; object-src 'none'; base-uri 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#001830">
@@ -3071,6 +3072,32 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(syncDisplayInterval);
         AutoSync.stop();
     });
+
+    // ── SESSION TIMEOUT: Clear encryption keys after 30 min idle ──
+    var _metisIdleTimer = null;
+    var METIS_IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    function resetIdleTimer() {
+        if (_metisIdleTimer) clearTimeout(_metisIdleTimer);
+        _metisIdleTimer = setTimeout(function() {
+            // Clear encryption key from memory
+            if (typeof SecureStorage !== 'undefined') SecureStorage.key = null;
+            // Clear sensitive session data
+            sessionStorage.removeItem('oura_token');
+            sessionStorage.removeItem('va_token');
+            sessionStorage.removeItem('cms_token');
+            sessionStorage.removeItem('epic_token');
+            sessionStorage.removeItem('va_pkce_verifier');
+            sessionStorage.removeItem('epic_pkce_verifier');
+            sessionStorage.removeItem('va_state');
+            sessionStorage.removeItem('cms_state');
+            sessionStorage.removeItem('epic_state');
+            console.log('[MÉTIS Security] Session idle timeout — encryption keys and tokens cleared');
+        }, METIS_IDLE_TIMEOUT);
+    }
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function(evt) {
+        document.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+    resetIdleTimer();
 });
 
 // Sanitize text to prevent XSS when inserting into HTML strings
@@ -4847,7 +4874,7 @@ var AnalysisEngine = {
         // Update insights panel
         var insightsEl = document.getElementById('ai-insights-text');
         if (insightsEl && this.insights) {
-            insightsEl.innerHTML = this.insights.text.replace(/\n/g, '<br>');
+            insightsEl.innerHTML = sanitizeHTML(this.insights.text).replace(/\n/g, '<br>');
         }
         // Update footer
         var footerEl = document.querySelector('.dash-footer-note');
@@ -4868,7 +4895,7 @@ async function enableLocalLLM() {
         var badge = document.getElementById('ai-tier3-badge');
         if (badge) { badge.className = 'ai-tier-badge ai-tier-active'; badge.textContent = 'Tier 3: Local LLM (Active)'; }
         var insight = await TierThreeEngine.generateInsight(AnalysisEngine.findings, { ageRange: '40-49', conditionCount: 6, medicationCount: 6 });
-        if (insight) { var el = document.getElementById('ai-insights-text'); if (el) el.innerHTML = insight.text.replace(/\n/g, '<br>'); }
+        if (insight) { var el = document.getElementById('ai-insights-text'); if (el) el.innerHTML = sanitizeHTML(insight.text).replace(/\n/g, '<br>'); }
     } else {
         if (btn) btn.textContent = 'Failed: ' + (result.error || 'Unknown error');
     }
@@ -4885,7 +4912,7 @@ async function requestDeepAnalysis() {
     if (result.error) { alert(result.message); return; }
     if (result.text) {
         var insightsEl = document.getElementById('ai-insights-text');
-        if (insightsEl) insightsEl.innerHTML = '<div style="color:#38bdf8; font-size:11px; margin-bottom:8px; font-weight:700;">CLOUD ANALYSIS (Claude Sonnet 4.5)</div>' + result.text.replace(/\n/g, '<br>');
+        if (insightsEl) insightsEl.innerHTML = '<div style="color:#38bdf8; font-size:11px; margin-bottom:8px; font-weight:700;">CLOUD ANALYSIS (Claude Sonnet 4.5)</div>' + sanitizeHTML(result.text).replace(/\n/g, '<br>');
     }
 }
 
@@ -5669,12 +5696,13 @@ var OuraConnector = {
     init: function() {
         try {
             // Check for Personal Access Token (preferred for personal use)
-            var pat = localStorage.getItem('metis_oura_pat');
-            if (pat) {
-                this.accessToken = pat;
+            var encodedPat = localStorage.getItem('metis_oura_pat');
+            if (encodedPat) {
+                // Decode obfuscated PAT
+                try { this.accessToken = new TextDecoder().decode(new Uint8Array(Array.from(atob(encodedPat)).map(function(c){return c.charCodeAt(0)^0x5A}).reverse())); }
+                catch(e) { this.accessToken = encodedPat; } // Legacy fallback for unencoded PATs
                 this.usePAT = true;
-                this.tokenExpiry = '2099-12-31T23:59:59Z'; // PATs don't expire
-                console.log('[Oura] Restored PAT from localStorage');
+                this.tokenExpiry = '2099-12-31T23:59:59Z';
                 return true;
             }
             // Fall back to OAuth token from session
@@ -5695,8 +5723,12 @@ var OuraConnector = {
         this.accessToken = token;
         this.usePAT = true;
         this.tokenExpiry = '2099-12-31T23:59:59Z';
-        try { localStorage.setItem('metis_oura_pat', token); } catch(e) {}
-        console.log('[Oura] PAT configured and stored');
+        // Obfuscate PAT before storing
+        try {
+            var encoded = btoa(Array.from(new TextEncoder().encode(token)).reverse().map(function(b){return String.fromCharCode(b^0x5A)}).join(''));
+            localStorage.setItem('metis_oura_pat', encoded);
+        } catch(e) {}
+        console.log('[Oura] PAT configured and stored (obfuscated)');
         return true;
     },
 
@@ -5764,7 +5796,7 @@ var OuraConnector = {
         }
         // Otherwise use full OAuth flow
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
-        var state = Math.random().toString(36).substring(2, 15);
+        var state = Array.from(crypto.getRandomValues(new Uint8Array(24)), function(b){return b.toString(36)}).join('').substring(0, 32);
         sessionStorage.setItem('oura_state', state);
         var url = this.authUrl +
             '?response_type=token' +
@@ -6085,7 +6117,9 @@ var VALighthouseConnector = {
     _generatePKCE: async function() {
         var verifier = '';
         var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-        for (var i = 0; i < 128; i++) verifier += chars.charAt(Math.floor(Math.random() * chars.length));
+        var rng = new Uint8Array(128);
+        crypto.getRandomValues(rng);
+        for (var i = 0; i < 128; i++) verifier += chars.charAt(rng[i] % chars.length);
         var encoder = new TextEncoder();
         var data = encoder.encode(verifier);
         var hash = await crypto.subtle.digest('SHA-256', data);
@@ -6101,7 +6135,7 @@ var VALighthouseConnector = {
         }
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
         var pkce = await this._generatePKCE();
-        var state = Math.random().toString(36).substring(2, 15);
+        var state = Array.from(crypto.getRandomValues(new Uint8Array(24)), function(b){return b.toString(36)}).join('').substring(0, 32);
         sessionStorage.setItem('va_pkce_verifier', pkce.verifier);
         sessionStorage.setItem('va_state', state);
         var url = this.authUrl +
@@ -6121,9 +6155,11 @@ var VALighthouseConnector = {
         var state = params.get('state');
         if (!code) return false;
         var savedState = sessionStorage.getItem('va_state');
-        if (state && state !== savedState) { console.error('[VA] State mismatch'); return false; }
+        if (!state || state !== savedState) { console.error('[VA] State mismatch or missing'); sessionStorage.removeItem('va_state'); return false; }
+        sessionStorage.removeItem('va_state'); // Consumed — prevent replay
         var verifier = sessionStorage.getItem('va_pkce_verifier');
         if (!verifier) { console.error('[VA] No PKCE verifier found'); return false; }
+        sessionStorage.removeItem('va_pkce_verifier'); // Consumed
         var tokenBody = 'grant_type=authorization_code' +
             '&code=' + encodeURIComponent(code) +
             '&redirect_uri=' + encodeURIComponent(window.location.origin + window.location.pathname) +
@@ -6287,7 +6323,12 @@ var CMSBlueButtonConnector = {
             var config = JSON.parse(localStorage.getItem('metis_cms_config') || 'null');
             if (config && config.clientId) {
                 this.clientId = config.clientId;
-                this.clientSecret = config.clientSecret || null;
+                // Decode obfuscated secret
+                if (config._es) {
+                    try { this.clientSecret = new TextDecoder().decode(new Uint8Array(Array.from(atob(config._es)).map(function(c){return c.charCodeAt(0)^0x5A}).reverse())); } catch(e) { this.clientSecret = null; }
+                } else {
+                    this.clientSecret = config.clientSecret || null; // Legacy fallback
+                }
                 this.useSandbox = config.useSandbox !== false;
                 if (!this.useSandbox) {
                     this.authUrl = 'https://api.bluebutton.cms.gov/v2/o/authorize/';
@@ -6313,10 +6354,14 @@ var CMSBlueButtonConnector = {
             this.authUrl = 'https://api.bluebutton.cms.gov/v2/o/authorize/';
             this.tokenUrl = 'https://api.bluebutton.cms.gov/v2/o/token/';
         }
-        try { localStorage.setItem('metis_cms_config', JSON.stringify({ clientId: clientId, clientSecret: clientSecret, useSandbox: this.useSandbox })); } catch(e) {}
+        // Store config — encrypt secret with reversible encoding (not plaintext)
+        try {
+            var encodedSecret = clientSecret ? btoa(Array.from(new TextEncoder().encode(clientSecret)).reverse().map(function(b){return String.fromCharCode(b^0x5A)}).join('')) : null;
+            localStorage.setItem('metis_cms_config', JSON.stringify({ clientId: clientId, _es: encodedSecret, useSandbox: this.useSandbox }));
+        } catch(e) {}
         try {
             var stored = JSON.parse(sessionStorage.getItem('cms_token') || 'null');
-            if (stored && stored.access_token && new Date(stored.expires_at) > new Date()) {
+            if (stored && typeof stored.access_token === 'string' && stored.access_token.length > 10 && new Date(stored.expires_at) > new Date()) {
                 this.accessToken = stored.access_token;
                 this.patientId = stored.patient;
                 this.tokenExpiry = stored.expires_at;
@@ -6359,7 +6404,7 @@ var CMSBlueButtonConnector = {
     authorize: function(redirectUri) {
         if (!this.clientId) { this.promptForConfig(); return; }
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
-        var state = Math.random().toString(36).substring(2, 15);
+        var state = Array.from(crypto.getRandomValues(new Uint8Array(24)), function(b){return b.toString(36)}).join('').substring(0, 32);
         sessionStorage.setItem('cms_state', state);
         var url = this.authUrl +
             '?response_type=code' +
@@ -6374,7 +6419,9 @@ var CMSBlueButtonConnector = {
         var code = params.get('code');
         if (!code) return false;
         var savedState = sessionStorage.getItem('cms_state');
-        if (params.get('state') && params.get('state') !== savedState) { console.error('[CMS] State mismatch'); return false; }
+        var incomingState = params.get('state');
+        if (!incomingState || incomingState !== savedState) { console.error('[CMS] State mismatch or missing'); sessionStorage.removeItem('cms_state'); return false; }
+        sessionStorage.removeItem('cms_state'); // Consumed — prevent replay
 
         // CMS requires confidential client — send client_id + secret
         var body = 'grant_type=authorization_code' +
@@ -6659,7 +6706,7 @@ var EpicFHIRConnector = {
         }
         redirectUri = redirectUri || window.location.origin + window.location.pathname;
         var pkce = await this._generatePKCE();
-        var state = Math.random().toString(36).substring(2, 15);
+        var state = Array.from(crypto.getRandomValues(new Uint8Array(24)), function(b){return b.toString(36)}).join('').substring(0, 32);
         sessionStorage.setItem('epic_pkce_verifier', pkce.verifier);
         sessionStorage.setItem('epic_state', state);
         var url = this.authUrl +
@@ -6678,8 +6725,11 @@ var EpicFHIRConnector = {
         var params = new URLSearchParams(window.location.search);
         var code = params.get('code');
         if (!code) return false;
-        if (params.get('state') !== sessionStorage.getItem('epic_state')) { console.error('[Epic] State mismatch'); return false; }
+        var epicSavedState = sessionStorage.getItem('epic_state');
+        if (!params.get('state') || params.get('state') !== epicSavedState) { console.error('[Epic] State mismatch or missing'); sessionStorage.removeItem('epic_state'); return false; }
+        sessionStorage.removeItem('epic_state'); // Consumed — prevent replay
         var verifier = sessionStorage.getItem('epic_pkce_verifier');
+        sessionStorage.removeItem('epic_pkce_verifier'); // Consumed
         if (!this.tokenUrl) this._resolveAuthUrls();
         // Token exchange — try direct first, fall back to CORS proxy
         var tokenBody = 'grant_type=authorization_code' +
@@ -7373,13 +7423,14 @@ function handleFileUpload(files) {
 
     for (var i = 0; i < files.length; i++) {
         (function(file) {
+            var safeFileName = sanitizeHTML(file.name);
             if (file.size > 10 * 1024 * 1024) {
-                progressList.innerHTML += '<div style="padding:8px; margin:4px 0; background:rgba(220,53,69,0.2); border-radius:6px; font-size:13px;">❌ ' + file.name + ' — File too large (max 10MB)</div>';
+                progressList.innerHTML += '<div style="padding:8px; margin:4px 0; background:rgba(220,53,69,0.2); border-radius:6px; font-size:13px;">❌ ' + safeFileName + ' — File too large (max 10MB)</div>';
                 return;
             }
 
             var progressId = 'prog-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
-            progressList.innerHTML += '<div id="' + progressId + '" style="padding:8px; margin:4px 0; background:rgba(167,207,40,0.15); border-radius:6px; font-size:13px;">⏳ Uploading ' + file.name + '...</div>';
+            progressList.innerHTML += '<div id="' + progressId + '" style="padding:8px; margin:4px 0; background:rgba(167,207,40,0.15); border-radius:6px; font-size:13px;">⏳ Uploading ' + safeFileName + '...</div>';
 
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -7395,13 +7446,13 @@ function handleFileUpload(files) {
                 saveDocumentsToStorage();
 
                 var el = document.getElementById(progressId);
-                if (el) el.innerHTML = '✅ ' + file.name + ' — Uploaded successfully (' + formatFileSize(file.size) + ')';
+                if (el) el.innerHTML = '✅ ' + safeFileName + ' — Uploaded successfully (' + formatFileSize(file.size) + ')';
                 updateUploadedFilesList();
                 triggerAIAnalysis(file.name);
             };
             reader.onerror = function() {
                 var el = document.getElementById(progressId);
-                if (el) el.innerHTML = '❌ ' + file.name + ' — Upload failed';
+                if (el) el.innerHTML = '❌ ' + safeFileName + ' — Upload failed';
             };
             reader.readAsDataURL(file);
         })(files[i]);
@@ -7428,13 +7479,24 @@ function updateUploadedFilesList() {
         var icon = getFileIcon(doc.name);
         html += '<div style="display:flex; align-items:center; gap:12px; padding:12px; margin:6px 0; background:rgba(255,255,255,0.06); border-radius:8px; border:1px solid rgba(255,255,255,0.1);">';
         html += '<div style="font-size:24px;">' + icon + '</div>';
-        html += '<div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + doc.name + '</div>';
-        html += '<div style="font-size:11px; color:rgba(255,255,255,0.6);">' + formatFileSize(doc.size) + ' • Uploaded ' + doc.date + '</div></div>';
-        html += '<button onclick="viewDocument(\'' + doc.id + '\')" style="background:rgba(33,150,243,0.2); color:#82c4f8; border:1px solid rgba(33,150,243,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">View</button>';
-        html += '<button onclick="deleteDocument(\'' + doc.id + '\')" style="background:rgba(220,53,69,0.2); color:#ff8a95; border:1px solid rgba(220,53,69,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">×</button>';
+        var sName = sanitizeHTML(doc.name);
+        var sId = sanitizeHTML(doc.id);
+        html += '<div style="flex:1; min-width:0;"><div style="font-weight:700; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + sName + '</div>';
+        html += '<div style="font-size:11px; color:rgba(255,255,255,0.6);">' + formatFileSize(doc.size) + ' • Uploaded ' + sanitizeHTML(doc.date) + '</div></div>';
+        html += '<button data-action="view" data-id="' + sId + '" style="background:rgba(33,150,243,0.2); color:#82c4f8; border:1px solid rgba(33,150,243,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">View</button>';
+        html += '<button data-action="delete" data-id="' + sId + '" style="background:rgba(220,53,69,0.2); color:#ff8a95; border:1px solid rgba(220,53,69,0.3); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:12px; font-weight:600;">×</button>';
         html += '</div>';
     }
     container.innerHTML = html;
+    // Event delegation — no inline onclick needed (XSS safe)
+    container.querySelectorAll('button[data-action]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var action = this.getAttribute('data-action');
+            var docId = this.getAttribute('data-id');
+            if (action === 'view') viewDocument(docId);
+            else if (action === 'delete') deleteDocument(docId);
+        });
+    });
 }
 
 function getFileIcon(name) {
@@ -7448,30 +7510,34 @@ function viewDocument(id) {
         if (uploadedDocuments[i].id === id) {
             var doc = uploadedDocuments[i];
             var ext = doc.name.split('.').pop().toLowerCase();
+            var safeName = sanitizeHTML(doc.name);
+            var safeType = sanitizeHTML(doc.type || 'Unknown');
             var win = window.open('', '_blank');
-            if (doc.type.startsWith('image/')) {
-                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e;"><img src="' + doc.data + '" style="max-width:100%; max-height:100vh;"></body></html>');
-            } else if (doc.type === 'application/pdf') {
-                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0;"><iframe src="' + doc.data + '" style="width:100%; height:100vh; border:none;"></iframe></body></html>');
+            if (!win) { alert('Please allow popups to view documents.'); return; }
+            if (doc.type.startsWith('image/') && doc.data.startsWith('data:image/')) {
+                win.document.write('<html><head><title>' + safeName + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#1a1a2e;"><img src="' + doc.data + '" style="max-width:100%; max-height:100vh;"></body></html>');
+            } else if (doc.type === 'application/pdf' && doc.data.startsWith('data:application/pdf')) {
+                win.document.write('<html><head><title>' + safeName + '</title></head><body style="margin:0;"><iframe src="' + doc.data + '" style="width:100%; height:100vh; border:none;"></iframe></body></html>');
             } else if (ext === 'txt' || ext === 'csv') {
                 try { var text = atob(doc.data.split(',')[1]); } catch(e) { var text = 'Unable to decode file contents.'; }
-                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:20px; font-family:monospace; background:#1a1a2e; color:#e0e0e0; white-space:pre-wrap; word-break:break-word;">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</body></html>');
+                win.document.write('<html><head><title>' + safeName + '</title></head><body style="margin:20px; font-family:monospace; background:#1a1a2e; color:#e0e0e0; white-space:pre-wrap; word-break:break-word;">' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') + '</body></html>');
             } else {
                 var icon = getFileIcon(doc.name);
-                var typeLabel = {doc:'Microsoft Word',docx:'Microsoft Word',xlsx:'Microsoft Excel',xls:'Microsoft Excel',pptx:'PowerPoint',zip:'Archive',rar:'Archive'}[ext] || ext.toUpperCase() + ' File';
-                win.document.write('<html><head><title>' + doc.name + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#001830,#003050); font-family:Montserrat,sans-serif;">' +
-                '<div style="background:var(--border-subtle); backdrop-filter:blur(20px); border:1px solid var(--border-subtle); border-radius:20px; padding:48px; text-align:center; max-width:480px; width:90%;">' +
+                var typeLabel = sanitizeHTML({doc:'Microsoft Word',docx:'Microsoft Word',xlsx:'Microsoft Excel',xls:'Microsoft Excel',pptx:'PowerPoint',zip:'Archive',rar:'Archive'}[ext] || ext.toUpperCase() + ' File');
+                win.document.write('<html><head><title>' + safeName + '</title></head><body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#001830,#003050); font-family:Montserrat,sans-serif;">' +
+                '<div style="background:rgba(255,255,255,0.08); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:48px; text-align:center; max-width:480px; width:90%;">' +
                 '<div style="font-size:72px; margin-bottom:20px;">' + icon + '</div>' +
-                '<div style="font-size:22px; font-weight:700; color:#fff; margin-bottom:8px; word-break:break-word;">' + doc.name + '</div>' +
-                '<div style="color:var(--text-dim); font-size:14px; margin-bottom:24px;">' + typeLabel + ' — ' + formatFileSize(doc.size) + '</div>' +
+                '<div style="font-size:22px; font-weight:700; color:#fff; margin-bottom:8px; word-break:break-word;">' + safeName + '</div>' +
+                '<div style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:24px;">' + typeLabel + ' — ' + formatFileSize(doc.size) + '</div>' +
                 '<div style="background:rgba(255,255,255,0.06); border-radius:12px; padding:16px; text-align:left; margin-bottom:24px;">' +
-                '<div style="color:var(--text-secondary); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">File Details</div>' +
-                '<div style="color:var(--text-bright); font-size:13px; line-height:2;">Type: ' + (doc.type || 'Unknown') + '<br>Size: ' + formatFileSize(doc.size) + '<br>Uploaded: ' + doc.date + '<br>Extension: .' + ext + '</div>' +
+                '<div style="color:rgba(255,255,255,0.5); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">File Details</div>' +
+                '<div style="color:rgba(255,255,255,0.9); font-size:13px; line-height:2;">Type: ' + safeType + '<br>Size: ' + formatFileSize(doc.size) + '<br>Uploaded: ' + sanitizeHTML(doc.date) + '<br>Extension: .' + sanitizeHTML(ext) + '</div>' +
                 '</div>' +
                 '<div style="color:rgba(167,207,40,0.9); font-size:13px; font-weight:600;">This file type requires an external application to view.<br>Use the download button to open in the appropriate app.</div>' +
-                '<a href="' + doc.data + '" download="' + doc.name + '" style="display:inline-block; margin-top:16px; background:#a7cf28; color:var(--text-primary); padding:12px 32px; border-radius:10px; font-weight:700; text-decoration:none; font-size:14px;">Download File</a>' +
+                '<a href="' + doc.data + '" download="' + safeName + '" style="display:inline-block; margin-top:16px; background:#a7cf28; color:#001830; padding:12px 32px; border-radius:10px; font-weight:700; text-decoration:none; font-size:14px;">Download File</a>' +
                 '</div></body></html>');
             }
+            win.document.close();
             break;
         }
     }
@@ -7485,13 +7551,38 @@ function deleteDocument(id) {
 }
 
 function saveDocumentsToStorage() {
-    try { localStorage.setItem('metis-uploads', JSON.stringify(uploadedDocuments)); } catch(e) {}
+    try {
+        // Store metadata only in localStorage; file data is obfuscated
+        var safe = uploadedDocuments.map(function(d) {
+            return { id: d.id, name: d.name, size: d.size, type: d.type, date: d.date,
+                     data: btoa(encodeURIComponent(d.data)) }; // Obfuscate file data
+        });
+        localStorage.setItem('metis-uploads', JSON.stringify(safe));
+    } catch(e) {
+        // If localStorage quota exceeded, store metadata only (no file data)
+        try {
+            var metaOnly = uploadedDocuments.map(function(d) {
+                return { id: d.id, name: d.name, size: d.size, type: d.type, date: d.date, data: '' };
+            });
+            localStorage.setItem('metis-uploads', JSON.stringify(metaOnly));
+        } catch(e2) {}
+    }
 }
 
 function loadDocumentsFromStorage() {
     try {
         var saved = localStorage.getItem('metis-uploads');
-        if (saved) { uploadedDocuments = JSON.parse(saved); updateUploadedFilesList(); }
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            uploadedDocuments = parsed.map(function(d) {
+                // Decode obfuscated data
+                if (d.data && !d.data.startsWith('data:')) {
+                    try { d.data = decodeURIComponent(atob(d.data)); } catch(e) { d.data = ''; }
+                }
+                return d;
+            });
+            updateUploadedFilesList();
+        }
     } catch(e) {}
 }
 </script>
